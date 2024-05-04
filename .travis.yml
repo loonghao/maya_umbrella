@@ -1,0 +1,16 @@
+language: python
+python:
+    - "3.8"
+    - "3.9"
+    - "3.10"
+    - "3.11"
+    - "3.12"
+before_script:
+    - pip install poetry
+    - poetry install
+script:
+    - poetry run codecov
+
+cache: pip
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
