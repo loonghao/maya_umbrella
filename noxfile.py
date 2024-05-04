@@ -34,26 +34,17 @@ def lint(session: nox.Session) -> None:
     session.install("flake8")
     session.run("flake8", PACKAGE_NAME)
 
-
-@nox.session
-def lint(session: nox.Session) -> None:
-    session.install("flake8")
-    session.run("flake8", PACKAGE_NAME)
-
-
 @nox.session
 def preflight(session: nox.Session) -> None:
     session.install("pre-commit")
     session.install("black")
     session.install("isort")
     session.install("pre-commit")
+    session.run("isort", PACKAGE_NAME)
     session.run(
         "pre-commit",
         "run",
         "--all-files",
-        "--show-diff-on-failure",
-        "--hook-stage=manual",
-        *session.posargs,
     )
 
 def add_dynamic_maya_session(session_name, command):

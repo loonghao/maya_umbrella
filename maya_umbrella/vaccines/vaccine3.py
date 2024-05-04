@@ -71,8 +71,11 @@ class Vaccine(BaseVaccine):
         for hik_mel in glob.glob(pattern):
             with open(hik_mel, "rb") as f:
                 data = f.read()
-
-            if len(re.findall(self.hik_regex, data)) > 0:
+            try:
+                check = re.findall(self.hik_regex, data)
+            except TypeError:
+                check = []
+            if len(check) > 0:
                 with open(hik_mel, "wb") as f:
                     f.write(re.sub(self.hik_regex, "", data))
                 self._logger.warning("Remove virus code from {}".format(hik_mel))

@@ -1,6 +1,5 @@
 # Import built-in modules
 import logging
-import os.path
 import re
 
 # Import third-party modules
@@ -55,6 +54,8 @@ class Defender(object):
                 self.callback_ids.append(
                     {name: om.MSceneMessage.addCallback(callback, getattr(self, "{0}_callback".format(method_name)))}
                 )
+
+        self.start()
 
     def before_callback(self, *args, **kwargs):
         self.logger.info("before_callback.")
