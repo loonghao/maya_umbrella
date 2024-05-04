@@ -21,7 +21,7 @@
         "infra",
         "test"
       ]
-    },
+    }
   ],
   "skipCi": true,
   "commitType": "docs"
