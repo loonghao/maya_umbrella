@@ -17,10 +17,6 @@ def _setup_maya(maya_version):
         if not os.path.isdir(root):
             print("Failed to locate the appropriate Maya path in the registration list.")
     except WindowsError:
-        print(
-            f"The installed version of Maya {maya_version} was not found "
-            f"in the system. Registering Nox session failed."
-        )
         return
     bin_root = os.path.join(root, "bin")
     return {

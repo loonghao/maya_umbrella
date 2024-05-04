@@ -8,6 +8,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      # IMPORTANT: this permission is mandatory for trusted publishing
+      id-token: write
     steps:
     - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
       with:
@@ -26,12 +29,12 @@ jobs:
         python -m pip install -U pip poetry nox
         poetry --version
         poetry install
-    - name: Publish
-      env:
-        PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        poetry publish --build -u $PYPI_USERNAME -p $PYPI_PASSWORD
+    # Note that we don't need credentials.
+    # We rely on https://docs.pypi.org/trusted-publishers/.
+    - name: Upload to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        packages-dir: dist
     - name: Create release Version
       run: gh release create ${{ steps.vars.outputs.tag }} --generate-notes
       env:

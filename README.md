@@ -25,8 +25,10 @@ nox -s maya-2020
 ```
 
 ## 在maya中测试
-通过nox -s maya-xxx, 启动maya
+通过`nox -s maya-xxx`, 启动maya. 
+nox会动态根据你本地安装得maya去注册nox session, 比如你本地安装了`maya-2020`，那么通过`nox -s maya-2018`
 
+启动maya后在脚本编辑器中执行下面得代码，就会动态的从`<repo>/tests/virus/`里面去open ma文件去进行测试.
 ```python
 import manual_test_in_maya
 
