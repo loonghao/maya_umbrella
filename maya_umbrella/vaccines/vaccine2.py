@@ -19,23 +19,20 @@ class Vaccine(BaseVaccine):
 
     @property
     def bad_files(self):
-        return [
-            os.path.join(self.local_script_path, "vaccine.py"),
-            os.path.join(self.local_script_path, "vaccine.pyc")
-        ]
+        return [os.path.join(self.local_script_path, "vaccine.py"), os.path.join(self.local_script_path, "vaccine.pyc")]
 
     def _get_nodes(self):
         bad_script_nodes = []
         for script_node in cmds.ls(type="script"):
             if cmds.referenceQuery(script_node, isNodeReferenced=True):
                 continue
-            script_before_string = cmds.getAttr('{}.before'.format(script_node))
-            script_after_string = cmds.getAttr('{}.after'.format(script_node))
+            script_before_string = cmds.getAttr("{}.before".format(script_node))
+            script_after_string = cmds.getAttr("{}.after".format(script_node))
             for script_string in [script_before_string, script_after_string]:
                 if not script_string:
                     continue
-                if 'internalVar' in script_string or 'userSetup' in script_string or 'fuckVirus' in script_string:
-                    self._logger.warning('script node {} has internalVar or userSetup or fuckVirus'.format(script_node))
+                if "internalVar" in script_string or "userSetup" in script_string or "fuckVirus" in script_string:
+                    self._logger.warning("script node {} has internalVar or userSetup or fuckVirus".format(script_node))
                     bad_script_nodes.append(script_node)
         return bad_script_nodes
 
@@ -48,17 +45,19 @@ class Vaccine(BaseVaccine):
             os.path.join(self.local_script_path, "vaccine.py"),
             os.path.join(self.user_script_path, "vaccine.py"),
             os.path.join(self.local_script_path, "userSetup.py"),
-            os.path.join(self.user_script_path, "userSetup.py")
+            os.path.join(self.user_script_path, "userSetup.py"),
         ]:
             if os.path.exists(usersetup_py):
                 data = read_file(usersetup_py)
                 if "petri_dish_path = cmds.internalVar(userAppDir=True) + 'scripts/userSetup.py" in data:
-                    self._logger.warning('vaccine.py found : Infected by Malware!')
+                    self._logger.warning("vaccine.py found : Infected by Malware!")
                     self._bad_files.append(rename(usersetup_py))
 
-                if "cmds.evalDeferred(\'leukocyte = vaccine.phage()\')" in data \
-                        and "cmds.evalDeferred(\'leukocyte.occupation()\')" in data:
-                    self._logger.warning('userSetup.py : Infected by Malware!')
+                if (
+                    "cmds.evalDeferred('leukocyte = vaccine.phage()')" in data
+                    and "cmds.evalDeferred('leukocyte.occupation()')" in data
+                ):
+                    self._logger.warning("userSetup.py : Infected by Malware!")
                     self._bad_files.append(rename(usersetup_py))
 
     def before_callback(self, *args, **kwargs):

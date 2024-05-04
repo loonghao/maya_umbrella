@@ -2,4 +2,4 @@
 from maya_umbrella.core import Defender
 
 
-__all__ = ['Defender']
+__all__ = ["Defender"]

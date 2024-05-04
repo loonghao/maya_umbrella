@@ -47,12 +47,18 @@ def lint(session: nox.Session) -> None:
 
 @nox.session
 def preflight(session: nox.Session) -> None:
+    session.install("pre-commit")
     session.install("black")
     session.install("isort")
     session.install("pre-commit")
-    # session.run("black", PACKAGE_NAME)
-    session.run("isort",  PACKAGE_NAME)
-
+    session.run(
+        "pre-commit",
+        "run",
+        "--all-files",
+        "--show-diff-on-failure",
+        "--hook-stage=manual",
+        *session.posargs,
+    )
 
 def add_dynamic_maya_session(session_name, command):
     @nox.session(name=session_name, python=False)

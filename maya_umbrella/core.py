@@ -13,12 +13,8 @@ from maya_umbrella.filesystem import load_hook
 
 
 class Defender(object):
-    callback_ids = [
-
-    ]
-    remove_callbacks = [
-
-    ]
+    callback_ids = []
+    remove_callbacks = []
     _bad_files = []
     _vaccines = []
     callback_maps = {
@@ -57,10 +53,7 @@ class Defender(object):
                 method_name = matched.group("name")
                 self.logger.info("setup %s.", name)
                 self.callback_ids.append(
-                    {
-                        name: om.MSceneMessage.addCallback(callback,
-                                                           getattr(self, "{0}_callback".format(method_name)))
-                    }
+                    {name: om.MSceneMessage.addCallback(callback, getattr(self, "{0}_callback".format(method_name)))}
                 )
 
     def before_callback(self, *args, **kwargs):
