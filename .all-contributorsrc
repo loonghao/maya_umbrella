@@ -31,6 +31,15 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "lingyunfx",
+      "name": "lingyunfx",
+      "avatar_url": "https://avatars.githubusercontent.com/u/73666629?v=4",
+      "profile": "https://github.com/lingyunfx",
+      "contributions": [
+        "test"
+      ]
     }
   ],
   "skipCi": true,
