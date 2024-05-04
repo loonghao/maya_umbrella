@@ -6,7 +6,6 @@ import sys
 # Import third-party modules
 import maya.standalone
 import pytest
-import os
 
 
 def run_test():
