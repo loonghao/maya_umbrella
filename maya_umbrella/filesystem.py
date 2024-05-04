@@ -13,7 +13,6 @@ def this_root():
     return os.path.abspath(os.path.dirname(__file__))
 
 
-
 def safe_remove_file(file_path):
     """Remove the file at the given path without raising an error if the file does not exist."""
     try:
@@ -66,7 +65,7 @@ def patch_file(source, target, key_values, report_error=True):
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     """Generate a random string of the given size using the given characters."""
-    return ''.join(random.choice(chars) for _ in range(size))
+    return "".join(random.choice(chars) for _ in range(size))
 
 
 def rename(src):
@@ -82,10 +81,11 @@ def rename(src):
 def load_hook(hook_file):
     """Load the Python module from the given hook file."""
     hook_name = os.path.basename(hook_file).split(".py")[0]
-    if hasattr(importlib, 'machinery'):
+    if hasattr(importlib, "machinery"):
         # Python 3
         # Import built-in modules
         from importlib.util import spec_from_loader
+
         loader = importlib.machinery.SourceFileLoader(hook_name, hook_file)
         spec = importlib.util.spec_from_loader(loader.name, loader=loader)
         module = importlib.util.module_from_spec(spec)
@@ -94,6 +94,7 @@ def load_hook(hook_file):
         # Python 2
         # Import built-in modules
         import imp
+
         module = imp.load_source(hook_name, hook_file)
     return module
 
@@ -101,13 +102,9 @@ def load_hook(hook_file):
 def get_hooks():
     """Return a list of paths to all hook files in the 'hooks' directory."""
     pattern = os.path.join(this_root(), "hooks", "*.py")
-    return [
-        hook for hook in glob.glob(pattern) if "__init__" not in hook
-    ]
+    return [hook for hook in glob.glob(pattern) if "__init__" not in hook]
 
 
 def get_vaccines():
     pattern = os.path.join(this_root(), "vaccines", "*.py")
-    return [
-        vaccine for vaccine in glob.glob(pattern) if "__init__" not in vaccine
-    ]
+    return [vaccine for vaccine in glob.glob(pattern) if "__init__" not in vaccine]

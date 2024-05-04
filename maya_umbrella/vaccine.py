@@ -37,9 +37,7 @@ class BaseVaccine(object):
 
     @property
     def bad_files(self):
-        return [
-
-        ]
+        return []
 
     @property
     def bad_nodes(self):
@@ -50,9 +48,7 @@ class BaseVaccine(object):
         return []
 
     def collect(self):
-        self._bad_files.extend(
-            [temp_file for temp_file in glob.glob(os.path.join(self.local_script_path, "._*"))]
-        )
+        self._bad_files.extend([temp_file for temp_file in glob.glob(os.path.join(self.local_script_path, "._*"))])
 
     def remove_bad_files(self):
         self.collect()

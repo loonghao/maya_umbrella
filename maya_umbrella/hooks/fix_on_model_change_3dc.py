@@ -7,16 +7,16 @@ import maya.mel as mel
 def hook(logger):
     needs_fixing = False
     try:
-        expression_str = cmds.getAttr('uiConfigurationScriptNode.before')
+        expression_str = cmds.getAttr("uiConfigurationScriptNode.before")
         fixed_expression_lines = []
-        for line in expression_str.split('\n'):
+        for line in expression_str.split("\n"):
             if '-editorChanged "onModelChange3dc"' in line:
                 needs_fixing = True
                 continue
             fixed_expression_lines.append(line)
-        fixed_expression = '\n'.join(fixed_expression_lines)
+        fixed_expression = "\n".join(fixed_expression_lines)
         if needs_fixing:
-            cmds.setAttr('uiConfigurationScriptNode.before', fixed_expression, typ='string')
+            cmds.setAttr("uiConfigurationScriptNode.before", fixed_expression, typ="string")
     except:
         pass
     mel.eval('outlinerEditor -edit -selectCommand "" "outlinerPanel1";')

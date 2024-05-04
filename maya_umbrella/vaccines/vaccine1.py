@@ -15,5 +15,5 @@ class Vaccine(BaseVaccine):
     def bad_files(self):
         return [
             os.path.join(self.local_script_path, "fuckVirus.py"),
-            os.path.join(self.local_script_path, "fuckVirus.pyc")
+            os.path.join(self.local_script_path, "fuckVirus.pyc"),
         ]
