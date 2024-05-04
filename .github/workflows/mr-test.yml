@@ -1,0 +1,25 @@
+name: MR Checks
+on: [pull_request]
+
+jobs:
+  python-check:
+    runs-on: windows-2022
+    strategy:
+      max-parallel: 3
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+      with:
+        fetch-depth: 0
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install -U pip poetry nox
+        poetry --version
+        nox --version
+        nox -s preflight
