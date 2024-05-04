@@ -21,6 +21,16 @@
         "infra",
         "test"
       ]
+    },
+    {
+      "login": "hotwinter0",
+      "name": "hotwinter0",
+      "avatar_url": "https://avatars.githubusercontent.com/u/106237305?v=4",
+      "profile": "https://github.com/hotwinter0",
+      "contributions": [
+        "test",
+        "code"
+      ]
     }
   ],
   "skipCi": true,
