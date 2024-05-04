@@ -1,5 +1,5 @@
 {
-  "projectName": "notifiers_wecom_provider",
+  "projectName": "maya_umbrella",
   "projectOwner": "loonghao",
   "repoType": "github",
   "commitConvention": "angular",
@@ -172,6 +172,16 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/857880?v=4",
       "profile": "http://www.thbattle.net",
       "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "yjjjj",
+      "name": "yjjjj",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12741735?v=4",
+      "profile": "https://github.com/yjjjj",
+      "contributions": [
+        "test",
         "code"
       ]
     }
