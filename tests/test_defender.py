@@ -1,4 +1,4 @@
-from maya_umbrella.core import Defender
+from maya_umbrella.core import MayaVirusDefender
 import pytest
 
 

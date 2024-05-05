@@ -8,7 +8,7 @@ from maya_umbrella.vaccine import AbstractVaccine
 class Vaccine(AbstractVaccine):
     virus_name = "pu tian tong qi"
 
-    def collect(self):
+    def collect_issues(self):
         self.api.add_bad_files(
             [
                 os.path.join(self.api.local_script_path, "fuckVirus.py"),

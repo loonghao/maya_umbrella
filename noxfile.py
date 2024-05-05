@@ -62,6 +62,7 @@ def ruff_check(session: nox.Session) -> None:
     session.install("ruff")
     session.run("ruff", "check")
 
+
 def add_dynamic_maya_session(session_name, command):
     @nox.session(name=session_name, python=False)
     def dynamic_session(session: nox.Session):

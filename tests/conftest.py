@@ -2,7 +2,7 @@ import os.path
 import maya.cmds as cmds
 
 import pytest
-from maya_umbrella.core import Defender
+from maya_umbrella.core import MayaVirusDefender
 
 
 @pytest.fixture()
@@ -26,7 +26,7 @@ def maya_cmds():
 @pytest.fixture
 def setup_defender():
     def _defender():
-        defender = Defender()
+        defender = MayaVirusDefender()
         defender.setup()
 
     return _defender

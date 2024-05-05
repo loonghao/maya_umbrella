@@ -6,14 +6,14 @@ import maya.mel as mel
 def hook(logger):
     try:
         mel.eval("global proc onModelChange3dc(string $a){}")
-    except:
+    except Exception:
         pass
     try:
         cmds.delete("fixCgAbBlastPanelOptChangeCallback")
-    except:
+    except Exception:
         pass
     try:
         script = "global proc CgAbBlastPanelOptChangeCallback(string $i){}"
         mel.eval(script)
-    except:
+    except Exception:
         pass

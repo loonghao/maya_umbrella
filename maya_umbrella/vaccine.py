@@ -12,7 +12,7 @@ from maya_umbrella.filesystem import safe_remove_file
 from maya_umbrella.filesystem import safe_rmtree
 
 
-class VaccineAPI(object):
+class MayaVirusCleaner(object):
     _bad_files = []
     _bad_nodes = []
     _bad_script_nodes = []
@@ -26,38 +26,47 @@ class VaccineAPI(object):
 
     @property
     def user_app_dir(self):
+        """Return the user application directory."""
         return cmds.internalVar(userAppDir=True)
 
     @property
     def maya_file(self):
+        """Return the current Maya file."""
         return cmds.file(q=True, sn=True)
 
     @property
     def maya_install_root(self):
+        """Return the Maya installation root directory."""
         return os.environ["MAYA_LOCATION"]
 
     @property
     def user_script_path(self):
+        """Return the user script directory."""
         return cmds.internalVar(userScriptDir=True)
 
     @property
     def local_script_path(self):
+        """Return the local script directory."""
         return os.path.join(self.user_app_dir, "scripts")
 
     @property
     def bad_files(self):
+        """Return a list of bad files."""
         return [path for path in list(set(self._bad_files)) if os.path.exists(path)]
 
     @property
     def bad_nodes(self):
+        """Return a list of bad nodes."""
         return list(set(self._bad_nodes))
 
     @property
     def bad_script_nodes(self):
+        """Return a list of bad script nodes."""
         return list(set(self._bad_script_nodes))
 
     @property
     def bad_script_jobs(self):
+        """Return a list of bad script jobs."""
         return list(set(self._bad_script_jobs))
 
     def callback_remove_rename_temp_files(self, *args, **kwargs):
@@ -163,7 +172,7 @@ class VaccineAPI(object):
         for node in self.bad_nodes:
             self.logger.info("Deleting %s", node)
             try:
-                cmds.lockNode(node, l=False)
+                cmds.lockNode(node, lock=False)
             except ValueError:
                 pass
             try:
@@ -172,19 +181,22 @@ class VaccineAPI(object):
                 pass
             self._bad_nodes.remove(node)
 
-    def fix(self):
+    def fix_all_issues(self):
+        """Fix all issues related to the Maya virus."""
         self.fix_bad_files()
         self.fix_bad_nodes()
         self.fix_script_jobs()
         for func in self._fix_funcs:
             func()
 
-    def report(self):
+    def report_all_issues(self):
+        """Report all issues related to the Maya virus."""
         self.logger.info("Bad files: {}".format(self.bad_files))
         self.logger.info("Bad nodes: {}".format(self.bad_nodes))
         self.logger.info("Bad script jobs: {}".format(self.bad_script_jobs))
 
-    def reset(self):
+    def reset_all_issues(self):
+        """Reset all issues related to the Maya virus."""
         self._bad_files = []
         self._bad_nodes = []
         self._bad_script_nodes = []
@@ -198,11 +210,15 @@ class AbstractVaccine(object):
         """Abstract class for Vaccine.
 
         Args:
-            api (VaccineAPI): The VaccineAPI instance.
+            api (MayaVirusCleaner): The VaccineAPI instance.
+            logger (Logger): The logger instance.
 
         """
         self.api = api
         self.logger = logger
 
-    def collect(self):
+    def collect_issues(self):
         raise NotImplementedError
+
+    def report_issue(self, name):
+        self.logger.warning("%s: Infected by Malware!", name)
