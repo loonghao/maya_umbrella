@@ -10,8 +10,7 @@ from maya_umbrella.filesystem import get_log_file
 
 
 def setup_logger(logger=None, logfile=None, log_level=None):
-    """
-    Set up the logger with the specified log file and log level.
+    """Set up the logger with the specified log file and log level.
 
     Args:
         logger (logging.Logger, optional): The logger to set up. Defaults to the logger for the package.

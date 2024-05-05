@@ -14,12 +14,10 @@ from maya_umbrella.vaccine import AbstractVaccine
 
 class Vaccine(AbstractVaccine):
     virus_name = "virus2024429"
-    hik_regex = r"python\(\"import base64;\s*pyCode\s*=\s*base64\.urlsafe_b64decode\([\'\"].*?[\"\']\);\s*exec\s*\(\s*pyCode\s*\)\"\)\s*;"  # noqa: E501
+    hik_regex = r"python\(\"import base64;\s*pyCode\s*=\s*base64\.urlsafe_b64decode\([\'\"].*?[\"\']\);\s*exec\s*\(\s*pyCode\s*\)\"\)\s*;"
 
     def collect_bad_nodes(self):
-        """
-        Collect all bad nodes related to the virus.
-        """
+        """Collect all bad nodes related to the virus."""
         for script_node in cmds.ls(type="script"):
             if cmds.referenceQuery(script_node, isNodeReferenced=True):
                 continue
@@ -31,9 +29,7 @@ class Vaccine(AbstractVaccine):
                 self.api.add_bad_node(script_node)
 
     def collect_bad_mel_files(self):
-        """
-        Collect all bad MEL files related to the virus.
-        """
+        """Collect all bad MEL files related to the virus."""
         # check usersetup.mel
         # C:/Users/hallong/Documents/maya/scripts/usersetup.mel
         # C:/Users/hallong/Documents/maya/xxxx/scripts/usersetup.mel
@@ -47,9 +43,7 @@ class Vaccine(AbstractVaccine):
                     self.api.add_bad_file(rename(usersetup_mel))
 
     def collect_script_jobs(self):
-        """
-        Collect all script jobs related to the virus.
-        """
+        """Collect all script jobs related to the virus."""
         virus_gene = [
             "leukocyte",
             "execute",
@@ -61,9 +55,7 @@ class Vaccine(AbstractVaccine):
                     self.api.add_bad_script_jobs(script_job)
 
     def fix_bad_hik_files(self):
-        """
-        Fix all bad HIK files related to the virus.
-        """
+        """Fix all bad HIK files related to the virus."""
         pattern = os.path.join(self.api.maya_install_root, "resources/l10n/*/plug-ins/mayaHIK.pres.mel")
         for hik_mel in glob.glob(pattern):
             with open(hik_mel, "rb") as f:
@@ -79,9 +71,7 @@ class Vaccine(AbstractVaccine):
                 self.logger.debug("Remove virus code from {}".format(hik_mel))
 
     def collect_issues(self):
-        """
-        Collect all issues related to the virus.
-        """
+        """Collect all issues related to the virus."""
         self.api.add_bad_file(os.path.join(os.getenv("APPDATA"), "syssst"))
         self.collect_bad_mel_files()
         self.collect_bad_nodes()

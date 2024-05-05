@@ -14,9 +14,7 @@ class Vaccine(AbstractVaccine):
     virus_name = "zei jian kang"
 
     def collect_bad_nodes(self):
-        """
-        Collect all bad nodes related to the virus.
-        """
+        """Collect all bad nodes related to the virus."""
         for script_node in cmds.ls(type="script"):
             if cmds.referenceQuery(script_node, isNodeReferenced=True):
                 continue
@@ -30,9 +28,7 @@ class Vaccine(AbstractVaccine):
                     self.api.add_bad_node(script_node)
 
     def collect_issues(self):
-        """
-        Collect all issues related to the virus.
-        """
+        """Collect all issues related to the virus."""
         self.api.add_bad_files(
             [
                 os.path.join(self.api.local_script_path, "vaccine.py"),
@@ -43,9 +39,7 @@ class Vaccine(AbstractVaccine):
         self.collect_bad_nodes()
 
     def collect_bad_usersetup_py(self):
-        """
-        Collect all bad userSetup.py files related to the virus.
-        """
+        """Collect all bad userSetup.py files related to the virus."""
         for usersetup_py in [
             os.path.join(self.api.local_script_path, "vaccine.py"),
             os.path.join(self.api.user_script_path, "vaccine.py"),

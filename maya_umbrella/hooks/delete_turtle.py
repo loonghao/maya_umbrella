@@ -3,7 +3,7 @@ import maya.cmds as cmds
 import maya.mel as mel
 
 
-def hook(logger):
+def hook(virus_cleaner):
     for plugin in ["Turtle.mll", "mayatomr.mll"]:
         if cmds.pluginInfo(plugin, q=1, loaded=1):
             cmds.unloadPlugin(plugin, f=1)

@@ -3,6 +3,7 @@ import logging
 
 # Import third-party modules
 import maya.api.OpenMaya as om
+import maya.cmds as cmds
 
 # Import local modules
 from maya_umbrella.filesystem import get_hooks
@@ -31,8 +32,7 @@ class MayaVirusDefender(object):
     }
 
     def __init__(self, auto_fix=True):
-        """
-        Initialize the MayaVirusDefender.
+        """Initialize the MayaVirusDefender.
 
         Args:
             auto_fix (bool): Whether to automatically fix issues.
@@ -44,9 +44,7 @@ class MayaVirusDefender(object):
         self.load_vaccines()
 
     def load_vaccines(self):
-        """
-        Load all vaccines.
-        """
+        """Load all vaccines."""
         for vaccine in get_vaccines():
             vaccine_class = load_hook(vaccine).Vaccine
             try:
@@ -56,8 +54,7 @@ class MayaVirusDefender(object):
 
     @property
     def vaccines(self):
-        """
-        Get all loaded vaccines.
+        """Get all loaded vaccines.
 
         Returns:
             list: A list of loaded vaccines.
@@ -65,41 +62,32 @@ class MayaVirusDefender(object):
         return self._vaccines
 
     def run_hooks(self):
-        """
-        Run all hooks.
-        """
-        for hook_file in get_hooks():
-            self.logger.debug("run_hook: %s", hook_file)
-            try:
-                load_hook(hook_file).hook(self.logger)
-            except Exception as e:
-                self.logger.error("Error running hook: %s", e)
+        """Run all hooks, only works in non-batch mode."""
+        if not cmds.about(batch=True):
+            for hook_file in get_hooks():
+                self.logger.debug("run_hook: %s", hook_file)
+                try:
+                    load_hook(hook_file).hook(self.virus_cleaner)
+                except Exception as e:
+                    self.logger.error("Error running hook: %s", e)
 
     def collect(self):
-        """
-        Collect all issues related to the Maya virus.
-        """
+        """Collect all issues related to the Maya virus."""
         for vaccine in self.vaccines:
             vaccine.collect_issues()
 
     def fix(self):
-        """
-        Fix all issues related to the Maya virus.
-        """
+        """Fix all issues related to the Maya virus."""
         self.virus_cleaner.fix_all_issues()
 
     def report(self):
-        """
-        Report all issues related to the Maya virus.
-        """
+        """Report all issues related to the Maya virus."""
         self.virus_cleaner.reset_all_issues()
         self.collect()
         self.virus_cleaner.report_all_issues()
 
     def setup(self):
-        """
-        Set up the MayaVirusDefender.
-        """
+        """Set up the MayaVirusDefender."""
         self.virus_cleaner.setup_default_callbacks()
         for name, callbacks in self.virus_cleaner.registered_callbacks.items():
             maya_callback = self.callback_maps[name]
@@ -111,8 +99,7 @@ class MayaVirusDefender(object):
             self.callback_ids.append(om.MSceneMessage.addCallback(callbacks, self._callback))
 
     def _callback(self, *args, **kwargs):
-        """
-        Callback function for MayaVirusDefender.
+        """Callback function for MayaVirusDefender.
 
         Args:
             *args: Variable length argument list.
@@ -126,7 +113,5 @@ class MayaVirusDefender(object):
             self.report()
 
     def start(self):
-        """
-        Start the MayaVirusDefender.
-        """
+        """Start the MayaVirusDefender."""
         self._callback()

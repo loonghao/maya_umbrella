@@ -124,7 +124,8 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
-    "dev"
+    "dev",
+    "noxfile.py"
 ]
 line-length = 120
 
@@ -146,6 +147,8 @@ ignore = [
     "D104", # ignore missing docstring in public package
     "D105", # ignore missing docstring in magic methods
     "C901", # ignore too complex functions, doesn't seem to be worth it
+    "UP032",
+    "UP004",
 ]
 
 [tool.ruff.lint.pydocstyle]

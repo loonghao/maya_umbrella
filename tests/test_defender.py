@@ -1,4 +1,3 @@
-from maya_umbrella.core import MayaVirusDefender
 import pytest
 
 
@@ -9,7 +8,7 @@ def test_run_defender_open_setup_callback(maya_cmds, get_virus_file, file_name, 
     maya_file = get_virus_file(file_name)
     try:
         maya_cmds.file(maya_file, open=True, force=True, prompt=False, ignoreVersion=True)
-    except:
+    except Exception:
         pass
 
 
@@ -19,5 +18,5 @@ def test_run_defender_open_start(maya_cmds, get_virus_file, file_name):
     maya_file = get_virus_file(file_name)
     try:
         maya_cmds.file(maya_file, open=True, force=True, prompt=False, ignoreVersion=True)
-    except:
+    except Exception:
         pass

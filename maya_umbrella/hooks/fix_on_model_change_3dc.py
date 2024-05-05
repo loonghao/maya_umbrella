@@ -3,7 +3,7 @@ import maya.cmds as cmds
 import maya.mel as mel
 
 
-def hook(logger):
+def hook(virus_cleaner):
     try:
         mel.eval("global proc onModelChange3dc(string $a){}")
     except Exception:
