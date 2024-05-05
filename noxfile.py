@@ -34,6 +34,7 @@ def lint(session: nox.Session) -> None:
     session.install("flake8")
     session.run("flake8", PACKAGE_NAME)
 
+
 @nox.session
 def preflight(session: nox.Session) -> None:
     session.install("pre-commit")
@@ -47,11 +48,13 @@ def preflight(session: nox.Session) -> None:
         "--all-files",
     )
 
+
 def add_dynamic_maya_session(session_name, command):
     @nox.session(name=session_name, python=False)
     def dynamic_session(session: nox.Session):
         print(_assemble_env_paths(ROOT, os.path.join(ROOT, "maya")))
-        session.run(command, env={"PYTHONPATH": _assemble_env_paths(ROOT, os.path.join(ROOT, "maya"))})
+        session.run(command, env={"PYTHONPATH": _assemble_env_paths(ROOT, os.path.join(ROOT, "maya")),
+                                  "MAYA_UMBRELLA_LOG_LEVEL": "DEBUG"})
 
 
 def add_dynamic_maya_test_session(maya_version, mayapy, command):
@@ -59,7 +62,7 @@ def add_dynamic_maya_test_session(maya_version, mayapy, command):
 
     @nox.session(name=session_name, python=False)
     def dynamic_session(session: nox.Session):
-        temp_dir = os.path.join(session._runner.envdir, "Lib", "site-packages")
+        temp_dir = os.path.join(session._runner.envdir, "test", "site-packages")
         os.makedirs(temp_dir, exist_ok=True)
         pip_py_name = "get-pip.py"
         if maya_version <= 2020:
