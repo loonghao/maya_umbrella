@@ -105,9 +105,7 @@ class MayaVirusCleaner(object):
         self._bad_script_nodes.append(node)
 
     def register_callback(self, callback_name, callback):
-        """
-        Register a callback to be executed before or after processing.
-        """
+        """Register a callback to be executed before or after processing."""
         self._registered_callbacks[callback_name].append(callback)
 
     def add_after_open_callback(self, callback):

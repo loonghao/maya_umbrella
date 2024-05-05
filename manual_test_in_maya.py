@@ -32,7 +32,7 @@ def start():
     for maya_file in get_virus_files():
         cmds.file(new=True, force=True)
         try:
-            cmds.file(maya_file, open=True, force=True, ignoreVersion=True)
-        except:
+            cmds.file(maya_file, open=True, force=True, ignoreVersion=True, executeScriptNodes=False)
+        except Exception:
             pass
         cmds.file(new=True, force=True)
