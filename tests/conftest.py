@@ -1,8 +1,8 @@
 import os.path
 import maya.cmds as cmds
 
-
 import pytest
+from maya_umbrella.core import Defender
 
 
 @pytest.fixture()
@@ -21,3 +21,12 @@ def get_virus_file(this_root):
 @pytest.fixture()
 def maya_cmds():
     return cmds
+
+
+@pytest.fixture
+def setup_defender():
+    def _defender():
+        defender = Defender()
+        defender.setup()
+
+    return _defender

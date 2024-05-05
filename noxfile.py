@@ -36,16 +36,27 @@ def lint(session: nox.Session) -> None:
 
 
 @nox.session
+def black(session: nox.Session) -> None:
+    session.install("black")
+    session.run("black", PACKAGE_NAME, "--check")
+
+
+@nox.session
+def isort(session: nox.Session) -> None:
+    session.install("isort")
+    session.run("isort", "--check-only", PACKAGE_NAME)
+
+
+@nox.session
 def preflight(session: nox.Session) -> None:
     session.install("pre-commit")
-    session.install("black")
-    session.install("isort")
     session.install("pre-commit")
-    session.run("isort", PACKAGE_NAME)
     session.run(
         "pre-commit",
         "run",
         "--all-files",
+        "--show-diff-on-failure",
+        "--verbose"
     )
 
 

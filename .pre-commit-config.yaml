@@ -13,13 +13,18 @@ repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: debug-statements
-    -   id: double-quote-string-fixer
-    -   id: name-tests-test
-    -   id: requirements-txt-fixer
+      - id: check-vcs-permalinks
+      - id: end-of-file-fixer
+        exclude: "tests/((commands|data)/|test_).+"
+      - id: trailing-whitespace
+        args: [ --markdown-linebreak-ext=md ]
+      - id: debug-statements
+      - id: no-commit-to-branch
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+        args: [ '--unsafe' ] # for mkdocs.yml
+      - id: detect-private-key
 -   hooks:
     -   additional_dependencies:
         - flake8-typing-imports==1.5.0
