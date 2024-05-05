@@ -110,8 +110,7 @@ def get_hooks():
 
 
 def get_vaccines():
-    """
-    Get a list of all vaccine files.
+    """Get a list of all vaccine files.
 
     Returns:
         list: A list of vaccine files.
@@ -121,8 +120,7 @@ def get_vaccines():
 
 
 def get_log_root():
-    """
-    Get the log root directory.
+    """Get the log root directory.
 
     Returns:
         str: The log root directory.
@@ -131,8 +129,7 @@ def get_log_root():
 
 
 def get_log_file():
-    """
-    Get the path of the log file.
+    """Get the path of the log file.
 
     Returns:
         str: The path of the log file.

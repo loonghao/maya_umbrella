@@ -68,7 +68,7 @@ class Vaccine(AbstractVaccine):
                 self.report_issue(hik_mel)
                 with open(hik_mel, "wb") as f:
                     f.write(re.sub(self.hik_regex, "", data))
-                self.logger.debug("Remove virus code from {}".format(hik_mel))
+                self.logger.info("Remove virus code from %s", hik_mel)
 
     def collect_issues(self):
         """Collect all issues related to the virus."""

@@ -150,7 +150,7 @@ class MayaVirusCleaner(object):
     def fix_script_jobs(self):
         for script_job in self.bad_script_jobs:
             script_num = int(script_job.split(":", 1)[0])
-            self.logger.info("Kill script job {}".format(script_job))
+            self.logger.info("Kill script job %s", script_job)
             cmds.scriptJob(kill=script_num, force=True)
             self._bad_script_jobs.remove(script_job)
 
@@ -158,11 +158,11 @@ class MayaVirusCleaner(object):
         for file_ in self.bad_files:
             if os.path.exists(file_):
                 if os.path.isfile(file_):
-                    self.logger.info("Removing {}".format(file_))
+                    self.logger.info("Removing %s", file_)
                     safe_remove_file(file_)
                     self._bad_files.remove(file_)
                 else:
-                    self.logger.info("Removing folder {}".format(file_))
+                    self.logger.info("Removing folder %s", file_)
                     safe_rmtree(file_)
                     self._bad_files.remove(file_)
 
@@ -189,9 +189,9 @@ class MayaVirusCleaner(object):
 
     def report_all_issues(self):
         """Report all issues related to the Maya virus."""
-        self.logger.info("Bad files: {}".format(self.bad_files))
-        self.logger.info("Bad nodes: {}".format(self.bad_nodes))
-        self.logger.info("Bad script jobs: {}".format(self.bad_script_jobs))
+        self.logger.info("Bad files: %s", self.bad_files)
+        self.logger.info("Bad nodes: %s", self.bad_nodes)
+        self.logger.info("Bad script jobs: %s", self.bad_script_jobs)
 
     def reset_all_issues(self):
         """Reset all issues related to the Maya virus."""

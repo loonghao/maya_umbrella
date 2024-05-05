@@ -67,7 +67,7 @@ class MayaVirusDefender(object):
             for hook_file in get_hooks():
                 self.logger.debug("run_hook: %s", hook_file)
                 try:
-                    load_hook(hook_file).hook(self.virus_cleaner)
+                    load_hook(hook_file).hook(virus_cleaner=self.virus_cleaner)
                 except Exception as e:
                     self.logger.error("Error running hook: %s", e)
 
