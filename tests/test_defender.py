@@ -21,4 +21,3 @@ def test_run_defender_open_start(maya_cmds, get_virus_file, file_name):
         maya_cmds.file(maya_file, open=True, force=True, prompt=False, ignoreVersion=True)
     except:
         pass
-

@@ -21,7 +21,7 @@ def safe_remove_file(file_path):
     """Remove the file at the given path without raising an error if the file does not exist."""
     try:
         os.remove(file_path)
-    except (IOError, OSError):
+    except OSError:
         pass
 
 
@@ -29,7 +29,7 @@ def safe_rmtree(path):
     """Remove the directory at the given path without raising an error if the directory does not exist."""
     try:
         shutil.rmtree(path)
-    except (IOError, OSError):
+    except OSError:
         pass
 
 

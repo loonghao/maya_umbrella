@@ -24,7 +24,7 @@ def block_prompt(func):
 
 
 def get_virus_files():
-    return glob.glob(os.path.join(ROOT, 'tests', 'virus', '*.ma'))
+    return glob.glob(os.path.join(ROOT, "tests", "virus", "*.ma"))
 
 
 @block_prompt

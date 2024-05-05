@@ -27,10 +27,12 @@ class Vaccine(AbstractVaccine):
                     self.api.add_bad_node(script_node)
 
     def collect(self):
-        self.api.add_bad_files([
-            os.path.join(self.api.local_script_path, "vaccine.py"),
-            os.path.join(self.api.local_script_path, "vaccine.pyc")
-        ])
+        self.api.add_bad_files(
+            [
+                os.path.join(self.api.local_script_path, "vaccine.py"),
+                os.path.join(self.api.local_script_path, "vaccine.pyc"),
+            ],
+        )
         self.collect_bad_usersetup_py()
         self.collect_bad_nodes()
 
@@ -48,8 +50,8 @@ class Vaccine(AbstractVaccine):
                     self.api.add_bad_file(rename(usersetup_py))
 
                 if (
-                        "cmds.evalDeferred('leukocyte = vaccine.phage()')" in data
-                        and "cmds.evalDeferred('leukocyte.occupation()')" in data
+                    "cmds.evalDeferred('leukocyte = vaccine.phage()')" in data
+                    and "cmds.evalDeferred('leukocyte.occupation()')" in data
                 ):
                     self.logger.warning("userSetup.py : Infected by Malware!")
                     self.api.add_bad_file(rename(usersetup_py))

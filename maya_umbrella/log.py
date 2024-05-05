@@ -1,5 +1,4 @@
 # Import built-in modules
-import logging
 import logging.handlers
 import os
 
@@ -27,9 +26,13 @@ def setup_logger(logger=None, logfile=None, log_level=None):
     logger.setLevel(log_level)
     logfile = logfile or get_log_file()
     if not len(logger.handlers):
-        filehandler = logging.handlers.RotatingFileHandler(logfile, mode="a", backupCount=7, delay=True,
-                                                           maxBytes=LOG_MAX_BYTES)
+        filehandler = logging.handlers.RotatingFileHandler(
+            logfile,
+            mode="a",
+            backupCount=7,
+            delay=True,
+            maxBytes=LOG_MAX_BYTES,
+        )
         filehandler.setFormatter(logging.Formatter(LOG_FORMAT))
         logger.addHandler(filehandler)
     return logger
-
