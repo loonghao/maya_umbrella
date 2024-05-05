@@ -1,10 +1,10 @@
 # Import local modules
 import maya.cmds as cmds
-from maya_umbrella import Defender
+from maya_umbrella import MayaVirusDefender
 
 
 def main():
-    Defender().setup()
+    MayaVirusDefender().setup()
 
 
 cmds.evalDeferred(main)

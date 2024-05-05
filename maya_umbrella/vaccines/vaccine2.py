@@ -14,6 +14,9 @@ class Vaccine(AbstractVaccine):
     virus_name = "zei jian kang"
 
     def collect_bad_nodes(self):
+        """
+        Collect all bad nodes related to the virus.
+        """
         for script_node in cmds.ls(type="script"):
             if cmds.referenceQuery(script_node, isNodeReferenced=True):
                 continue
@@ -23,10 +26,13 @@ class Vaccine(AbstractVaccine):
                 if not script_string:
                     continue
                 if "internalVar" in script_string or "userSetup" in script_string or "fuckVirus" in script_string:
-                    self.logger.warning("script node {} has internalVar or userSetup or fuckVirus".format(script_node))
+                    self.report_issue(script_node)
                     self.api.add_bad_node(script_node)
 
-    def collect(self):
+    def collect_issues(self):
+        """
+        Collect all issues related to the virus.
+        """
         self.api.add_bad_files(
             [
                 os.path.join(self.api.local_script_path, "vaccine.py"),
@@ -37,6 +43,9 @@ class Vaccine(AbstractVaccine):
         self.collect_bad_nodes()
 
     def collect_bad_usersetup_py(self):
+        """
+        Collect all bad userSetup.py files related to the virus.
+        """
         for usersetup_py in [
             os.path.join(self.api.local_script_path, "vaccine.py"),
             os.path.join(self.api.user_script_path, "vaccine.py"),
@@ -46,12 +55,12 @@ class Vaccine(AbstractVaccine):
             if os.path.exists(usersetup_py):
                 data = read_file(usersetup_py)
                 if "petri_dish_path = cmds.internalVar(userAppDir=True) + 'scripts/userSetup.py" in data:
-                    self.logger.warning("vaccine1.py found : Infected by Malware!")
+                    self.report_issue("vaccine.py")
                     self.api.add_bad_file(rename(usersetup_py))
 
                 if (
                     "cmds.evalDeferred('leukocyte = vaccine.phage()')" in data
                     and "cmds.evalDeferred('leukocyte.occupation()')" in data
                 ):
-                    self.logger.warning("userSetup.py : Infected by Malware!")
+                    self.report_issue("userSetup.py")
                     self.api.add_bad_file(rename(usersetup_py))

@@ -1,8 +1,5 @@
 # Import built-in modules
-from collections import defaultdict
 import logging
-import os
-import re
 
 # Import third-party modules
 import maya.api.OpenMaya as om
@@ -12,10 +9,10 @@ from maya_umbrella.filesystem import get_hooks
 from maya_umbrella.filesystem import get_vaccines
 from maya_umbrella.filesystem import load_hook
 from maya_umbrella.log import setup_logger
-from maya_umbrella.vaccine import VaccineAPI
+from maya_umbrella.vaccine import MayaVirusCleaner
 
 
-class Defender(object):
+class MayaVirusDefender(object):
     callback_ids = []
     remove_callbacks = []
     _bad_files = []
@@ -34,25 +31,43 @@ class Defender(object):
     }
 
     def __init__(self, auto_fix=True):
+        """
+        Initialize the MayaVirusDefender.
+
+        Args:
+            auto_fix (bool): Whether to automatically fix issues.
+        """
         logger = logging.getLogger(__name__)
         self.auto_fix = auto_fix
         self.logger = setup_logger(logger)
-        self.vaccine_api = VaccineAPI(self.logger)
+        self.virus_cleaner = MayaVirusCleaner(self.logger)
         self.load_vaccines()
 
     def load_vaccines(self):
+        """
+        Load all vaccines.
+        """
         for vaccine in get_vaccines():
             vaccine_class = load_hook(vaccine).Vaccine
             try:
-                self._vaccines.append(vaccine_class(api=self.vaccine_api, logger=self.logger))
+                self._vaccines.append(vaccine_class(api=self.virus_cleaner, logger=self.logger))
             except Exception as e:
                 self.logger.error("Error loading vaccine: %s", e)
 
     @property
     def vaccines(self):
+        """
+        Get all loaded vaccines.
+
+        Returns:
+            list: A list of loaded vaccines.
+        """
         return self._vaccines
 
     def run_hooks(self):
+        """
+        Run all hooks.
+        """
         for hook_file in get_hooks():
             self.logger.debug("run_hook: %s", hook_file)
             try:
@@ -61,30 +76,48 @@ class Defender(object):
                 self.logger.error("Error running hook: %s", e)
 
     def collect(self):
+        """
+        Collect all issues related to the Maya virus.
+        """
         for vaccine in self.vaccines:
-            vaccine.collect()
+            vaccine.collect_issues()
 
     def fix(self):
-        self.vaccine_api.fix()
+        """
+        Fix all issues related to the Maya virus.
+        """
+        self.virus_cleaner.fix_all_issues()
 
     def report(self):
-        self.vaccine_api.reset()
+        """
+        Report all issues related to the Maya virus.
+        """
+        self.virus_cleaner.reset_all_issues()
         self.collect()
-        self.vaccine_api.report()
+        self.virus_cleaner.report_all_issues()
 
     def setup(self):
-        self.vaccine_api.setup_default_callbacks()
-        for name, callbacks in self.vaccine_api.registered_callbacks.items():
+        """
+        Set up the MayaVirusDefender.
+        """
+        self.virus_cleaner.setup_default_callbacks()
+        for name, callbacks in self.virus_cleaner.registered_callbacks.items():
             maya_callback = self.callback_maps[name]
             self.logger.debug("%s setup.", name)
             for func in callbacks:
                 self.callback_ids.append(om.MSceneMessage.addCallback(maya_callback, func))
-            print(self.callback_ids)
         for name, callbacks in self.callback_maps.items():
             self.logger.debug("setup callback %s.", name)
             self.callback_ids.append(om.MSceneMessage.addCallback(callbacks, self._callback))
 
     def _callback(self, *args, **kwargs):
+        """
+        Callback function for MayaVirusDefender.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
         if self.auto_fix:
             self.collect()
             self.fix()
@@ -93,4 +126,7 @@ class Defender(object):
             self.report()
 
     def start(self):
+        """
+        Start the MayaVirusDefender.
+        """
         self._callback()

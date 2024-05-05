@@ -1,6 +1,6 @@
 [run]
 branch = True
-source = notifiers_wecom_provider
+source = maya_umbrella
 
 [report]
 exclude_lines =
@@ -10,4 +10,4 @@ exclude_lines =
     if __name__ == .__main__.:
 ignore_errors = True
 omit =
-    test/*
+    tests/*
