@@ -37,9 +37,7 @@ manual_test_in_maya.start()
 
 ## 增加新的疫苗
 在`<repo>/maya_umbrella/vaccines/` 新建一个py, 因为有很多病毒没有具体的名字代号，我们统一以`vaccine<id>.py`
-继承`from maya_umbrella.vaccine import BaseVaccine`并且class名字叫`Vaccine`即可, 然后去写具体的逻辑
-
-
+继承`from maya_umbrella.vaccine import AbstractVaccine`并且class名字叫`Vaccine`即可, 然后去写具体的收集病毒逻辑
 
 # 环境变量
 我们可以通过下列环境变量去修改maya_umbrella的一些设置，方便有pipeline的公司可以更好的集成

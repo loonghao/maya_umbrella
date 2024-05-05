@@ -1,5 +1,5 @@
 name: MR Checks
-on: [pull_request]
+on: [ pull_request ]
 
 jobs:
   python-check:
@@ -7,19 +7,21 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
 
     steps:
-    - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
-      with:
-        fetch-depth: 0
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install -U pip poetry nox
-        poetry --version
-        nox --version
-        nox -s preflight
+      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
+        with:
+          fetch-depth: 0
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip poetry nox
+          poetry --version
+          nox --version
+          nox -s lint
+          nox -s black
+          nox -s isort

@@ -6,6 +6,10 @@ import os
 import random
 import shutil
 import string
+import tempfile
+
+# Import local modules
+from maya_umbrella.constants import PACKAGE_NAME
 
 
 def this_root():
@@ -106,5 +110,37 @@ def get_hooks():
 
 
 def get_vaccines():
+    """
+    Get a list of all vaccine files.
+
+    Returns:
+        list: A list of vaccine files.
+    """
     pattern = os.path.join(this_root(), "vaccines", "*.py")
     return [vaccine for vaccine in glob.glob(pattern) if "__init__" not in vaccine]
+
+
+def get_log_root():
+    """
+    Get the log root directory.
+
+    Returns:
+        str: The log root directory.
+    """
+    return os.getenv("MAYA_UMBRELLA_LOG_ROOT", tempfile.gettempdir())
+
+
+def get_log_file():
+    """
+    Get the path of the log file.
+
+    Returns:
+        str: The path of the log file.
+    """
+    root = get_log_root()
+    try:
+        os.makedirs(root)
+    except OSError:
+        pass
+    name = os.getenv("MAYA_UMBRELLA_LOG_NAME", PACKAGE_NAME)
+    return os.path.join(root, "{name}.log".format(name=name))

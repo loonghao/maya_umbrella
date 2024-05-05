@@ -1,19 +1,16 @@
 # Import built-in modules
-import os.path
+import os
 
 # Import local modules
-from maya_umbrella.vaccine import BaseVaccine
+from maya_umbrella.vaccine import AbstractVaccine
 
 
-class Vaccine(BaseVaccine):
+class Vaccine(AbstractVaccine):
     virus_name = "pu tian tong qi"
 
-    def __init__(self, logger=None):
-        super(Vaccine, self).__init__(logger)
+    def collect(self):
+        self.api.add_bad_files([
+            os.path.join(self.api.local_script_path, "fuckVirus.py"),
+            os.path.join(self.api.local_script_path, "fuckVirus.pyc"),
 
-    @property
-    def bad_files(self):
-        return [
-            os.path.join(self.local_script_path, "fuckVirus.py"),
-            os.path.join(self.local_script_path, "fuckVirus.pyc"),
-        ]
+        ])

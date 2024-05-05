@@ -1,4 +1,5 @@
 # Import built-in modules
+from collections import defaultdict
 import glob
 import logging
 import os
@@ -11,17 +12,25 @@ from maya_umbrella.filesystem import safe_remove_file
 from maya_umbrella.filesystem import safe_rmtree
 
 
-class BaseVaccine(object):
-    virus_name = None
-
+class VaccineAPI(object):
     _bad_files = []
+    _bad_nodes = []
+    _bad_script_nodes = []
+    _bad_script_jobs = []
+    _registered_callbacks = defaultdict(list)
+    _fix_funcs = []
 
-    def __init__(self, logger=None):
-        self._logger = logger or logging.getLogger(__name__)
+    def __init__(self, logger=None, auto_fix=True):
+        self.logger = logger or logging.getLogger(__name__)
+        self.auto_fix = auto_fix
 
     @property
     def user_app_dir(self):
         return cmds.internalVar(userAppDir=True)
+
+    @property
+    def maya_file(self):
+        return cmds.file(q=True, sn=True)
 
     @property
     def maya_install_root(self):
@@ -37,44 +46,163 @@ class BaseVaccine(object):
 
     @property
     def bad_files(self):
-        return []
+        return [path for path in list(set(self._bad_files)) if os.path.exists(path)]
 
     @property
     def bad_nodes(self):
-        return []
+        return list(set(self._bad_nodes))
 
     @property
     def bad_script_nodes(self):
-        return []
+        return list(set(self._bad_script_nodes))
 
-    def collect(self):
-        self._bad_files.extend([temp_file for temp_file in glob.glob(os.path.join(self.local_script_path, "._*"))])
+    @property
+    def bad_script_jobs(self):
+        return list(set(self._bad_script_jobs))
 
-    def remove_bad_files(self):
-        self.collect()
+    def callback_remove_rename_temp_files(self, *args, **kwargs):
+        """
+        Remove temporary files in the local script path.
+        """
+        self.logger.info("Removing temporary files in %s", self.local_script_path)
+        [safe_remove_file(temp_file) for temp_file in glob.glob(os.path.join(self.local_script_path, "._*"))]
+
+    @property
+    def registered_callbacks(self):
+        return self._registered_callbacks
+
+    def add_bad_files(self, files):
+        self._bad_files.extend(files)
+
+    def add_bad_file(self, file):
+        self._bad_files.append(file)
+
+    def add_bad_nodes(self, nodes):
+        self._bad_nodes.extend(nodes)
+
+    def add_bad_node(self, node):
+        self._bad_nodes.append(node)
+
+    def add_bad_script_jobs(self, jobs):
+        self._bad_script_jobs.extend(jobs)
+
+    def add_bad_script_job(self, job):
+        self._bad_script_jobs.append(job)
+
+    def add_bad_script_nodes(self, nodes):
+        self._bad_script_nodes.extend(nodes)
+
+    def add_bad_script_node(self, node):
+        self._bad_script_nodes.append(node)
+
+    def register_callback(self, callback_name, callback):
+        """
+        Register a callback to be executed before or after processing.
+        """
+        self._registered_callbacks[callback_name].append(callback)
+
+    def add_after_open_callback(self, callback):
+        self.register_callback("after_open", callback)
+
+    def add_maya_initialized_callback(self, callback):
+        self.register_callback("maya_initialized", callback)
+
+    def add_after_import_callback(self, callback):
+        self.register_callback("after_import", callback)
+
+    def add_after_import_reference_callback(self, callback):
+        self.register_callback("after_import_reference", callback)
+
+    def add_after_load_reference_callback(self, callback):
+        self.register_callback("after_load_reference", callback)
+
+    def add_before_save_callback(self, callback):
+        self.register_callback("before_save", callback)
+
+    def add_before_import_callback(self, callback):
+        self.register_callback("before_import", callback)
+
+    def add_before_load_reference_callback(self, callback):
+        self.register_callback("before_load_reference", callback)
+
+    def add_before_import_reference_callback(self, callback):
+        self.register_callback("before_import_reference", callback)
+
+    def add_maya_exiting_callback(self, callback):
+        self.register_callback("maya_exiting", callback)
+
+    def setup_default_callbacks(self):
+        self.add_maya_initialized_callback(self.callback_remove_rename_temp_files)
+        self.add_maya_exiting_callback(self.callback_remove_rename_temp_files)
+
+    def add_fix_function(self, func):
+        self._fix_funcs.append(func)
+
+    # fix
+
+    def fix_script_jobs(self):
+        for script_job in self.bad_script_jobs:
+            script_num = int(script_job.split(":", 1)[0])
+            self.logger.info("Kill script job {}".format(script_job))
+            cmds.scriptJob(kill=script_num, force=True)
+            self._bad_script_jobs.remove(script_job)
+
+    def fix_bad_files(self):
         for file_ in self.bad_files:
             if os.path.exists(file_):
                 if os.path.isfile(file_):
-                    self._logger.info("Removing {}".format(file_))
+                    self.logger.info("Removing {}".format(file_))
                     safe_remove_file(file_)
+                    self._bad_files.remove(file_)
                 else:
-                    self._logger.info("Removing folder {}".format(file_))
+                    self.logger.info("Removing folder {}".format(file_))
                     safe_rmtree(file_)
+                    self._bad_files.remove(file_)
 
-    def delete_bad_nodes(self):
+    def fix_bad_nodes(self):
         for node in self.bad_nodes:
-            self._logger.info("Deleting %s", node)
-            cmds.lockNode(node, l=False)
-            cmds.delete(node)
+            self.logger.info("Deleting %s", node)
+            try:
+                cmds.lockNode(node, l=False)
+            except ValueError:
+                pass
+            try:
+                cmds.delete(node)
+            except ValueError:
+                pass
+            self._bad_nodes.remove(node)
 
-    def before_callback(self, *args, **kwargs):
-        self.remove_bad_files()
-        self.delete_bad_nodes()
+    def fix(self):
+        self.fix_bad_files()
+        self.fix_bad_nodes()
+        self.fix_script_jobs()
+        for func in self._fix_funcs:
+            func()
 
-    def after_callback(self, *args, **kwargs):
-        self.remove_bad_files()
-        self.delete_bad_nodes()
+    def report(self):
+        self.logger.info("Bad files: {}".format(self.bad_files))
+        self.logger.info("Bad nodes: {}".format(self.bad_nodes))
+        self.logger.info("Bad script jobs: {}".format(self.bad_script_jobs))
 
-    def process(self):
-        self.before_callback()
-        self.after_callback()
+    def reset(self):
+        self._bad_files = []
+        self._bad_nodes = []
+        self._bad_script_nodes = []
+        self._bad_script_jobs = []
+
+
+class AbstractVaccine(object):
+    virus_name = None
+
+    def __init__(self, api, logger):
+        """Abstract class for Vaccine.
+
+        Args:
+            api (VaccineAPI): The VaccineAPI instance.
+
+        """
+        self.api = api
+        self.logger = logger
+
+    def collect(self):
+        raise NotImplementedError
