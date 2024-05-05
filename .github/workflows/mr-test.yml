@@ -23,10 +23,7 @@ jobs:
           poetry --version
       - name: lint
         run: |
-          nox -s lint
+          nox -s ruff_check
       - name: isort
         run: |
-          nox -s isort
-      - name: black
-        run: |
-          nox -s black
+          nox -s isort_check

@@ -9,8 +9,9 @@ class Vaccine(AbstractVaccine):
     virus_name = "pu tian tong qi"
 
     def collect(self):
-        self.api.add_bad_files([
-            os.path.join(self.api.local_script_path, "fuckVirus.py"),
-            os.path.join(self.api.local_script_path, "fuckVirus.pyc"),
-
-        ])
+        self.api.add_bad_files(
+            [
+                os.path.join(self.api.local_script_path, "fuckVirus.py"),
+                os.path.join(self.api.local_script_path, "fuckVirus.pyc"),
+            ],
+        )

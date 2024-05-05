@@ -5,7 +5,7 @@ import maya.mel as mel
 
 def hook(logger):
     try:
-        mel.eval('global proc onModelChange3dc(string $a){}')
+        mel.eval("global proc onModelChange3dc(string $a){}")
     except:
         pass
     try:
@@ -17,4 +17,3 @@ def hook(logger):
         mel.eval(script)
     except:
         pass
-

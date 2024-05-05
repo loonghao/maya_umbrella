@@ -4,7 +4,6 @@ import maya.cmds as cmds
 
 def hook(logger):
     for model_panel in cmds.getPanel(typ="modelPanel"):
-
         # Get callback of the model editor
         callback = cmds.modelEditor(model_panel, query=True, editorChanged=True)
 

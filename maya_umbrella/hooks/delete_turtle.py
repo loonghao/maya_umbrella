@@ -7,7 +7,12 @@ def hook(logger):
     for plugin in ["Turtle.mll", "mayatomr.mll"]:
         if cmds.pluginInfo(plugin, q=1, loaded=1):
             cmds.unloadPlugin(plugin, f=1)
-    turtle_nodes = ["TurtleRenderOptions", "TurtleUIOptions", "TurtleBakeLayerManager", "TurtleDefaultBakeLayer"]
+    turtle_nodes = [
+        "TurtleRenderOptions",
+        "TurtleUIOptions",
+        "TurtleBakeLayerManager",
+        "TurtleDefaultBakeLayer",
+    ]
     for node in turtle_nodes:
         if cmds.objExists(node):
             cmds.lockNode(node, lock=1)
