@@ -25,7 +25,7 @@ Check and fix maya virus.
 
 # 发开环境设置
 
-python 版本 3.9
+通过虚拟环境去设置开发环境, 推荐python-3.8以上的版本
 
 ```shell
 pip install nox poetry
@@ -60,9 +60,7 @@ manual_test_in_maya.start()
 我们可以利用封装好的`nox`命令去执行进行代码检查
 
 ```shell
-nox -s lint
-nox -s black
-nox -s isort
+nox -s ruff_check
 ```
 
 # 环境变量
