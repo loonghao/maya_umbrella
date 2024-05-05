@@ -1,3 +1,13 @@
+## v0.4.0 (2024-05-05)
+
+### Feat
+
+- Improve codes for setup callback and clean virus
+
+### Refactor
+
+- except any error for fix 3dc
+
 ## v0.3.0 (2024-05-04)
 
 ### Feat
