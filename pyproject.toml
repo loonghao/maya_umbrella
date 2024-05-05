@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "maya_umbrella"
-version = "0.4.0"
+version = "0.4.1"
 description = "Check and fix maya virus."
 homepage = "https://github.com/loonghao/maya_umbrella"
 repository = "https://github.com/loonghao/maya_umbrella"
@@ -34,7 +34,7 @@ nox = {version = "^2024.3.2", python = ">=3.8.1,<3.11"}
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.4.0"
+version = "0.4.1"
 tag_format = "v$version"
 version_files = [
     "pyproject.toml:version",

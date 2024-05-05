@@ -1,3 +1,9 @@
+## v0.4.1 (2024-05-05)
+
+### Refactor
+
+- improve all logs
+
 ## v0.4.0 (2024-05-05)
 
 ### Feat
