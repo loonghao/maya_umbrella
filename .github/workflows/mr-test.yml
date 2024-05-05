@@ -3,16 +3,16 @@ on: [ pull_request ]
 
 jobs:
   python-check:
-    runs-on: windows-2022
+    runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 3
       matrix:
+        os: ['windows-latest']
         python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
-
+      fail-fast: false
     steps:
-      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
-        with:
-          fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
