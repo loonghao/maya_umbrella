@@ -8,7 +8,7 @@ import os
 from maya_umbrella.filesystem import safe_remove_file
 from maya_umbrella.filesystem import safe_rmtree
 from maya_umbrella.filesystem import remove_virus_file_by_signature
-from maya_umbrella.constants import VIRUS_SIGNATURE
+from maya_umbrella.constants import FILE_VIRUS_SIGNATURES
 from maya_umbrella._maya import cmds
 
 
@@ -33,7 +33,7 @@ class MayaVirusCleaner(object):
     @property
     def maya_file(self):
         """Return the current Maya file."""
-        return cmds.file(q=True, sn=True)
+        return cmds.file(query=True, sceneName=True, shortName=True) or "empty/scene"
 
     @property
     def maya_install_root(self):
@@ -75,9 +75,7 @@ class MayaVirusCleaner(object):
         return self._infected_files
 
     def callback_remove_rename_temp_files(self, *args, **kwargs):
-        """
-        Remove temporary files in the local script path.
-        """
+        """Remove temporary files in the local script path."""
         self.logger.info("Removing temporary files in %s", self.local_script_path)
         [safe_remove_file(temp_file) for temp_file in glob.glob(os.path.join(self.local_script_path, "._*"))]
 
@@ -156,8 +154,6 @@ class MayaVirusCleaner(object):
     def add_fix_function(self, func):
         self._fix_funcs.append(func)
 
-    # fix
-
     def fix_script_jobs(self):
         for script_job in self.bad_script_jobs:
             script_num = int(script_job.split(":", 1)[0])
@@ -192,21 +188,27 @@ class MayaVirusCleaner(object):
 
     def fix_infected_files(self):
         for file_path in self.infected_files:
-            remove_virus_file_by_signature(file_path, VIRUS_SIGNATURE)
+            self.logger.info("Removing infected file: %s", file_path)
+            remove_virus_file_by_signature(file_path, FILE_VIRUS_SIGNATURES)
+            self._infected_files.remove(file_path)
 
     def fix_all_issues(self):
         """Fix all issues related to the Maya virus."""
+        self.logger.info("Starting Fixing all issues related to the Maya virus from %s.", self.maya_file)
         self.fix_bad_files()
+        self.fix_infected_files()
         self.fix_bad_nodes()
         self.fix_script_jobs()
         for func in self._fix_funcs:
             func()
+        self.logger.info("Finished Fixing all issues related to the Maya virus from %s.", self.maya_file)
 
     def report_all_issues(self):
         """Report all issues related to the Maya virus."""
         self.logger.info("Bad files: %s", self.bad_files)
         self.logger.info("Bad nodes: %s", self.bad_nodes)
         self.logger.info("Bad script jobs: %s", self.bad_script_jobs)
+        self.logger.info("Infected files: %s", self.infected_files)
 
     def reset_all_issues(self):
         """Reset all issues related to the Maya virus."""

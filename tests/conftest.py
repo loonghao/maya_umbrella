@@ -3,7 +3,7 @@ import os.path
 try:
     from unittest.mock import MagicMock
 except ImportError:
-    from mock import MagicMock
+    from unittest.mock import MagicMock
 try:
     import maya.cmds as cmds
 except ImportError:

@@ -5,12 +5,15 @@ import os.path
 from maya_umbrella._maya import cmds
 
 # Import local modules
-from maya_umbrella.filesystem import read_file
-from maya_umbrella.filesystem import rename
 from maya_umbrella.vaccine import AbstractVaccine
+from maya_umbrella.filesystem import check_virus_file_by_signature
+from maya_umbrella.filesystem import check_virus_by_signature
+from maya_umbrella.constants import JOB_SCRIPTS_VIRUS_SIGNATURES
 
 
 class Vaccine(AbstractVaccine):
+    """A class for handling the ZeiJianKang virus."""
+
     virus_name = "zei jian kang"
 
     def collect_bad_nodes(self):
@@ -23,7 +26,7 @@ class Vaccine(AbstractVaccine):
             for script_string in [script_before_string, script_after_string]:
                 if not script_string:
                     continue
-                if "internalVar" in script_string or "userSetup" in script_string or "fuckVirus" in script_string:
+                if check_virus_by_signature(script_string, JOB_SCRIPTS_VIRUS_SIGNATURES):
                     self.report_issue(script_node)
                     self.api.add_bad_node(script_node)
 
@@ -45,14 +48,6 @@ class Vaccine(AbstractVaccine):
             os.path.join(self.api.user_script_path, "userSetup.py"),
         ]:
             if os.path.exists(usersetup_py):
-                data = read_file(usersetup_py)
-                if "petri_dish_path = cmds.internalVar(userAppDir=True) + 'scripts/userSetup.py" in data:
-                    self.report_issue("vaccine.py")
-                    self.api.add_bad_file(rename(usersetup_py))
-
-                if (
-                    "cmds.evalDeferred('leukocyte = vaccine.phage()')" in data
-                    and "cmds.evalDeferred('leukocyte.occupation()')" in data
-                ):
-                    self.report_issue("userSetup.py")
-                    self.api.add_bad_file(rename(usersetup_py))
+                if check_virus_file_by_signature(usersetup_py):
+                    self.report_issue(usersetup_py)
+                    self.api.add_infected_file(usersetup_py)

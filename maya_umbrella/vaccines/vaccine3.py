@@ -1,7 +1,6 @@
 # Import built-in modules
 import glob
 import os.path
-import re
 
 # Import third-party modules
 from maya_umbrella._maya import cmds
@@ -9,12 +8,12 @@ from maya_umbrella._maya import cmds
 # Import local modules
 from maya_umbrella.vaccine import AbstractVaccine
 from maya_umbrella.filesystem import check_virus_file_by_signature
-from maya_umbrella.constants import VIRUS_SIGNATURE
 
 
 class Vaccine(AbstractVaccine):
+    """A class for handling the virus2024429 virus."""
+
     virus_name = "virus2024429"
-    virus_signatures = VIRUS_SIGNATURE
 
     def collect_bad_nodes(self):
         """Collect all bad nodes related to the virus."""
@@ -23,9 +22,11 @@ class Vaccine(AbstractVaccine):
                 continue
             # check uifiguration
             if cmds.objExists("{}.KGMScriptProtector".format(script_node)):
+                self.report_issue(script_node)
                 self.api.add_bad_node(script_node)
             # check vaccine
             if "_gene" in script_node:
+                self.report_issue(script_node)
                 self.api.add_bad_node(script_node)
 
     def collect_bad_mel_files(self):
@@ -38,8 +39,9 @@ class Vaccine(AbstractVaccine):
             os.path.join(self.api.user_script_path, "usersetup.mel"),
         ]:
             if os.path.exists(usersetup_mel):
-                check_virus_file_by_signature(usersetup_mel, self.virus_signatures)
-                self.api.add_infected_file(usersetup_mel)
+                if check_virus_file_by_signature(usersetup_mel):
+                    self.report_issue(usersetup_mel)
+                    self.api.add_infected_file(usersetup_mel)
 
     def collect_script_jobs(self):
         """Collect all script jobs related to the virus."""
@@ -57,8 +59,9 @@ class Vaccine(AbstractVaccine):
         """Fix all bad HIK files related to the virus."""
         pattern = os.path.join(self.api.maya_install_root, "resources/l10n/*/plug-ins/mayaHIK.pres.mel")
         for hik_mel in glob.glob(pattern):
-            check_virus_file_by_signature(hik_mel, self.virus_signatures)
-            self.api.add_infected_file(hik_mel)
+            if check_virus_file_by_signature(hik_mel):
+                self.report_issue(hik_mel)
+                self.api.add_infected_file(hik_mel)
 
     def collect_issues(self):
         """Collect all issues related to the virus."""
