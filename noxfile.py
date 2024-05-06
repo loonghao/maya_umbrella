@@ -2,6 +2,13 @@ import os
 import winreg
 
 import nox
+import argparse
+import glob
+import os
+import shutil
+import sys
+from pathlib import Path
+from typing import Iterator, List, Tuple
 
 PACKAGE_NAME = "maya_umbrella"
 ROOT = os.path.dirname(__file__)
@@ -61,6 +68,77 @@ def ruff_format(session: nox.Session) -> None:
 def ruff_check(session: nox.Session) -> None:
     session.install("ruff")
     session.run("ruff", "check")
+
+
+@nox.session
+def pytest(session: nox.Session) -> None:
+    session.install("pytest", "pytest_cov")
+    test_root = os.path.join(ROOT, "tests")
+    session.run("pytest", f"--cov={PACKAGE_NAME}",
+                f"--rootdir={test_root}",
+                env={"PYTHONPATH": ROOT}, )
+
+
+# https://github.com/pypa/pip/blob/main/noxfile.py#L185C1-L250C59@nox.session
+def vendoring(session: nox.Session) -> None:
+    session.install("vendoring~=1.2.0")
+
+    parser = argparse.ArgumentParser(prog="nox -s vendoring")
+    parser.add_argument("--upgrade-all", action="store_true")
+    parser.add_argument("--upgrade", action="append", default=[])
+    parser.add_argument("--skip", action="append", default=[])
+    args = parser.parse_args(session.posargs)
+
+    if not (args.upgrade or args.upgrade_all):
+        session.run("vendoring", "sync", "-v")
+        return
+
+    def pinned_requirements(path: Path) -> Iterator[Tuple[str, str]]:
+        for line in path.read_text().splitlines(keepends=False):
+            one, sep, two = line.partition("==")
+            if not sep:
+                continue
+            name = one.strip()
+            version = two.split("#", 1)[0].strip()
+            if name and version:
+                yield name, version
+
+    vendor_txt = Path("maya_umbrella/_vendor/vendor.txt")
+    for name, old_version in pinned_requirements(vendor_txt):
+        if name in args.skip:
+            continue
+        if args.upgrade and name not in args.upgrade:
+            continue
+
+        # update requirements.txt
+        session.run("vendoring", "update", ".", name)
+
+        # get the updated version
+        new_version = old_version
+        for inner_name, inner_version in pinned_requirements(vendor_txt):
+            if inner_name == name:
+                # this is a dedicated assignment, to make lint happy
+                new_version = inner_version
+                break
+        else:
+            session.error(f"Could not find {name} in {vendor_txt}")
+
+        # check if the version changed.
+        if new_version == old_version:
+            continue  # no change, nothing more to do here.
+
+        # synchronize the contents
+        session.run("vendoring", "sync", ".")
+
+        # Determine the correct message
+        message = f"Upgrade {name} to {new_version}"
+
+        # Write our news fragment
+        news_file = Path("news") / (name + ".vendor.rst")
+        news_file.write_text(message + "\n")  # "\n" appeases end-of-line-fixer
+
+        # Commit the changes
+        # release.commit_file(session, ".", message=message)
 
 
 def add_dynamic_maya_session(session_name, command):

@@ -1,0 +1,112 @@
+
+global proc protection_openAuto()
+{
+    global int $protection_auto ;
+    if ($protection_auto == 0)
+    {
+        $protection_auto=`scriptJob -e "SelectionChanged"            "protection_system" `;
+        if(`window -exists protection_Window` == 1)
+        {
+            button  -e  -backgroundColor 0.1 0.8 0.2  -command "protection_closeAuto" -label "            " protection_Window_button  ;
+        }
+        else
+        {
+            protection_Window;
+        }
+    }
+    else if ($protection_auto != 0)
+    {
+        print "已经开启";
+    }
+}
+
+
+
+global proc protection_system()
+{
+    //print "运行\n";
+    ///////////  1   检查是否有可疑文件
+    string $APPDATA=(`getenv("APPDATA")`); // 获取appdata路径
+    if ( `filetest -r ($APPDATA +"/syssst/KGMScriptProtector.mel")`!= 0)//  查看是否有文件
+    {
+         print ("中毒了，请及时清理 " +($APPDATA +"/syssst  目录下的文件"));
+         //我觉得这里可以配一个杀毒程序   如果发现中毒   那么调取这个应用程序来进行删除文件，把文件目录更改为只读
+         //system("load 杀毒.exe ");   来调用杀毒
+    }
+
+    ///////////  2   检查窗口是否存在，存在修改按钮颜色
+    if(`window -exists protection_Window` == 1)
+    {
+        button  -e  -backgroundColor 0.1 0.8 0.2  -command "protection_closeAuto" -label "            " protection_Window_button  ;
+    }
+    else
+    {
+        protection_Window;
+    }
+    ///////////  3   检查当前文件的所有 script
+    string $scripts[]=`ls -fl -type script`; //全部 script
+    string $characteristic="python(\"import base64; _pyco";  // 特征
+    for ($ii = 0;$ii<`size $scripts`;$ii++)
+    {
+        string $scriptnode=`scriptNode  -q -beforeScript $scripts[$ii]`;   // 获取当前脚本的内容
+        string $management=`substring $scriptnode 1 28`; //获取当前脚本的特征
+        if ($characteristic  == $management)  //符合特征
+        {
+                delete $scripts[$ii];  // 符合特征删除恶意代码
+                string $python="maya_path=''";  // 破坏病毒路径
+                python $python;
+                print ("已经清理 " + $scripts[$ii] );
+        }
+    }
+}
+
+
+
+global proc protection_closeAuto()
+{
+    global int $protection_auto ;
+
+    if ($protection_auto == 0)
+    {
+      print "已经关闭";
+    }
+    else if ($protection_auto != 0)
+    {
+      scriptJob -kill $protection_auto; // scriptJob -lj
+      $protection_auto = 0 ;
+      button  -e  -backgroundColor 0.8 0.2 0.1  -command "protection_openAuto" -label "            "  protection_Window_button  ;
+    }
+}
+
+
+
+global proc protection_Window()
+{
+    string $whatIs=`whatIs  protection_system` ;
+
+    if(`window -exists protection_Window`){deleteUI -window protection_Window;   }
+    window  -title "检测" -rtf true -wh 300 100 protection_Window;
+    columnLayout -adjustableColumn true;
+    frameLayout -lv false;
+    rowColumnLayout-numberOfColumns 1;
+
+    if ( $whatIs == "Unknown")
+    {
+        button    -backgroundColor 0 0 0 -command "error"  -label "错误" -ann "插件加载失败" protection_Window_button;
+    }
+    else
+    {
+        global int $protection_auto ;
+        if ($protection_auto == 0 )
+        {
+            button    -backgroundColor 0.8 0.2 0.1 -command "protection_openAuto" -label "            "  -ann " 开启防护，将一直检测" protection_Window_button ;
+        }
+        else
+        {
+            button    -backgroundColor 0.1 0.8 0.2  -command "protection_closeAuto" -label "            " -ann " 关闭防护，小心中毒" protection_Window_button  ;
+        }
+    }
+    showWindow protection_Window;
+}
+protection_Window;
+protection_openAuto;

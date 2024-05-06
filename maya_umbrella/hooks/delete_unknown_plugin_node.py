@@ -1,5 +1,6 @@
 # Import third-party modules
-import maya.cmds as cmds
+from maya_umbrella._maya import cmds
+from maya_umbrella._maya import mel
 
 
 def hook(virus_cleaner):
@@ -16,7 +17,8 @@ def hook(virus_cleaner):
                         cmds.lockNode(nodeObj, lock=False)
                     except Exception:
                         virus_cleaner.logger.warning(
-                            "The node is locked and cannot be unlocked. skip {}".format(nodeObj))
+                            "The node is locked and cannot be unlocked. skip {}".format(nodeObj)
+                        )
                         continue
                 try:
                     cmds.delete(nodeObj)

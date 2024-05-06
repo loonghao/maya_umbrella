@@ -4,16 +4,16 @@
 import sys
 
 # Import third-party modules
-import maya.standalone
 import pytest
+import maya.standalone
 
 
 def run_test():
-    maya.standalone.initialize()
     retcode = pytest.main(sys.argv[1:])
-    maya.standalone.uninitialize()
     sys.exit(retcode)
 
 
 if __name__ == "__main__":
+    maya.standalone.initialize()
     run_test()
+    maya.standalone.uninitialize()

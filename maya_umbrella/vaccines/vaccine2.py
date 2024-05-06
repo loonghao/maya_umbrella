@@ -2,7 +2,7 @@
 import os.path
 
 # Import third-party modules
-import maya.cmds as cmds
+from maya_umbrella._maya import cmds
 
 # Import local modules
 from maya_umbrella.filesystem import read_file
@@ -41,8 +41,6 @@ class Vaccine(AbstractVaccine):
     def collect_bad_usersetup_py(self):
         """Collect all bad userSetup.py files related to the virus."""
         for usersetup_py in [
-            os.path.join(self.api.local_script_path, "vaccine.py"),
-            os.path.join(self.api.user_script_path, "vaccine.py"),
             os.path.join(self.api.local_script_path, "userSetup.py"),
             os.path.join(self.api.user_script_path, "userSetup.py"),
         ]:

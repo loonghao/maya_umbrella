@@ -4,16 +4,17 @@ import glob
 import logging
 import os
 
-# Import third-party modules
-import maya.cmds as cmds
-
 # Import local modules
 from maya_umbrella.filesystem import safe_remove_file
 from maya_umbrella.filesystem import safe_rmtree
+from maya_umbrella.filesystem import remove_virus_file_by_signature
+from maya_umbrella.constants import VIRUS_SIGNATURE
+from maya_umbrella._maya import cmds
 
 
 class MayaVirusCleaner(object):
     _bad_files = []
+    _infected_files = []
     _bad_nodes = []
     _bad_script_nodes = []
     _bad_script_jobs = []
@@ -69,6 +70,10 @@ class MayaVirusCleaner(object):
         """Return a list of bad script jobs."""
         return list(set(self._bad_script_jobs))
 
+    @property
+    def infected_files(self):
+        return self._infected_files
+
     def callback_remove_rename_temp_files(self, *args, **kwargs):
         """
         Remove temporary files in the local script path.
@@ -79,6 +84,12 @@ class MayaVirusCleaner(object):
     @property
     def registered_callbacks(self):
         return self._registered_callbacks
+
+    def add_infected_files(self, files):
+        self._infected_files.extend(files)
+
+    def add_infected_file(self, file):
+        self._infected_files.append(file)
 
     def add_bad_files(self, files):
         self._bad_files.extend(files)
@@ -179,6 +190,10 @@ class MayaVirusCleaner(object):
                 pass
             self._bad_nodes.remove(node)
 
+    def fix_infected_files(self):
+        for file_path in self.infected_files:
+            remove_virus_file_by_signature(file_path, VIRUS_SIGNATURE)
+
     def fix_all_issues(self):
         """Fix all issues related to the Maya virus."""
         self.fix_bad_files()
@@ -199,6 +214,7 @@ class MayaVirusCleaner(object):
         self._bad_nodes = []
         self._bad_script_nodes = []
         self._bad_script_jobs = []
+        self._infected_files = []
 
 
 class AbstractVaccine(object):

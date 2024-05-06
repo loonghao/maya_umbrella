@@ -1,5 +1,13 @@
 import os.path
-import maya.cmds as cmds
+
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import MagicMock
+try:
+    import maya.cmds as cmds
+except ImportError:
+    cmds = MagicMock()
 
 import pytest
 from maya_umbrella.core import MayaVirusDefender
@@ -16,6 +24,14 @@ def get_virus_file(this_root):
         return os.path.join(this_root, "virus", name)
 
     return _get_virus_file
+
+
+@pytest.fixture
+def get_test_data(this_root):
+    def _get_test_data(name):
+        return os.path.join(this_root, "data", name)
+
+    return _get_test_data
 
 
 @pytest.fixture()

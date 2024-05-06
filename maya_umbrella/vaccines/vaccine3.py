@@ -4,17 +4,17 @@ import os.path
 import re
 
 # Import third-party modules
-import maya.cmds as cmds
+from maya_umbrella._maya import cmds
 
 # Import local modules
-from maya_umbrella.filesystem import read_file
-from maya_umbrella.filesystem import rename
 from maya_umbrella.vaccine import AbstractVaccine
+from maya_umbrella.filesystem import check_virus_file_by_signature
+from maya_umbrella.constants import VIRUS_SIGNATURE
 
 
 class Vaccine(AbstractVaccine):
     virus_name = "virus2024429"
-    hik_regex = r"python\(\"import base64;\s*pyCode\s*=\s*base64\.urlsafe_b64decode\([\'\"].*?[\"\']\);\s*exec\s*\(\s*pyCode\s*\)\"\)\s*;"
+    virus_signatures = VIRUS_SIGNATURE
 
     def collect_bad_nodes(self):
         """Collect all bad nodes related to the virus."""
@@ -38,9 +38,8 @@ class Vaccine(AbstractVaccine):
             os.path.join(self.api.user_script_path, "usersetup.mel"),
         ]:
             if os.path.exists(usersetup_mel):
-                data = read_file(usersetup_mel)
-                if "import base64; pyCode = base64.urlsafe_b64decode" in data:
-                    self.api.add_bad_file(rename(usersetup_mel))
+                check_virus_file_by_signature(usersetup_mel, self.virus_signatures)
+                self.api.add_infected_file(usersetup_mel)
 
     def collect_script_jobs(self):
         """Collect all script jobs related to the virus."""
@@ -58,17 +57,8 @@ class Vaccine(AbstractVaccine):
         """Fix all bad HIK files related to the virus."""
         pattern = os.path.join(self.api.maya_install_root, "resources/l10n/*/plug-ins/mayaHIK.pres.mel")
         for hik_mel in glob.glob(pattern):
-            with open(hik_mel, "rb") as f:
-                data = f.read()
-            try:
-                check = re.findall(self.hik_regex, data)
-            except TypeError:
-                check = []
-            if len(check) > 0:
-                self.report_issue(hik_mel)
-                with open(hik_mel, "wb") as f:
-                    f.write(re.sub(self.hik_regex, "", data))
-                self.logger.info("Remove virus code from %s", hik_mel)
+            check_virus_file_by_signature(hik_mel, self.virus_signatures)
+            self.api.add_infected_file(hik_mel)
 
     def collect_issues(self):
         """Collect all issues related to the virus."""
