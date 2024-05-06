@@ -30,7 +30,7 @@ generate-setup-file = false
 python = ">=2.7,<2.8 || >=3.6.0"
 
 [tool.poetry.dev-dependencies]
-nox = {version = "^2024.3.2", python = ">=3.8.1,<3.11"}
+nox = { version = "^2024.3.2", python = ">=3.8.1,<3.11" }
 
 [tool.commitizen]
 name = "cz_conventional_commits"
@@ -63,6 +63,7 @@ exclude = '''
     | _build
     | buck-out
     | build
+    | maya_umbrella/_vendor
     | dist
   )/
   | foo.py           # also separately exclude a file named foo.py in
@@ -92,7 +93,7 @@ force_single_line = true
 
 # All project unrelated unknown imports belong to third-party.
 default_section = "THIRDPARTY"
-skip_glob = "*/docs/conf.py"
+skip_glob = ["*/docs/conf.py", "*/maya_umbrella/_vendor/*"]
 
 
 # https://beta.ruff.rs/docs/configuration/
@@ -125,7 +126,8 @@ exclude = [
     "site-packages",
     "venv",
     "dev",
-    "noxfile.py"
+    "noxfile.py",
+    "maya_umbrella/_vendor/"
 ]
 line-length = 120
 
@@ -145,6 +147,9 @@ ignore = [
     "I001",
     "D107", # ignore missing docstring in __init__ methods
     "D100", # ignore missing docstring in module
+    "D101",
+    "D102",
+    "D103", # ignore missing docstring in public class
     "D104", # ignore missing docstring in public package
     "D105", # ignore missing docstring in magic methods
     "C901", # ignore too complex functions, doesn't seem to be worth it
@@ -175,20 +180,20 @@ protected-files = ["__init__.py", "README.rst", "vendor.txt"]
 
 [tool.vendoring.transformations]
 drop = [
-  # contains unnecessary scripts
-  "bin/",
-  # interpreter and OS specific msgpack libs
-  "msgpack/*.so",
-  # unneeded parts of setuptools
-  "easy_install.py",
-  "setuptools",
-  "pkg_resources/_vendor/",
-  "_distutils_hack",
-  "distutils-precedence.pth",
-  "pkg_resources/extern/",
-  # trim vendored pygments styles and lexers
-  "pygments/styles/[!_]*.py",
-  '^pygments/lexers/(?!python|__init__|_mapping).*\.py$',
+    # contains unnecessary scripts
+    "bin/",
+    # interpreter and OS specific msgpack libs
+    "msgpack/*.so",
+    # unneeded parts of setuptools
+    "easy_install.py",
+    "setuptools",
+    "pkg_resources/_vendor/",
+    "_distutils_hack",
+    "distutils-precedence.pth",
+    "pkg_resources/extern/",
+    # trim vendored pygments styles and lexers
+    "pygments/styles/[!_]*.py",
+    '^pygments/lexers/(?!python|__init__|_mapping).*\.py$',
 ]
 
 [tool.vendoring.typing-stubs]

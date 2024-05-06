@@ -6,7 +6,7 @@ from maya_umbrella.vaccine import AbstractVaccine
 
 
 class Vaccine(AbstractVaccine):
-    virus_name = "pu tian tong qi"
+    """A class for handling the PuTianTongQi virus."""
 
     def collect_issues(self):
         self.api.add_bad_files(

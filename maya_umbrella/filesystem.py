@@ -1,7 +1,7 @@
 # Import built-in modules
 import glob
 import importlib
-import io
+import sys
 import logging
 import os
 import random
@@ -12,8 +12,10 @@ import tempfile
 
 # Import local modules
 from maya_umbrella.constants import PACKAGE_NAME
-from maya_umbrella._vendor import six
-from maya_umbrella.constants import VIRUS_SIGNATURE
+from maya_umbrella.constants import FILE_VIRUS_SIGNATURES
+
+PY2 = sys.version_info[0] == 2
+PY3 = sys.version_info[0] == 3
 
 
 def this_root():
@@ -40,8 +42,8 @@ def safe_rmtree(path):
 def read_file(path):
     """Read the content of the file at the given path."""
     """Read the content of the file at the given path."""
-    options = {"encoding": "utf-8"} if six.PY3 else {}
-    with open(path, "r", **options) as file_:
+    options = {"encoding": "utf-8"} if PY3 else {}
+    with open(path, **options) as file_:
         content = file_.read()
     return content
 
@@ -50,28 +52,6 @@ def write_file(path, content):
     """Write the given content to the file at the given path."""
     with open(path, "w") as file_:
         file_.write(content)
-
-
-def patch_file(source, target, key_values, report_error=True):
-    """Modify the file at the source path with the given key value pairs and write the result to the target path.
-
-    If report_error is True, raise an IndexError if any of the keys are not found in the source file.
-    """
-    key_values = key_values if key_values else {}
-    found_keys = []
-    file_data = read_file(source)
-    for key, value in key_values.items():
-        before_ = file_data
-        file_data = file_data.replace(key, value)
-        if before_ != file_data:
-            found_keys.append(key)
-    write_file(target, file_data)
-
-    if report_error:
-        not_found = list(set(key_values.keys()) - set(found_keys))
-        if not_found:
-            raise IndexError("Not found: {0}".format(not_found))
-
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     """Generate a random string of the given size using the given characters."""
@@ -94,7 +74,7 @@ def load_hook(hook_file):
     if hasattr(importlib, "machinery"):
         # Python 3
         # Import built-in modules
-        from importlib.util import spec_from_loader
+        from importlib.util import spec_from_loader  # noqa: F401
 
         loader = importlib.machinery.SourceFileLoader(hook_name, hook_file)
         spec = importlib.util.spec_from_loader(loader.name, loader=loader)
@@ -164,20 +144,20 @@ def replace_content_by_signatures(content, signatures):
     return content
 
 
-def check_virus_file_by_signature(file_path, signature):
+def check_virus_file_by_signature(file_path, signatures=None):
+    signatures = signatures or FILE_VIRUS_SIGNATURES
     try:
         data = read_file(file_path)
-        return check_virus_by_signature(data, signature)
-    except IOError:
+        return check_virus_by_signature(data, signatures)
+    except OSError:
         return False
     except UnicodeDecodeError:
         return True
 
 
 def check_virus_by_signature(content, signatures=None):
-    signatures = signatures or VIRUS_SIGNATURE
+    signatures = signatures or FILE_VIRUS_SIGNATURES
     for signature in signatures:
-        print(type(signature), type(content))
         if re.search(signature, content):
             return True
     return False

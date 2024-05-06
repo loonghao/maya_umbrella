@@ -1,14 +1,10 @@
-import os
 import winreg
 
 import nox
 import argparse
-import glob
 import os
-import shutil
-import sys
 from pathlib import Path
-from typing import Iterator, List, Tuple
+from typing import Iterator, Tuple
 
 PACKAGE_NAME = "maya_umbrella"
 ROOT = os.path.dirname(__file__)
@@ -61,7 +57,7 @@ def preflight(session: nox.Session) -> None:
 @nox.session
 def ruff_format(session: nox.Session) -> None:
     session.install("ruff")
-    session.run("ruff", "format")
+    session.run("ruff", "check", "--fix")
 
 
 @nox.session
@@ -70,7 +66,7 @@ def ruff_check(session: nox.Session) -> None:
     session.run("ruff", "check")
 
 
-@nox.session
+@nox.session(python=["2.7", "3.9"], reuse_venv=True)
 def pytest(session: nox.Session) -> None:
     session.install("pytest", "pytest_cov")
     test_root = os.path.join(ROOT, "tests")

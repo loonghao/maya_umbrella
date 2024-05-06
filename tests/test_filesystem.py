@@ -1,7 +1,6 @@
-import os.path
 
 from maya_umbrella.filesystem import check_virus_file_by_signature
-from maya_umbrella.constants import VIRUS_SIGNATURE
+from maya_umbrella.constants import FILE_VIRUS_SIGNATURES
 from maya_umbrella.filesystem import remove_virus_file_by_signature
 import pytest
 
@@ -17,7 +16,7 @@ import pytest
 )
 def test_check_virus_file_by_signature(get_test_data, file_name, result):
     mel_file = get_test_data(file_name)
-    assert check_virus_file_by_signature(mel_file, VIRUS_SIGNATURE) == result
+    assert check_virus_file_by_signature(mel_file, FILE_VIRUS_SIGNATURES) == result
 
 
 @pytest.mark.parametrize(
@@ -36,5 +35,5 @@ def test_check_virus_file_by_signature(get_test_data, file_name, result):
 def test_remove_virus_file_by_signature(get_test_data, file_name, tmpdir, result):
     mel_file = get_test_data(file_name)
     fixed_mel_file = str(tmpdir.join(file_name))
-    remove_virus_file_by_signature(mel_file, VIRUS_SIGNATURE, fixed_mel_file)
-    assert check_virus_file_by_signature(fixed_mel_file, VIRUS_SIGNATURE) == result
+    remove_virus_file_by_signature(mel_file, FILE_VIRUS_SIGNATURES, fixed_mel_file)
+    assert check_virus_file_by_signature(fixed_mel_file, FILE_VIRUS_SIGNATURES) == result
