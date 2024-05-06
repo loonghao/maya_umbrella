@@ -1,16 +1,14 @@
 # Import built-in modules
 import logging
 
-# Import third-party modules
-import maya.api.OpenMaya as om
-import maya.cmds as cmds
-
 # Import local modules
 from maya_umbrella.filesystem import get_hooks
 from maya_umbrella.filesystem import get_vaccines
 from maya_umbrella.filesystem import load_hook
 from maya_umbrella.log import setup_logger
 from maya_umbrella.vaccine import MayaVirusCleaner
+from maya_umbrella._maya import om
+from maya_umbrella._maya import cmds
 
 
 class MayaVirusDefender(object):

@@ -2,14 +2,18 @@
 import glob
 import importlib
 import io
+import logging
 import os
 import random
+import re
 import shutil
 import string
 import tempfile
 
 # Import local modules
 from maya_umbrella.constants import PACKAGE_NAME
+from maya_umbrella._vendor import six
+from maya_umbrella.constants import VIRUS_SIGNATURE
 
 
 def this_root():
@@ -35,14 +39,16 @@ def safe_rmtree(path):
 
 def read_file(path):
     """Read the content of the file at the given path."""
-    with io.open(path, "r", encoding="utf-8") as file_:
+    """Read the content of the file at the given path."""
+    options = {"encoding": "utf-8"} if six.PY3 else {}
+    with open(path, "r", **options) as file_:
         content = file_.read()
     return content
 
 
 def write_file(path, content):
     """Write the given content to the file at the given path."""
-    with io.open(path, "w", encoding="utf-8", newline="\n") as file_:
+    with open(path, "w") as file_:
         file_.write(content)
 
 
@@ -141,3 +147,37 @@ def get_log_file():
         pass
     name = os.getenv("MAYA_UMBRELLA_LOG_NAME", PACKAGE_NAME)
     return os.path.join(root, "{name}.log".format(name=name))
+
+
+def remove_virus_file_by_signature(file_path, signatures, output_file_path=None):
+    logger = logging.getLogger(__name__)
+    data = read_file(file_path)
+    if check_virus_by_signature(data, signatures):
+        logger.warning("%s: Infected by Malware!", file_path)
+        fixed_data = replace_content_by_signatures(data, signatures)
+        write_file(output_file_path or file_path, fixed_data)
+
+
+def replace_content_by_signatures(content, signatures):
+    for signature in signatures:
+        content = re.sub(signature, "", content)
+    return content
+
+
+def check_virus_file_by_signature(file_path, signature):
+    try:
+        data = read_file(file_path)
+        return check_virus_by_signature(data, signature)
+    except IOError:
+        return False
+    except UnicodeDecodeError:
+        return True
+
+
+def check_virus_by_signature(content, signatures=None):
+    signatures = signatures or VIRUS_SIGNATURE
+    for signature in signatures:
+        print(type(signature), type(content))
+        if re.search(signature, content):
+            return True
+    return False

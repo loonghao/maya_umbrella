@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "v*"
+      -
 
 jobs:
   deploy:
@@ -11,7 +12,6 @@ jobs:
     permissions:
       # IMPORTANT: this permission is mandatory for trusted publishing
       id-token: write
-      actions: write
     steps:
     - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
       with:
@@ -39,4 +39,4 @@ jobs:
     - name: Create release Version
       run: gh release create ${{ steps.vars.outputs.tag }} --generate-notes
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

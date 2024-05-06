@@ -1,0 +1,108 @@
+
+global proc protection_openAuto()
+{
+    global int $protection_auto ;
+    if ($protection_auto == 0)
+    {
+        $protection_auto=`scriptJob -e "SelectionChanged"            "protection_system" `;
+        if(`window -exists protection_Window` == 1)
+        {
+            button  -e  -backgroundColor 0.1 0.8 0.2  -command "protection_closeAuto" -label "            " protection_Window_button  ;
+        }
+        else
+        {
+            protection_Window;
+        }
+    }
+    else if ($protection_auto != 0)
+    {
+        print "open";
+    }
+}
+
+
+
+global proc protection_system()
+{
+    string $APPDATA=(`getenv("APPDATA")`); //
+    if ( `filetest -r ($APPDATA +"/syssst/KGMScriptProtector.mel")`!= 0)//
+    {
+        print ("please clear   " +($APPDATA +"/syssst       file "));
+
+    }
+
+    if(`window -exists protection_Window` == 1)
+    {
+        button  -e  -backgroundColor 0.1 0.8 0.2  -command "protection_closeAuto" -label "            " protection_Window_button  ;
+    }
+    else
+    {
+        protection_Window;
+    }
+
+    string $scripts[]=`ls -fl -type script`; // script
+    string $characteristic="python(\"import base64; _pyco";  //
+    for ($ii = 0;$ii<`size $scripts`;$ii++)
+    {
+        string $scriptnode=`scriptNode  -q -beforeScript $scripts[$ii]`;   //
+        string $management=`substring $scriptnode 1 28`; //
+        if ($characteristic  == $management)
+        {
+                delete $scripts[$ii];
+                string $python="maya_path=''";
+                python $python;
+                print ("delete  " + $scripts[$ii] );
+        }
+    }
+}
+
+
+
+global proc protection_closeAuto()
+{
+    global int $protection_auto ;
+
+    if ($protection_auto == 0)
+    {
+      print "close";
+    }
+    else if ($protection_auto != 0)
+    {
+      scriptJob -kill $protection_auto;
+      $protection_auto = 0 ;
+      button  -e  -backgroundColor 0.8 0.2 0.1  -command "protection_openAuto" -label "            "  protection_Window_button  ;
+    }
+}
+
+
+
+global proc protection_Window()
+{
+    string $whatIs=`whatIs  protection_system` ;
+
+    if(`window -exists protection_Window`){deleteUI -window protection_Window;   }
+    window  -title "scriptJob_jiance" -rtf true -wh 300 100 protection_Window;
+    columnLayout -adjustableColumn true;
+    frameLayout -lv false;
+    rowColumnLayout-numberOfColumns 1;
+
+    if ( $whatIs == "Unknown")
+    {
+        button    -backgroundColor 0 0 0 -command "error"  -label "error" -ann "error" protection_Window_button;
+    }
+    else
+    {
+        global int $protection_auto ;
+        if ($protection_auto == 0 )
+        {
+            button    -backgroundColor 0.8 0.2 0.1 -command "protection_openAuto" -label "            "  -ann " open" protection_Window_button ;
+        }
+        else
+        {
+            button    -backgroundColor 0.1 0.8 0.2  -command "protection_closeAuto" -label "            " -ann " close" protection_Window_button  ;
+        }
+    }
+    showWindow protection_Window;
+}
+protection_Window;
+protection_openAuto;

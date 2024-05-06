@@ -163,3 +163,41 @@ convention = "google"
 [tool.ruff.format]
 docstring-code-format = true
 quote-style = "double"
+
+
+######################################################################################
+# vendoring
+[tool.vendoring]
+destination = "maya_umbrella/_vendor/"
+requirements = "maya_umbrella/_vendor/vendor.txt"
+namespace = "maya_umbrella._vendor"
+protected-files = ["__init__.py", "README.rst", "vendor.txt"]
+
+[tool.vendoring.transformations]
+drop = [
+  # contains unnecessary scripts
+  "bin/",
+  # interpreter and OS specific msgpack libs
+  "msgpack/*.so",
+  # unneeded parts of setuptools
+  "easy_install.py",
+  "setuptools",
+  "pkg_resources/_vendor/",
+  "_distutils_hack",
+  "distutils-precedence.pth",
+  "pkg_resources/extern/",
+  # trim vendored pygments styles and lexers
+  "pygments/styles/[!_]*.py",
+  '^pygments/lexers/(?!python|__init__|_mapping).*\.py$',
+]
+
+[tool.vendoring.typing-stubs]
+six = ["six.__init__", "six.moves.__init__", "six.moves.configparser"]
+distro = []
+
+[tool.vendoring.license.directories]
+setuptools = "pkg_resources"
+
+[tool.vendoring.license.fallback-urls]
+distlib = "https://bitbucket.org/pypa/distlib/raw/master/LICENSE.txt"
+webencodings = "https://github.com/SimonSapin/python-webencodings/raw/master/LICENSE"
