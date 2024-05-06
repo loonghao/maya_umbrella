@@ -1,3 +1,17 @@
+## v0.5.0 (2024-05-06)
+
+### Feat
+
+- Improve clean logic for `userSetup.mel` and `userSetup.py`
+
+### Fix
+
+- clean up nodes from reference files.
+
+### Refactor
+
+- fix code styles
+
 ## v0.4.1 (2024-05-05)
 
 ### Refactor
