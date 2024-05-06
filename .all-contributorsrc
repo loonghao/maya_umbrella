@@ -50,6 +50,15 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "uncleschen",
+      "name": "Unclechen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37014389?v=4",
+      "profile": "https://github.com/uncleschen",
+      "contributions": [
+        "test"
+      ]
     }
   ],
   "skipCi": true,
