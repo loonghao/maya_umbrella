@@ -1,6 +1,6 @@
-# Import third-party modules
-from maya_umbrella._maya import cmds
-from maya_umbrella._maya import mel
+# Import local modules
+from maya_umbrella.maya_funs import cmds
+from maya_umbrella.maya_funs import mel
 
 
 def hook(virus_cleaner):

@@ -155,6 +155,7 @@ ignore = [
     "C901", # ignore too complex functions, doesn't seem to be worth it
     "UP032",
     "UP004",
+    "UP025",
 ]
 
 [tool.ruff.lint.pydocstyle]

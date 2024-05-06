@@ -1,14 +1,13 @@
 # Import built-in modules
 import os.path
 
-# Import third-party modules
-from maya_umbrella._maya import cmds
-
 # Import local modules
-from maya_umbrella.vaccine import AbstractVaccine
-from maya_umbrella.filesystem import check_virus_file_by_signature
-from maya_umbrella.filesystem import check_virus_by_signature
 from maya_umbrella.constants import JOB_SCRIPTS_VIRUS_SIGNATURES
+from maya_umbrella.filesystem import check_virus_by_signature
+from maya_umbrella.filesystem import check_virus_file_by_signature
+from maya_umbrella.maya_funs import check_reference_node_exists
+from maya_umbrella.maya_funs import cmds
+from maya_umbrella.vaccine import AbstractVaccine
 
 
 class Vaccine(AbstractVaccine):
@@ -19,7 +18,7 @@ class Vaccine(AbstractVaccine):
     def collect_bad_nodes(self):
         """Collect all bad nodes related to the virus."""
         for script_node in cmds.ls(type="script"):
-            if cmds.referenceQuery(script_node, isNodeReferenced=True):
+            if check_reference_node_exists(script_node):
                 continue
             script_before_string = cmds.getAttr("{}.before".format(script_node))
             script_after_string = cmds.getAttr("{}.after".format(script_node))

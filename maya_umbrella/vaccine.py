@@ -3,13 +3,15 @@ from collections import defaultdict
 import glob
 import logging
 import os
+import re
 
 # Import local modules
+from maya_umbrella.constants import FILE_VIRUS_SIGNATURES
+from maya_umbrella.filesystem import remove_virus_file_by_signature
 from maya_umbrella.filesystem import safe_remove_file
 from maya_umbrella.filesystem import safe_rmtree
-from maya_umbrella.filesystem import remove_virus_file_by_signature
-from maya_umbrella.constants import FILE_VIRUS_SIGNATURES
-from maya_umbrella._maya import cmds
+from maya_umbrella.maya_funs import check_reference_node_exists
+from maya_umbrella.maya_funs import cmds
 
 
 class MayaVirusCleaner(object):
@@ -77,7 +79,8 @@ class MayaVirusCleaner(object):
     def callback_remove_rename_temp_files(self, *args, **kwargs):
         """Remove temporary files in the local script path."""
         self.logger.info("Removing temporary files in %s", self.local_script_path)
-        [safe_remove_file(temp_file) for temp_file in glob.glob(os.path.join(self.local_script_path, "._*"))]
+        for temp_file in glob.glob(os.path.join(self.local_script_path, "._*")):
+            safe_remove_file(temp_file)
 
     @property
     def registered_callbacks(self):
@@ -156,7 +159,7 @@ class MayaVirusCleaner(object):
 
     def fix_script_jobs(self):
         for script_job in self.bad_script_jobs:
-            script_num = int(script_job.split(":", 1)[0])
+            script_num = int(re.findall(r"^(\d+):", script_job)[0])
             self.logger.info("Kill script job %s", script_job)
             cmds.scriptJob(kill=script_num, force=True)
             self._bad_script_jobs.remove(script_job)
@@ -176,15 +179,25 @@ class MayaVirusCleaner(object):
     def fix_bad_nodes(self):
         for node in self.bad_nodes:
             self.logger.info("Deleting %s", node)
-            try:
-                cmds.lockNode(node, lock=False)
-            except ValueError:
-                pass
-            try:
-                cmds.delete(node)
-            except ValueError:
-                pass
-            self._bad_nodes.remove(node)
+            is_referenced = check_reference_node_exists(node)
+            if is_referenced:
+                try:
+                    cmds.setAttr("{node}.before".format(node=node), "", type="string")
+                    cmds.setAttr("{node}.after".format(node=node), "", type="string")
+                    cmds.setAttr("{node}.scriptType".format(node=node), 0)
+                    self._bad_nodes.remove(node)
+                except Exception as e:
+                    self.logger.debug(e)
+            else:
+                try:
+                    cmds.lockNode(node, lock=False)
+                except ValueError:
+                    pass
+                try:
+                    cmds.delete(node)
+                except ValueError:
+                    pass
+                self._bad_nodes.remove(node)
 
     def fix_infected_files(self):
         for file_path in self.infected_files:

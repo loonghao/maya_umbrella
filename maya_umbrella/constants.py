@@ -13,5 +13,6 @@ FILE_VIRUS_SIGNATURES = [
 JOB_SCRIPTS_VIRUS_SIGNATURES = [
     "petri_dish_path.+cmds.internalVar.+",
     "userSetup",
-    "fuckVirus"
+    "fuckVirus",
+    "python(.*);.+exec.+(pyCode).+;",
 ]

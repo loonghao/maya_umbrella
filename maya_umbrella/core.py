@@ -6,9 +6,9 @@ from maya_umbrella.filesystem import get_hooks
 from maya_umbrella.filesystem import get_vaccines
 from maya_umbrella.filesystem import load_hook
 from maya_umbrella.log import setup_logger
+from maya_umbrella.maya_funs import is_maya_standalone
+from maya_umbrella.maya_funs import om
 from maya_umbrella.vaccine import MayaVirusCleaner
-from maya_umbrella._maya import om
-from maya_umbrella._maya import cmds
 
 
 class MayaVirusDefender(object):
@@ -61,7 +61,7 @@ class MayaVirusDefender(object):
 
     def run_hooks(self):
         """Run all hooks, only works in non-batch mode."""
-        if not cmds.about(batch=True):
+        if not is_maya_standalone():
             for hook_file in get_hooks():
                 self.logger.debug("run_hook: %s", hook_file)
                 try:
@@ -74,13 +74,17 @@ class MayaVirusDefender(object):
         for vaccine in self.vaccines:
             vaccine.collect_issues()
 
+    def reset(self):
+        """Reset internal buffer."""
+        self.virus_cleaner.reset_all_issues()
+
     def fix(self):
         """Fix all issues related to the Maya virus."""
         self.virus_cleaner.fix_all_issues()
 
     def report(self):
         """Report all issues related to the Maya virus."""
-        self.virus_cleaner.reset_all_issues()
+        self.reset()
         self.collect()
         self.virus_cleaner.report_all_issues()
 
@@ -104,6 +108,7 @@ class MayaVirusDefender(object):
             **kwargs: Arbitrary keyword arguments.
         """
         if self.auto_fix:
+            self.reset()
             self.collect()
             self.fix()
             self.run_hooks()
