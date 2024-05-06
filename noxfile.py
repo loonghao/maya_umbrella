@@ -66,7 +66,7 @@ def ruff_check(session: nox.Session) -> None:
     session.run("ruff", "check")
 
 
-@nox.session(python=["2.7", "3.9"], reuse_venv=True)
+@nox.session
 def pytest(session: nox.Session) -> None:
     session.install("pytest", "pytest_cov")
     test_root = os.path.join(ROOT, "tests")

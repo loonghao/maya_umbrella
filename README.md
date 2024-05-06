@@ -3,8 +3,9 @@
 [![Python Version](https://img.shields.io/pypi/pyversions/maya-umbrella)](https://img.shields.io/pypi/pyversions/maya-umbrella)
 [![Nox](https://img.shields.io/badge/%F0%9F%A6%8A-Nox-D85E00.svg)](https://github.com/wntrblm/nox)
 [![PyPI Version](https://img.shields.io/pypi/v/maya-umbrella?color=green)](https://pypi.org/project/maya-umbrella/)
-[![Downloads Status](https://img.shields.io/pypi/dw/maya-umbrella)](https://pypi.org/project/maya-umbrella/)
-[![Downloads](https://pepy.tech/badge/maya-umbrella)](https://pepy.tech/project/maya-umbrella)
+[![Downloads](https://static.pepy.tech/badge/maya-umbrella)](https://pepy.tech/project/maya-umbrella)
+[![Downloads](https://static.pepy.tech/badge/maya-umbrella/month)](https://pepy.tech/project/maya-umbrella)
+[![Downloads](https://static.pepy.tech/badge/maya-umbrella/week)](https://pepy.tech/project/maya-umbrella)
 [![License](https://img.shields.io/pypi/l/maya-umbrella)](https://pypi.org/project/maya-umbrella/)
 [![PyPI Format](https://img.shields.io/pypi/format/maya-umbrella)](https://pypi.org/project/maya-umbrella/)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/loonghao/maya-umbrella/graphs/commit-activity)
@@ -20,10 +21,16 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-Check and fix maya virus.
+This tool is designed to provide a robust solution for identifying and resolving any potential viruses within Autodesk Maya. 
+It ensures a secure and seamless user experience by proactively scanning for threats and effectively neutralizing them.
+
+It can be provided as an API for seamless integration into your existing pipeline.
 
 
-# 发开环境设置
+# 开发环境设置
+
+Set up the development environment using a virtual environment, 
+and it is recommended to use Python 3.8 or higher versions.
 
 通过虚拟环境去设置开发环境, 推荐python-3.8以上的版本
 

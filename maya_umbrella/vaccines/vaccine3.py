@@ -2,12 +2,11 @@
 import glob
 import os.path
 
-# Import third-party modules
-from maya_umbrella._maya import cmds
-
 # Import local modules
-from maya_umbrella.vaccine import AbstractVaccine
 from maya_umbrella.filesystem import check_virus_file_by_signature
+from maya_umbrella.maya_funs import cmds
+from maya_umbrella.maya_funs import is_maya_standalone
+from maya_umbrella.vaccine import AbstractVaccine
 
 
 class Vaccine(AbstractVaccine):
@@ -49,11 +48,10 @@ class Vaccine(AbstractVaccine):
             "leukocyte",
             "execute",
         ]
-
         for script_job in cmds.scriptJob(listJobs=True):
             for virus in virus_gene:
                 if virus in script_job:
-                    self.api.add_bad_script_jobs(script_job)
+                    self.api.add_bad_script_job(script_job)
 
     def fix_bad_hik_files(self):
         """Fix all bad HIK files related to the virus."""
@@ -68,4 +66,7 @@ class Vaccine(AbstractVaccine):
         self.api.add_bad_file(os.path.join(os.getenv("APPDATA"), "syssst"))
         self.collect_bad_mel_files()
         self.collect_bad_nodes()
+        # This only works for Maya Gui model.
+        if not is_maya_standalone():
+            self.collect_script_jobs()
         self.api.add_fix_function(self.fix_bad_hik_files)

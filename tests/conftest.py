@@ -1,15 +1,7 @@
 import os.path
 
-try:
-    from unittest.mock import MagicMock
-except ImportError:
-    from unittest.mock import MagicMock
-try:
-    import maya.cmds as cmds
-except ImportError:
-    cmds = MagicMock()
-
 import pytest
+from maya_umbrella.maya_funs import cmds
 from maya_umbrella.core import MayaVirusDefender
 
 
