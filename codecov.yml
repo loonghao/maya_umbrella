@@ -1,0 +1,10 @@
+coverage:
+  status:
+    project: off
+
+github_checks:
+  annotations: false
+
+ignore:
+  - "maya_umbrella/hooks"
+  - "noxfile.py"

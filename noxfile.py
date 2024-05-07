@@ -1,5 +1,3 @@
-import winreg
-
 import nox
 import argparse
 import os
@@ -12,6 +10,10 @@ ROOT = os.path.dirname(__file__)
 
 def _setup_maya(maya_version):
     """Set up the appropriate Maya version for testing."""
+    try:
+        import winreg    # noqa: F401
+    except ImportError:
+        return {}
     try:
         key = winreg.OpenKey(
             winreg.HKEY_LOCAL_MACHINE,
@@ -71,6 +73,7 @@ def pytest(session: nox.Session) -> None:
     session.install("pytest", "pytest_cov")
     test_root = os.path.join(ROOT, "tests")
     session.run("pytest", f"--cov={PACKAGE_NAME}",
+                "--cov-report=xml:coverage.xml",
                 f"--rootdir={test_root}",
                 env={"PYTHONPATH": ROOT}, )
 
