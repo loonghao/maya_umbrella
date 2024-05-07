@@ -1,8 +1,12 @@
+# -*- coding: UTF-8 -*-
+import shutil
+
 import nox
 import argparse
 import os
 from pathlib import Path
 from typing import Iterator, Tuple
+import zipfile
 
 PACKAGE_NAME = "maya_umbrella"
 ROOT = os.path.dirname(__file__)
@@ -11,7 +15,7 @@ ROOT = os.path.dirname(__file__)
 def _setup_maya(maya_version):
     """Set up the appropriate Maya version for testing."""
     try:
-        import winreg    # noqa: F401
+        import winreg  # noqa: F401
     except ImportError:
         return {}
     try:
@@ -196,3 +200,41 @@ for maya_version in range(2018, 2026):
         maya_python = os.path.join(maya_setup["bin_root"], "mayapy.exe")
         test_runner = os.path.join(ROOT, "tests", "_test_runner.py")
         add_dynamic_maya_test_session(maya_version, maya_python, test_runner)
+
+
+@nox.session(name="make-zip")
+def make_install_zip(session: nox.Session):
+    temp_dir = os.path.join(ROOT, ".zip")
+    build_root = os.path.join(temp_dir, "maya_umbrella")
+    script_dir = os.path.join(build_root, "scripts")
+    shutil.rmtree(temp_dir, ignore_errors=True)
+    bat_template = """
+@echo off
+SET "batPath=%~dp0"
+SET "modContent=+ maya_umbrella {version} %batPath%"
+SET "modFilePath=%~dp0maya_umbrella.mod"
+echo %modContent% > "%modFilePath%"
+xcopy "%~dp0maya_umbrella.mod"  "%USERPROFILE%\\documents\\maya\\modules\\" /y
+del  /f "%~dp0maya_umbrella.mod"
+pause
+"""
+    parser = argparse.ArgumentParser(prog="nox -s make-zip")
+    parser.add_argument("--version", default="0.5.0", help="Version to use for the zip file")
+    args = parser.parse_args(session.posargs)
+    version = str(args.version)
+    print(f"make zip to current version: {version}")
+
+    shutil.copytree(os.path.join(ROOT, "maya_umbrella"),
+                    os.path.join(script_dir, "maya_umbrella"))
+    with open(os.path.join(build_root, "install.bat"), "w") as f:
+        f.write(bat_template.format(version=version))
+
+    shutil.copy2(os.path.join(ROOT, "maya", "userSetup.py"),
+                 os.path.join(script_dir, "userSetup.py"))
+
+    with zipfile.ZipFile(os.path.join(temp_dir, f"{PACKAGE_NAME}-{version}.zip"), "w") as zip:
+        for root, _, files in os.walk(build_root):
+            for file in files:
+                zip.write(os.path.join(root, file),
+                          os.path.relpath(os.path.join(root, file),
+                                          os.path.join(build_root, '.')))

@@ -70,6 +70,12 @@ manual_test_in_maya.start()
 nox -s ruff_check
 ```
 
+# 生成安装包
+执行下面的命令可以在<repo>/.zip下面创建zip，参数 `--version` 当前工具的版本号
+```shell
+nox -s make-zip -- --version 0.5.0
+```
+
 # 环境变量
 
 我们可以通过下列环境变量去修改maya_umbrella的一些设置，方便有pipeline的公司可以更好的集成
