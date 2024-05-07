@@ -26,3 +26,5 @@ venv_python
 docs_src/_build/
 
 run_pycharm.bat
+
+coverage.xml

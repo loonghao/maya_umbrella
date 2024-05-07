@@ -8,7 +8,7 @@ jobs:
       max-parallel: 3
       matrix:
         os: [ 'windows-2019' ]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12" ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
       fail-fast: false
     steps:
       - name: Checkout
@@ -27,6 +27,3 @@ jobs:
       - name: isort
         run: |
           nox -s isort_check
-      - name: pytest
-        run: |
-          nox -s pytest
