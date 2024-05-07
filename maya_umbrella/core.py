@@ -71,12 +71,9 @@ class MayaVirusDefender(object):
 
     def collect(self):
         """Collect all issues related to the Maya virus."""
+        self.virus_cleaner.reset()
         for vaccine in self.vaccines:
             vaccine.collect_issues()
-
-    def reset(self):
-        """Reset internal buffer."""
-        self.virus_cleaner.reset_all_issues()
 
     def fix(self):
         """Fix all issues related to the Maya virus."""
@@ -84,7 +81,6 @@ class MayaVirusDefender(object):
 
     def report(self):
         """Report all issues related to the Maya virus."""
-        self.reset()
         self.collect()
         self.virus_cleaner.report_all_issues()
 
@@ -100,6 +96,10 @@ class MayaVirusDefender(object):
             self.logger.debug("setup callback %s.", name)
             self.callback_ids.append(om.MSceneMessage.addCallback(callbacks, self._callback))
 
+    def get_unfixed_references(self):
+        self.collect()
+        return self.virus_cleaner.infected_reference_files
+
     def _callback(self, *args, **kwargs):
         """Callback function for MayaVirusDefender.
 
@@ -108,7 +108,6 @@ class MayaVirusDefender(object):
             **kwargs: Arbitrary keyword arguments.
         """
         if self.auto_fix:
-            self.reset()
             self.collect()
             self.fix()
             self.run_hooks()

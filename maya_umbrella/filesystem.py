@@ -2,7 +2,7 @@
 from contextlib import contextmanager
 import glob
 import importlib
-import logging
+import json
 import os
 import random
 import re
@@ -53,12 +53,21 @@ def read_file(path):
     return content
 
 
+def read_json(path):
+    """Read the content of the file at the given path."""
+    options = {"encoding": "utf-8"} if PY3 else {}
+    with open(path, **options) as file_:
+        try:
+            content = json.load(file_)
+        except UnicodeDecodeError:
+            return {}
+    return content
+
 def write_file(path, content):
     """Write the given content to the file at the given path."""
     options = {"encoding": "utf-8"} if PY3 else {}
     with atomic_writes(path, "w", **options) as file_:
         file_.write(content)
-
 
 @contextmanager
 def atomic_writes(src, mode, **options):
@@ -148,10 +157,8 @@ def get_log_file():
 
 
 def remove_virus_file_by_signature(file_path, signatures, output_file_path=None):
-    logger = logging.getLogger(__name__)
     data = read_file(file_path)
     if check_virus_by_signature(data, signatures):
-        logger.warning("%s: Infected by Malware!", file_path)
         fixed_data = replace_content_by_signatures(data, signatures)
         write_file(output_file_path or file_path, fixed_data)
 

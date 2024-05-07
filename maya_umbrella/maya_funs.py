@@ -34,3 +34,22 @@ def check_reference_node_exists(node_name):
         return cmds.referenceQuery(node_name, isNodeReferenced=True)
     except RuntimeError:
         return False
+
+
+def get_reference_file_by_node(node_name):
+    """Get reference file by node name."""
+    try:
+        return cmds.referenceQuery(node_name, filename=True)
+    except RuntimeError:
+        return None
+
+
+def get_attr_value(node_name, attr_name):
+    try:
+        return cmds.getAttr("{node_name}.{attr}".format(node_name=node_name, attr=attr_name))
+    except ValueError:
+        return None
+
+
+def maya_ui_language():
+    return cmds.about(uiLocaleLanguage=True)

@@ -21,15 +21,15 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-This tool is designed to provide a robust solution for identifying and resolving any potential viruses within Autodesk Maya. 
+This tool is designed to provide a robust solution for identifying and resolving any potential viruses within Autodesk
+Maya.
 It ensures a secure and seamless user experience by proactively scanning for threats and effectively neutralizing them.
 
 It can be provided as an API for seamless integration into your existing pipeline.
 
-
 # 开发环境设置
 
-Set up the development environment using a virtual environment, 
+Set up the development environment using a virtual environment,
 and it is recommended to use Python 3.8 or higher versions.
 
 通过虚拟环境去设置开发环境, 推荐python-3.8以上的版本
@@ -71,9 +71,21 @@ nox -s ruff_check
 ```
 
 # 生成安装包
+
 执行下面的命令可以在<repo>/.zip下面创建zip，参数 `--version` 当前工具的版本号
+
 ```shell
 nox -s make-zip -- --version 0.5.0
+```
+
+# API
+获取当前场景没有被修复的病毒文件
+
+```python
+from maya_umbrella import MayaVirusDefender
+
+api = MayaVirusDefender()
+print(api.get_unfixed_references)
 ```
 
 # 环境变量
