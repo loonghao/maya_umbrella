@@ -19,7 +19,9 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
 ]
-
+include = [
+    { path = "maya_umbrella/locales", format = ["sdist", "wheel"] },
+]
 packages = [
     { include = "maya_umbrella" },
 ]

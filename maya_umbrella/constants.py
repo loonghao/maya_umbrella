@@ -15,4 +15,5 @@ JOB_SCRIPTS_VIRUS_SIGNATURES = [
     "userSetup",
     "fuckVirus",
     "python(.*);.+exec.+(pyCode).+;",
+    "[a-zA-Z0-9.]*",
 ]

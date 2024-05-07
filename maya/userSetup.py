@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 # Import local modules
 import maya.cmds as cmds
 from maya_umbrella import MayaVirusDefender
@@ -8,11 +6,10 @@ from maya_umbrella import MayaVirusDefender
 def main():
     MayaVirusDefender().setup()
     if not cmds.about(batch=True):
-        cmds.inViewMessage(message=u"成功加载 <hl>maya_umbrella</hl> 保护中.", pos="topRight",
+        cmds.inViewMessage(message="Successfully loaded <hl>maya_umbrella</hl> under protection.", pos="topRight",
                            fade=True)
     else:
-        message = u"-----------------------成功加载 maya_umbrella-----------------------"
-        print(message)
+        print("-----------------------Loading maya_umbrella successfully----------------------")
 
 
 if __name__ == "__main__":

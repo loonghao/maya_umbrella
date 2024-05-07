@@ -1,0 +1,14 @@
+{
+  "start_fix_issues": "Start fixing all problems related to Maya virus $name",
+  "init_message": "Successfully loaded <hl>maya_umbrella</hl> under protection.",
+  "init_standalone_message": "-----------------------Loading maya_umbrella successfully----------------------",
+  "report_issue": "$name: Infected by Malware!",
+  "infected_nodes": "Infected nodes: $name: ",
+  "bad_files": "Bad files: $name",
+  "infected_script_jobs": "Infected script jobs: $name",
+  "infected_files": "Infected files: $name",
+  "infected_reference_files": "Infected reference files: $name",
+  "fix_infected_files": "Deleting infected files: $name",
+  "delete": "Deleting: $name",
+  "fix_script_job": "Kill script job: %s"
+}
