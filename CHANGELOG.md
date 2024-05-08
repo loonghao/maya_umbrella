@@ -1,3 +1,10 @@
+## v0.6.0 (2024-05-08)
+
+### Feat
+
+- Refactor code logic to make API more flexible.
+- Add i18n support and add new API to get unfixed references files.
+
 ## v0.5.0 (2024-05-06)
 
 ### Feat
