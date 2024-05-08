@@ -45,7 +45,6 @@ jobs:
     - name: Generate changelog
       id: changelog
       uses: jaywcjlove/changelog-generator@main
-      if: steps.get_tag_name.outputs.successful
       with:
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         filter-author: (|dependabot|renovate\\[bot\\]|dependabot\\[bot\\]|Renovate Bot)
@@ -62,7 +61,6 @@ jobs:
           ## Unknown
           {{__unknown__}}
     - uses: ncipollo/release-action@v1
-      if: steps.make_maya_mod.outputs.successful
       with:
         artifacts: ".zip/maya_umbrella-*.zip"
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

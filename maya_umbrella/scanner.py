@@ -38,6 +38,7 @@ class MayaVirusScanner(object):
         self.defender = None
         self.output_path = output_path
         self._failed_files = []
+        self._reference_files = []
         self._fixed_files = []
         # Custom env.
         self._env = env or {
@@ -63,6 +64,9 @@ class MayaVirusScanner(object):
             self.defender = defender
             for maya_file in files:
                 self._fix(maya_file)
+            while len(self._reference_files) > 0:
+                for ref in self._reference_files:
+                    self._fix(ref)
         return self._fixed_files
 
     def scan_files_from_file(self, text_file):
@@ -96,6 +100,7 @@ class MayaVirusScanner(object):
             shutil.copy2(maya_file, backup_path)
             cmds.file(s=True, f=True)
             self._fixed_files.append(maya_file)
-            cmds.file(new=True, force=True)
-        for ref in self.defender.collector.infected_reference_files:
-            self._fix(ref)
+            self._reference_files.extend(self.defender.collector.infected_reference_files)
+        if maya_file in self._reference_files:
+            self._reference_files.remove(maya_file)
+        cmds.file(new=True, force=True)
