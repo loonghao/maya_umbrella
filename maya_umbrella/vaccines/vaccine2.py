@@ -21,8 +21,8 @@ class Vaccine(AbstractVaccine):
         for script_node in cmds.ls(type="script"):
             if check_reference_node_exists(script_node):
                 continue
-            for script_string in [get_attr_value(script_node, "before"),
-                                  get_attr_value(script_node, "after")]:
+            for attr_name in ("before", "after"):
+                script_string = get_attr_value(script_node, attr_name)
                 if not script_string:
                     continue
                 if check_virus_by_signature(script_string, JOB_SCRIPTS_VIRUS_SIGNATURES):
@@ -31,22 +31,22 @@ class Vaccine(AbstractVaccine):
 
     def collect_issues(self):
         """Collect all issues related to the virus."""
-        self.api.add_bad_files(
+        self.api.add_malicious_files(
             [
                 os.path.join(self.api.local_script_path, "vaccine.py"),
                 os.path.join(self.api.local_script_path, "vaccine.pyc"),
             ],
         )
-        self.collect_infected_usersetup_py()
+        self.collect_infected_user_setup_py()
         self.collect_infected_nodes()
 
-    def collect_infected_usersetup_py(self):
+    def collect_infected_user_setup_py(self):
         """Collect all bad userSetup.py files related to the virus."""
-        for usersetup_py in [
+        for user_setup_py in [
             os.path.join(self.api.local_script_path, "userSetup.py"),
             os.path.join(self.api.user_script_path, "userSetup.py"),
         ]:
-            if os.path.exists(usersetup_py):
-                if check_virus_file_by_signature(usersetup_py):
-                    self.report_issue(usersetup_py)
-                    self.api.add_infected_file(usersetup_py)
+            if os.path.exists(user_setup_py):
+                if check_virus_file_by_signature(user_setup_py):
+                    self.report_issue(user_setup_py)
+                    self.api.add_infected_file(user_setup_py)

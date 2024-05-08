@@ -1,20 +1,45 @@
 # Import built-in modules
+from contextlib import contextmanager
 import logging
 
 # Import local modules
+from maya_umbrella.cleaner import MayaVirusCleaner
+from maya_umbrella.collector import MayaVirusCollector
 from maya_umbrella.filesystem import get_hooks
-from maya_umbrella.filesystem import get_vaccines
 from maya_umbrella.filesystem import load_hook
+from maya_umbrella.i18n import Translator
 from maya_umbrella.log import setup_logger
 from maya_umbrella.maya_funs import is_maya_standalone
 from maya_umbrella.maya_funs import om
-from maya_umbrella.vaccine import MayaVirusCleaner
+
+
+# Global list to store IDs of Maya callbacks
+MAYA_UMBRELLA_CALLBACK_IDS = []
+
+def _add_callbacks_id(id_):
+    """Add a callback ID to the global list if it's not already present.
+
+    Args:
+        id_ (int): ID of the callback to be added.
+    """
+    global MAYA_UMBRELLA_CALLBACK_IDS
+    if id_ not in MAYA_UMBRELLA_CALLBACK_IDS:
+        MAYA_UMBRELLA_CALLBACK_IDS.append(id_)
 
 
 class MayaVirusDefender(object):
-    callback_ids = []
-    remove_callbacks = []
-    _bad_files = []
+    """A class to defend against Maya viruses.
+
+    Attributes:
+        _vaccines (list): List to store vaccines.
+        callback_maps (dict): Dictionary to map callback names to MSceneMessage constants.
+        auto_fix (bool): Whether to automatically fix issues.
+        logger (Logger): Logger object for logging purposes.
+        translator (Translator): Translator object for translation purposes.
+        collector (MayaVirusCollector): MayaVirusCollector object for collecting issues.
+        virus_cleaner (MayaVirusCleaner): MayaVirusCleaner object for fixing issues.
+        hooks (list): List of hooks to run.
+    """
     _vaccines = []
     callback_maps = {
         "after_open": om.MSceneMessage.kAfterOpen,
@@ -38,31 +63,15 @@ class MayaVirusDefender(object):
         logger = logging.getLogger(__name__)
         self.auto_fix = auto_fix
         self.logger = setup_logger(logger)
-        self.virus_cleaner = MayaVirusCleaner(self.logger)
-        self.load_vaccines()
-
-    def load_vaccines(self):
-        """Load all vaccines."""
-        for vaccine in get_vaccines():
-            vaccine_class = load_hook(vaccine).Vaccine
-            try:
-                self._vaccines.append(vaccine_class(api=self.virus_cleaner, logger=self.logger))
-            except Exception as e:
-                self.logger.error("Error loading vaccine: %s", e)
-
-    @property
-    def vaccines(self):
-        """Get all loaded vaccines.
-
-        Returns:
-            list: A list of loaded vaccines.
-        """
-        return self._vaccines
+        self.translator = Translator()
+        self.collector = MayaVirusCollector(self.logger, self.translator)
+        self.virus_cleaner = MayaVirusCleaner(self.collector, self.logger)
+        self.hooks = get_hooks()
 
     def run_hooks(self):
         """Run all hooks, only works in non-batch mode."""
         if not is_maya_standalone():
-            for hook_file in get_hooks():
+            for hook_file in self.hooks:
                 self.logger.debug("run_hook: %s", hook_file)
                 try:
                     load_hook(hook_file).hook(virus_cleaner=self.virus_cleaner)
@@ -71,34 +80,53 @@ class MayaVirusDefender(object):
 
     def collect(self):
         """Collect all issues related to the Maya virus."""
-        self.virus_cleaner.reset()
-        for vaccine in self.vaccines:
-            vaccine.collect_issues()
+        self.collector.collect()
 
     def fix(self):
         """Fix all issues related to the Maya virus."""
-        self.virus_cleaner.fix_all_issues()
+        self.virus_cleaner.fix()
 
     def report(self):
         """Report all issues related to the Maya virus."""
         self.collect()
-        self.virus_cleaner.report_all_issues()
+        self.collector.report()
+
+    @property
+    def have_issues(self):
+        """Check if any issues are found.
+
+        Returns:
+            bool: True if any issues are found, False otherwise.
+        """
+        return self.collector.have_issues
 
     def setup(self):
         """Set up the MayaVirusDefender."""
         self.virus_cleaner.setup_default_callbacks()
-        for name, callbacks in self.virus_cleaner.registered_callbacks.items():
+        for name, callbacks in self.collector.registered_callbacks.items():
             maya_callback = self.callback_maps[name]
             self.logger.debug("%s setup.", name)
             for func in callbacks:
-                self.callback_ids.append(om.MSceneMessage.addCallback(maya_callback, func))
+                _add_callbacks_id(om.MSceneMessage.addCallback(maya_callback, func))
         for name, callbacks in self.callback_maps.items():
             self.logger.debug("setup callback %s.", name)
-            self.callback_ids.append(om.MSceneMessage.addCallback(callbacks, self._callback))
+            _add_callbacks_id(om.MSceneMessage.addCallback(callbacks, self._callback))
+
+    def stop(self):
+        """Stop the MayaVirusDefender."""
+        for ids in MAYA_UMBRELLA_CALLBACK_IDS:
+            self.logger.debug("remove callback. %s", ids)
+            om.MSceneMessage.removeCallback(ids)
+            MAYA_UMBRELLA_CALLBACK_IDS.remove(ids)
 
     def get_unfixed_references(self):
+        """Get the list of unfixed reference files.
+
+        Returns:
+            list: List of unfixed reference files.
+        """
         self.collect()
-        return self.virus_cleaner.infected_reference_files
+        return self.collector.infected_reference_files
 
     def _callback(self, *args, **kwargs):
         """Callback function for MayaVirusDefender.
@@ -117,3 +145,16 @@ class MayaVirusDefender(object):
     def start(self):
         """Start the MayaVirusDefender."""
         self._callback()
+
+
+@contextmanager
+def context_defender():
+    """Context manager for MayaVirusDefender.
+
+    Yields:
+        MayaVirusDefender: An instance of MayaVirusDefender.
+    """
+    defender = MayaVirusDefender()
+    defender.stop()
+    yield defender
+    defender.setup()
