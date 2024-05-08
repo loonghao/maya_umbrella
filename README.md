@@ -27,6 +27,12 @@ It ensures a secure and seamless user experience by proactively scanning for thr
 
 It can be provided as an API for seamless integration into your existing pipeline.
 
+# 安装
+maya_umbrella是以标准pipy包去发布的，所以我们可以通过pip install去安装
+```shell
+your/maya-root/mayapy -m pip install maya-umbrella
+```
+
 # 开发环境设置
 
 Set up the development environment using a virtual environment,
@@ -78,16 +84,6 @@ nox -s ruff_check
 nox -s make-zip -- --version 0.5.0
 ```
 
-# API
-获取当前场景没有被修复的病毒文件
-
-```python
-from maya_umbrella import MayaVirusDefender
-
-api = MayaVirusDefender()
-print(api.get_unfixed_references)
-```
-
 # 环境变量
 
 我们可以通过下列环境变量去修改maya_umbrella的一些设置，方便有pipeline的公司可以更好的集成
@@ -108,6 +104,45 @@ MAYA_UMBRELLA_LOG_NAME
 
 ```shell
 MAYA_UMBRELLA_LOG_LEVEL
+```
+修改杀毒后文件的备份文件夹名称， 默认是`_maya_umbrella`
+比如:
+你文件路径是  `c:/your/path/file.ma`
+那么备份文件路径是 `c:/your/path/_maya_umbrella/file.ma`
+```shell
+MAYA_UMBRELLA_BACKUP_FOLDER_NAME
+```
+默认的显示语言，包含日志打印输出等，默认是根据你当前maya的界面语言来设置的，当然我们也可以通过下面的环境变量去设置
+```shell
+MAYA_UMBRELLA_LANG
+```
+
+忽略保存到备份文件夹，*请注意，如果你不清楚这个会导致的后果请不要轻易修改*，默认批量杀毒后会自动保存到当前文件的备份文件夹.
+```shell
+MAYA_UMBRELLA_IGNORE_BACKUP
+```
+如果忽略请设置为
+```shell
+SET MAYA_UMBRELLA_IGNORE_BACKUP=true
+```
+
+# API
+获取当前场景没有被修复的病毒文件
+
+```python
+from maya_umbrella import MayaVirusDefender
+
+api = MayaVirusDefender()
+print(api.get_unfixed_references())
+```
+
+批量修复文件
+```python
+from maya_umbrella import MayaVirusScanner
+
+api = MayaVirusScanner()
+print(api.scan_files_from_pattern("your/path/*.m[ab]"))
+
 ```
 
 ## Contributors ✨

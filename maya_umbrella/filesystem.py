@@ -63,14 +63,31 @@ def read_json(path):
             return {}
     return content
 
+
 def write_file(path, content):
     """Write the given content to the file at the given path."""
     options = {"encoding": "utf-8"} if PY3 else {}
     with atomic_writes(path, "w", **options) as file_:
         file_.write(content)
 
+
 @contextmanager
 def atomic_writes(src, mode, **options):
+    """Context manager for atomic writes to a file.
+
+    This context manager ensures that the file is only written to disk if the write operation completes without errors.
+
+    Args:
+        src (str): Path to the file to be written.
+        mode (str): Mode in which the file is opened, like 'r', 'w', 'a', etc.
+        **options: Arbitrary keyword arguments that are passed to the built-in open() function.
+
+    Yields:
+        file object: The opened file object.
+
+    Raises:
+        AttributeError: If the os module does not have the 'replace' function (Python 2 compatibility).
+    """
     temp_path = os.path.join(os.path.dirname(src), "._{}".format(id_generator()))
     with open(temp_path, mode, **options) as f:
         yield f
@@ -78,6 +95,7 @@ def atomic_writes(src, mode, **options):
         os.replace(temp_path, src)
     except AttributeError:
         shutil.move(temp_path, src)
+
 
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
@@ -157,6 +175,13 @@ def get_log_file():
 
 
 def remove_virus_file_by_signature(file_path, signatures, output_file_path=None):
+    """Remove virus content from a file by matching signatures.
+
+    Args:
+        file_path (str): Path to the file to be cleaned.
+        signatures (list): List of signatures to match and remove.
+        output_file_path (str, optional): Path to the cleaned output file. Defaults to None, which overwrites the input file.
+    """
     data = read_file(file_path)
     if check_virus_by_signature(data, signatures):
         fixed_data = replace_content_by_signatures(data, signatures)
@@ -164,12 +189,30 @@ def remove_virus_file_by_signature(file_path, signatures, output_file_path=None)
 
 
 def replace_content_by_signatures(content, signatures):
+    """Replace content in a string that matches given signatures.
+
+    Args:
+        content (str): The input content.
+        signatures (list): List of signatures to match and remove.
+
+    Returns:
+        str: The cleaned content.
+    """
     for signature in signatures:
         content = re.sub(signature, "", content)
     return content
 
 
 def check_virus_file_by_signature(file_path, signatures=None):
+    """Check if a file contains a virus by matching signatures.
+
+    Args:
+        file_path (str): Path to the file to be checked.
+        signatures (list, optional): List of signatures to match. Defaults to None, which uses FILE_VIRUS_SIGNATURES.
+
+    Returns:
+        bool: True if a virus signature is found, False otherwise.
+    """
     signatures = signatures or FILE_VIRUS_SIGNATURES
     try:
         data = read_file(file_path)
@@ -181,8 +224,39 @@ def check_virus_file_by_signature(file_path, signatures=None):
 
 
 def check_virus_by_signature(content, signatures=None):
+    """Check if a content contains a virus by matching signatures.
+
+    Args:
+        content (str): The input content.
+        signatures (list, optional): List of signatures to match. Defaults to None, which uses FILE_VIRUS_SIGNATURES.
+
+    Returns:
+        bool: True if a virus signature is found, False otherwise.
+    """
     signatures = signatures or FILE_VIRUS_SIGNATURES
     for signature in signatures:
         if re.search(signature, content):
             return True
     return False
+
+
+def get_backup_path(path):
+    """Get the backup path for a given file path based on environment variables.
+
+    Args:
+        path (str): Path to the original file.
+
+    Returns:
+        str: The backup path.
+    """
+    ignore_backup = os.getenv("MAYA_UMBRELLA_IGNORE_BACKUP", "false").lower() == "true"
+    if ignore_backup:
+        return path
+    root, filename = os.path.split(path)
+    backup_folder_name = os.getenv("MAYA_UMBRELLA_BACKUP_FOLDER_NAME", "_umbrella_backup")
+    backup_path = os.path.join(root, backup_folder_name)
+    try:
+        os.makedirs(backup_path)
+    except (OSError, IOError):  # noqa: UP024
+        pass
+    return os.path.join(backup_path, filename)

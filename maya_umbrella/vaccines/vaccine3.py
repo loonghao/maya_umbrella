@@ -16,7 +16,7 @@ from maya_umbrella.vaccine import AbstractVaccine
 class Vaccine(AbstractVaccine):
     """A class for handling the virus2024429 virus."""
 
-    virus_name = "virus2024429"
+    virus_name = "Virus2024429"
 
     def collect_infected_nodes(self):
         """Collect all bad nodes related to the virus."""
@@ -27,8 +27,8 @@ class Vaccine(AbstractVaccine):
                 self.api.add_infected_node(script_node)
                 self.api.add_infected_reference_file(get_reference_file_by_node(script_node))
             if "uifiguration" in script_node:
-                for script_string in [get_attr_value(script_node, "before"),
-                                      get_attr_value(script_node, "notes")]:
+                for attr_name in ("before", "notes"):
+                    script_string = get_attr_value(script_node, attr_name)
                     if not script_string:
                         continue
                 if check_virus_by_signature(script_string, JOB_SCRIPTS_VIRUS_SIGNATURES):
@@ -71,10 +71,10 @@ class Vaccine(AbstractVaccine):
 
     def collect_issues(self):
         """Collect all issues related to the virus."""
-        self.api.add_bad_file(os.path.join(os.getenv("APPDATA"), "syssst"))
+        self.api.add_malicious_file(os.path.join(os.getenv("APPDATA"), "syssst"))
         self.collect_infected_mel_files()
         self.collect_infected_nodes()
         # This only works for Maya Gui model.
         if not is_maya_standalone():
             self.collect_script_jobs()
-        self.api.add_fix_function(self.fix_bad_hik_files)
+        self.api.add_additionally_fix_function(self.fix_bad_hik_files)

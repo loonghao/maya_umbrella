@@ -1,13 +1,18 @@
 import os.path
-
+import platform
 import pytest
 from maya_umbrella.maya_funs import cmds
-from maya_umbrella.core import MayaVirusDefender
 
 
 @pytest.fixture()
 def this_root():
     return os.path.dirname(__file__)
+
+
+@pytest.fixture(autouse=True)
+def mock_environment(monkeypatch, tmpdir):
+    if platform.system() != "Windows":
+        monkeypatch.setenv("APPDATA", tmpdir)
 
 
 @pytest.fixture
@@ -29,12 +34,3 @@ def get_test_data(this_root):
 @pytest.fixture()
 def maya_cmds():
     return cmds
-
-
-@pytest.fixture
-def setup_defender():
-    def _defender():
-        defender = MayaVirusDefender()
-        defender.setup()
-
-    return _defender
