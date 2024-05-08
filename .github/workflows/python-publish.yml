@@ -11,15 +11,18 @@ jobs:
     permissions:
       # IMPORTANT: this permission is mandatory for trusted publishing
       id-token: write
+      contents: write
+
     steps:
     - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
       with:
         token: "${{ secrets.GITHUB_TOKEN }}"
         fetch-depth: 0
         ref: main
-    - name: Set output
-      id: vars
-      run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+    - uses: olegtarasov/get-tag@v2.1.3
+      id: get_tag_name
+      with:
+        tagRegex: "v(?<version>.*)"
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -35,7 +38,35 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         packages-dir: dist
-    - name: Create release Version
-      run: gh release create ${{ steps.vars.outputs.tag }} --generate-notes
-      env:
-        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    - name: make Maya Mod
+      id: make_maya_mod
+      run: |
+        nox -s make-zip -- --version ${{ steps.get_tag_name.outputs.version }}
+    - name: Generate changelog
+      id: changelog
+      uses: jaywcjlove/changelog-generator@main
+      if: steps.get_tag_name.outputs.successful
+      with:
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        filter-author: (|dependabot|renovate\\[bot\\]|dependabot\\[bot\\]|Renovate Bot)
+        filter: '[R|r]elease[d]\s+[v|V]\d(\.\d+){0,2}'
+        template: |
+          ## Bugs
+          {{fix}}
+          ## Feature
+          {{feat}}
+          ## Improve
+          {{refactor,perf,clean}}
+          ## Misc
+          {{chore,style,ci||🔶 Nothing change}}
+          ## Unknown
+          {{__unknown__}}
+    - uses: ncipollo/release-action@v1
+      if: steps.make_maya_mod.outputs.successful
+      with:
+        artifacts: ".zip/maya_umbrella-*.zip"
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        body: |
+          Comparing Changes: ${{ steps.changelog.outputs.compareurl }}
+
+          ${{ steps.changelog.outputs.changelog }}

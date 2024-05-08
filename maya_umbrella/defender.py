@@ -16,6 +16,7 @@ from maya_umbrella.maya_funs import om
 # Global list to store IDs of Maya callbacks
 MAYA_UMBRELLA_CALLBACK_IDS = []
 
+
 def _add_callbacks_id(id_):
     """Add a callback ID to the global list if it's not already present.
 
@@ -76,7 +77,7 @@ class MayaVirusDefender(object):
                 try:
                     load_hook(hook_file).hook(virus_cleaner=self.virus_cleaner)
                 except Exception as e:
-                    self.logger.error("Error running hook: %s", e)
+                    self.logger.debug("Error running hook: %s", e)
 
     def collect(self):
         """Collect all issues related to the Maya virus."""
