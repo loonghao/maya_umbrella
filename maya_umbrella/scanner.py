@@ -64,7 +64,6 @@ class MayaVirusScanner(object):
             self.defender = defender
             for maya_file in files:
                 self._fix(maya_file)
-            while len(self._reference_files) > 0:
                 for ref in self._reference_files:
                     self._fix(ref)
         return self._fixed_files
@@ -92,7 +91,9 @@ class MayaVirusScanner(object):
             maya_funs.open_maya_file(maya_file)
             self.defender.collect()
         except Exception:
+            self.logger.debug("failed to open maya file: {maya_file}".format(maya_file=maya_file))
             self._failed_files.append(maya_file)
+
         if self.defender.have_issues:
             self.defender.fix()
             backup_path = get_backup_path(maya_file, root_path=self.output_path)
@@ -101,6 +102,4 @@ class MayaVirusScanner(object):
             cmds.file(s=True, f=True)
             self._fixed_files.append(maya_file)
             self._reference_files.extend(self.defender.collector.infected_reference_files)
-        if maya_file in self._reference_files:
-            self._reference_files.remove(maya_file)
         cmds.file(new=True, force=True)
