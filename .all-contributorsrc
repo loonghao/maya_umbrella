@@ -59,6 +59,15 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "CGRnDStudio",
+      "name": "andyvfx",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8320794?v=4",
+      "profile": "https://github.com/CGRnDStudio",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
