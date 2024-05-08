@@ -35,7 +35,7 @@ class MayaVirusCleaner(object):
 
     def callback_remove_rename_temp_files(self, *args, **kwargs):
         """Remove temporary files in the local script path."""
-        self.logger.info("Removing temporary files in %s", self.collector.local_script_path)
+        self.logger.debug("Removing temporary files in %s", self.collector.local_script_path)
         for temp_file in glob.glob(os.path.join(self.collector.local_script_path, "._*")):
             safe_remove_file(temp_file)
 
@@ -43,7 +43,7 @@ class MayaVirusCleaner(object):
         """Fix infected script jobs."""
         for script_job in self.collector.infected_script_jobs:
             script_num = int(re.findall(r"^(\d+):", script_job)[0])
-            self.logger.info("Kill script job %s", script_job)
+            self.logger.debug("Kill script job %s", script_job)
             cmds.scriptJob(kill=script_num, force=True)
             self.collector.remove_infected_script_job(script_job)
 
@@ -52,21 +52,21 @@ class MayaVirusCleaner(object):
         for file_ in self.collector.malicious_files:
             if os.path.exists(file_):
                 if os.path.isfile(file_):
-                    self.logger.info("Removing %s", file_)
+                    self.logger.debug(self.translator.translate("remove_file", name=file_))
                     safe_remove_file(file_)
                     self.collector.remove_malicious_file(file_)
                 else:
-                    self.logger.info("Removing folder %s", file_)
+                    self.logger.debug(self.translator.translate("remove_path", name=file_))
                     safe_rmtree(file_)
                     self.collector.remove_malicious_file(file_)
 
     def fix_infected_nodes(self):
         """Fix infected nodes."""
         for node in self.collector.infected_nodes:
-            self.logger.info(self.translator.translate("delete", name=node))
             is_referenced = check_reference_node_exists(node)
             if is_referenced:
                 try:
+                    self.logger.debug(self.translator.translate("fix_infected_reference_nodes", name=node))
                     cmds.setAttr("{node}.before".format(node=node), "", type="string")
                     cmds.setAttr("{node}.after".format(node=node), "", type="string")
                     cmds.setAttr("{node}.scriptType".format(node=node), 0)
@@ -79,6 +79,7 @@ class MayaVirusCleaner(object):
                 except ValueError:
                     pass
                 try:
+                    self.logger.debug(self.translator.translate("fix_infected_nodes", name=node))
                     cmds.delete(node)
                 except ValueError:
                     pass
@@ -100,11 +101,11 @@ class MayaVirusCleaner(object):
         """Fix all issues related to the Maya virus."""
         if self.collector.have_issues:
             maya_file = cmds.file(query=True, sceneName=True, shortName=True) or "empty/scene"
-            self.logger.info("Starting Fixing all issues related to the Maya virus from %s.", maya_file)
+            self.logger.info(self.translator.translate("start_fix_issues", name=maya_file))
             self.fix_malicious_files()
             self.fix_infected_files()
             self.fix_infected_nodes()
             self.fix_script_jobs()
             for func in self.collector.get_additionally_fix_funcs():
                 func()
-            self.logger.info("Finished Fixing all issues related to the Maya virus from %s.", maya_file)
+            self.logger.info(self.translator.translate("finish_fix_issues", name=maya_file))

@@ -180,7 +180,8 @@ def remove_virus_file_by_signature(file_path, signatures, output_file_path=None)
     Args:
         file_path (str): Path to the file to be cleaned.
         signatures (list): List of signatures to match and remove.
-        output_file_path (str, optional): Path to the cleaned output file. Defaults to None, which overwrites the input file.
+        output_file_path (str, optional): Path to the cleaned output file.
+         Defaults to None, which overwrites the input file.
     """
     data = read_file(file_path)
     if check_virus_by_signature(data, signatures):
@@ -240,11 +241,13 @@ def check_virus_by_signature(content, signatures=None):
     return False
 
 
-def get_backup_path(path):
+def get_backup_path(path, root_path=None):
     """Get the backup path for a given file path based on environment variables.
 
     Args:
         path (str): Path to the original file.
+        root_path (str, optional): Path to the root folder where backups should be saved.
+            Defaults to None, which saves backups in the original file's folder.
 
     Returns:
         str: The backup path.
@@ -253,8 +256,11 @@ def get_backup_path(path):
     if ignore_backup:
         return path
     root, filename = os.path.split(path)
-    backup_folder_name = os.getenv("MAYA_UMBRELLA_BACKUP_FOLDER_NAME", "_umbrella_backup")
+    backup_folder_name = os.getenv("MAYA_UMBRELLA_BACKUP_FOLDER_NAME", "_virus")
     backup_path = os.path.join(root, backup_folder_name)
+    if root_path:
+        _, base_path = os.path.splitdrive(root)
+        backup_path = os.path.join(root_path, base_path.strip(os.sep))
     try:
         os.makedirs(backup_path)
     except (OSError, IOError):  # noqa: UP024

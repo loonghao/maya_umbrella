@@ -32,6 +32,14 @@ maya_umbrella是以标准pipy包去发布的，所以我们可以通过pip insta
 ```shell
 your/maya-root/mayapy -m pip install maya-umbrella
 ```
+更新版本
+```shell
+your/maya-root/mayapy -m pip install maya-umbrella --upgrade
+```
+卸载
+```shell
+your/maya-root/mayapy -m pip uninstall  maya-umbrella
+```
 
 # 开发环境设置
 
@@ -105,7 +113,7 @@ MAYA_UMBRELLA_LOG_NAME
 ```shell
 MAYA_UMBRELLA_LOG_LEVEL
 ```
-修改杀毒后文件的备份文件夹名称， 默认是`_maya_umbrella`
+修改杀毒后文件的备份文件夹名称， 默认是`_virus`
 比如:
 你文件路径是  `c:/your/path/file.ma`
 那么备份文件路径是 `c:/your/path/_maya_umbrella/file.ma`
@@ -117,7 +125,7 @@ MAYA_UMBRELLA_BACKUP_FOLDER_NAME
 MAYA_UMBRELLA_LANG
 ```
 
-忽略保存到备份文件夹，*请注意，如果你不清楚这个会导致的后果请不要轻易修改*，默认批量杀毒后会自动保存到当前文件的备份文件夹.
+忽略保存到备份文件夹，*请注意，如果你不清楚这个会导致的后果请不要轻易修改*，默认批量杀毒后会把源文件自动备份到当前文件的备份文件夹.
 ```shell
 MAYA_UMBRELLA_IGNORE_BACKUP
 ```

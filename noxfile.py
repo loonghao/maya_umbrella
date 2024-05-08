@@ -232,9 +232,11 @@ pause
     shutil.copy2(os.path.join(ROOT, "maya", "userSetup.py"),
                  os.path.join(script_dir, "userSetup.py"))
 
-    with zipfile.ZipFile(os.path.join(temp_dir, f"{PACKAGE_NAME}-{version}.zip"), "w") as zip:
+    zip_file = os.path.join(temp_dir, f"{PACKAGE_NAME}-{version}.zip")
+    with zipfile.ZipFile(os.path.join(temp_dir, f"{PACKAGE_NAME}-{version}.zip"), "w") as zip_obj:
         for root, _, files in os.walk(build_root):
             for file in files:
-                zip.write(os.path.join(root, file),
+                zip_obj.write(os.path.join(root, file),
                           os.path.relpath(os.path.join(root, file),
                                           os.path.join(build_root, '.')))
+    print("Saving to %s" % zip_file)

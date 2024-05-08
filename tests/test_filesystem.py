@@ -46,4 +46,11 @@ def test_remove_virus_file_by_signature(get_test_data, file_name, tmpdir, virus,
 def test_get_backup_path(tmpdir):
     """Test if the backup path is correct."""
     test_file = str(tmpdir.join("test.txt"))
-    assert get_backup_path(test_file) == str(tmpdir.join("_umbrella_backup").join("test.txt"))
+    assert get_backup_path(test_file) == str(tmpdir.join("_virus").join("test.txt"))
+
+
+def test_get_backup_path_and_root_path(tmpdir):
+    """Test if the backup path is correct."""
+    test_file = str(tmpdir.join("test.txt"))
+    root_path = "d:\\xxx"
+    assert get_backup_path(test_file, root_path)

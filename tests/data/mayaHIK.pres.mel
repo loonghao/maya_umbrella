@@ -6,7 +6,7 @@
 // otherwise accompanies this software in either electronic or hard copy form.
 // ===========================================================================
 // Resources for Plug-in: mayaHIK
-// 
+//
 // ----------------------------
 // Registered string resources:
 // ----------------------------
@@ -27,13 +27,13 @@ setPluginResource( "mayaHIK", "kImageResourceNotFound", "ƒCƒ[ƒW ^1s ‚ªŒ©‚Â‚©‚è
 setPluginResource( "mayaHIK", "kParentLayoutNotFound", "eƒŒƒCƒAƒEƒg‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
 setPluginResource( "mayaHIK", "kParentLayoutNotSpecified", "eƒŒƒCƒAƒEƒg‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
 setPluginResource( "mayaHIK", "kUnsupportedImageResource", "ƒCƒ[ƒW ^1s ‚ÍƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
-// 
+//
 // --------------------------
 // Registered node resources:
 // --------------------------
-// 
+//
 // Node: HIKSolverNode
-// 
+//
 setNodeNiceNameResource( "HIKSolverNode", "HIKSolver ƒm[ƒh" );
 setAttrNiceNameResource( "HIKSolverNode", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKSolverNode", "InputActive", "ƒAƒNƒeƒBƒu‚Ì“ü—Í" );
@@ -54,9 +54,9 @@ setAttrNiceNameResource( "HIKSolverNode", "fza", "ƒtƒŠ[ƒY‚Ì‰e‹¿‚ğó‚¯‚é" );
 setAttrEnumResource( "HIKSolverNode", "SolverMode", 0, "ƒtƒ‹ ƒ{ƒfƒB" );
 setAttrEnumResource( "HIKSolverNode", "SolverMode", 1, "ƒ{ƒfƒB ƒp[ƒc" );
 setAttrEnumResource( "HIKSolverNode", "SolverMode", 2, "‘I‘ğ" );
-// 
+//
 // Node: HIKRetargeterNode
-// 
+//
 setNodeNiceNameResource( "HIKRetargeterNode", "HIKRetargeter ƒm[ƒh" );
 setAttrNiceNameResource( "HIKRetargeterNode", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKRetargeterNode", "SNS", "ûk‚ÆL’·" );
@@ -68,9 +68,9 @@ setAttrNiceNameResource( "HIKRetargeterNode", "InputSrcPropertySetState", "“ü—Í¿
 setAttrNiceNameResource( "HIKRetargeterNode", "InputDstPropertySetState", "“ü—ÍæÌßÛÊßÃ¨ ¾¯Ä‚Ì\\nó‘Ô" );
 setAttrNiceNameResource( "HIKRetargeterNode", "OutputCharacterState", "o—ÍƒLƒƒƒ‰ƒNƒ^‚Ìó‘Ô" );
 setAttrNiceNameResource( "HIKRetargeterNode", "fza", "ƒtƒŠ[ƒY‚Ì‰e‹¿‚ğó‚¯‚é" );
-// 
+//
 // Node: HIKCharacterNode
-// 
+//
 setNodeNiceNameResource( "HIKCharacterNode", "HIKCharacter ƒm[ƒh" );
 setAttrNiceNameResource( "HIKCharacterNode", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKCharacterNode", "OutputCharacterDefinition", "o—ÍƒLƒƒƒ‰ƒNƒ^’è‹`" );
@@ -8986,9 +8986,9 @@ setAttrEnumResource( "HIKCharacterNode", "LeafRightForeArmRoll5RotateOrder", 4, 
 setAttrEnumResource( "HIKCharacterNode", "LeafRightForeArmRoll5RotateOrder", 6, "yxz" );
 setAttrEnumResource( "HIKCharacterNode", "LeafRightForeArmRoll5RotateOrder", 8, "zxy" );
 setAttrEnumResource( "HIKCharacterNode", "LeafRightForeArmRoll5RotateOrder", 10, "zyx" );
-// 
+//
 // Node: HIKSkeletonGeneratorNode
-// 
+//
 setNodeNiceNameResource( "HIKSkeletonGeneratorNode", "HIKSkeleton Generator ƒm[ƒh" );
 setAttrNiceNameResource( "HIKSkeletonGeneratorNode", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKSkeletonGeneratorNode", "SpineCount", "Ò’Å”" );
@@ -11567,9 +11567,9 @@ setAttrNiceNameResource( "HIKSkeletonGeneratorNode", "LeafRightForeArmRoll5Sx", 
 setAttrNiceNameResource( "HIKSkeletonGeneratorNode", "LeafRightForeArmRoll5Sy", "‰E‘O˜rƒ[ƒ‹ 5 Sy ‰Â“®•”" );
 setAttrNiceNameResource( "HIKSkeletonGeneratorNode", "LeafRightForeArmRoll5Sz", "‰E‘O˜rƒ[ƒ‹ 5 Sz ‰Â“®•”" );
 setAttrNiceNameResource( "HIKSkeletonGeneratorNode", "fza", "ƒtƒŠ[ƒY‚Ì‰e‹¿‚ğó‚¯‚é" );
-// 
+//
 // Node: HIKControlSetNode
-// 
+//
 setNodeNiceNameResource( "HIKControlSetNode", "HIKControl Set ƒm[ƒh" );
 setAttrNiceNameResource( "HIKControlSetNode", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKControlSetNode", "HIC", "“ü—ÍƒLƒƒƒ‰ƒNƒ^’è‹`" );
@@ -11876,9 +11876,9 @@ setAttrNiceNameResource( "HIKControlSetNode", "IKNodeCurrIdx43", "IK ƒm[ƒhÅV‚
 setAttrNiceNameResource( "HIKControlSetNode", "ra", "ƒŠƒO ƒAƒ‰ƒCƒ“" );
 setAttrNiceNameResource( "HIKControlSetNode", "rao", "ƒŠƒO ƒAƒ‰ƒCƒ“ ƒAƒEƒg" );
 setAttrNiceNameResource( "HIKControlSetNode", "fza", "ƒtƒŠ[ƒY‚Ì‰e‹¿‚ğó‚¯‚é" );
-// 
+//
 // Node: HIKEffectorFromCharacter
-// 
+//
 setNodeNiceNameResource( "HIKEffectorFromCharacter", "HIKEffector From Character" );
 setAttrNiceNameResource( "HIKEffectorFromCharacter", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKEffectorFromCharacter", "InputCharacterDefinition", "“ü—ÍƒLƒƒƒ‰ƒNƒ^’è‹`" );
@@ -11886,9 +11886,9 @@ setAttrNiceNameResource( "HIKEffectorFromCharacter", "InputCharacterState", "“ü—
 setAttrNiceNameResource( "HIKEffectorFromCharacter", "InputPropertySetState", "“ü—ÍÌßÛÊßÃ¨ ¾¯Ä‚Ìó‘Ô" );
 setAttrNiceNameResource( "HIKEffectorFromCharacter", "OutputEffectorState", "o—ÍƒGƒtƒFƒNƒ^‚Ìó‘Ô" );
 setAttrNiceNameResource( "HIKEffectorFromCharacter", "fza", "ƒtƒŠ[ƒY‚Ì‰e‹¿‚ğó‚¯‚é" );
-// 
+//
 // Node: HIKSK2State
-// 
+//
 setNodeNiceNameResource( "HIKSK2State", "HIKSK2State" );
 setAttrNiceNameResource( "HIKSK2State", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKSK2State", "OutputCharacterState", "o—ÍƒLƒƒƒ‰ƒNƒ^‚Ìó‘Ô" );
@@ -12106,9 +12106,9 @@ setAttrNiceNameResource( "HIKSK2State", "LeafLeftForeArmRoll5GX", "¶‘O˜rƒ[ƒ‹ 
 setAttrNiceNameResource( "HIKSK2State", "LeafRightArmRoll5GX", "‰E˜rƒ[ƒ‹ 5 ‚Ì GX ‰Â“®•”" );
 setAttrNiceNameResource( "HIKSK2State", "LeafRightForeArmRoll5GX", "‰E‘O˜rƒ[ƒ‹ 5 ‚Ì GX ‰Â“®•”" );
 setAttrNiceNameResource( "HIKSK2State", "fza", "ƒtƒŠ[ƒY‚Ì‰e‹¿‚ğó‚¯‚é" );
-// 
+//
 // Node: HIKFK2State
-// 
+//
 setNodeNiceNameResource( "HIKFK2State", "HIKFK2State" );
 setAttrNiceNameResource( "HIKFK2State", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKFK2State", "OutputCharacterState", "o—ÍƒLƒƒƒ‰ƒNƒ^‚Ìó‘Ô" );
@@ -12326,9 +12326,9 @@ setAttrNiceNameResource( "HIKFK2State", "LeafLeftForeArmRoll5GX", "¶‘O˜rƒ[ƒ‹ 
 setAttrNiceNameResource( "HIKFK2State", "LeafRightArmRoll5GX", "‰E˜rƒ[ƒ‹ 5 ‚Ì GX ‰Â“®•”" );
 setAttrNiceNameResource( "HIKFK2State", "LeafRightForeArmRoll5GX", "‰E‘O˜rƒ[ƒ‹ 5 ‚Ì GX ‰Â“®•”" );
 setAttrNiceNameResource( "HIKFK2State", "fza", "ƒtƒŠ[ƒY‚Ì‰e‹¿‚ğó‚¯‚é" );
-// 
+//
 // Node: HIKState2FK
-// 
+//
 setNodeNiceNameResource( "HIKState2FK", "HIKState 2FK" );
 setAttrNiceNameResource( "HIKState2FK", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKState2FK", "InputCharacterState", "“ü—ÍƒLƒƒƒ‰ƒNƒ^‚Ìó‘Ô" );
@@ -12546,9 +12546,9 @@ setAttrNiceNameResource( "HIKState2FK", "LeafLeftForeArmRoll5GX", "¶‘O˜rƒ[ƒ‹ 
 setAttrNiceNameResource( "HIKState2FK", "LeafRightArmRoll5GX", "‰E˜rƒ[ƒ‹ 5 ‚Ì GX ‰Â“®•”" );
 setAttrNiceNameResource( "HIKState2FK", "LeafRightForeArmRoll5GX", "‰E‘O˜rƒ[ƒ‹ 5 ‚Ì GX ‰Â“®•”" );
 setAttrNiceNameResource( "HIKState2FK", "fza", "ƒtƒŠ[ƒY‚Ì‰e‹¿‚ğó‚¯‚é" );
-// 
+//
 // Node: HIKState2SK
-// 
+//
 setNodeNiceNameResource( "HIKState2SK", "HIKState 2SK" );
 setAttrNiceNameResource( "HIKState2SK", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKState2SK", "InputCharacterState", "“ü—ÍƒLƒƒƒ‰ƒNƒ^‚Ìó‘Ô" );
@@ -19550,9 +19550,9 @@ setAttrEnumResource( "HIKState2SK", "LeafRightForeArmRoll5ROrder", 2, "zxy" );
 setAttrEnumResource( "HIKState2SK", "LeafRightForeArmRoll5ROrder", 3, "xzy" );
 setAttrEnumResource( "HIKState2SK", "LeafRightForeArmRoll5ROrder", 4, "yxz" );
 setAttrEnumResource( "HIKState2SK", "LeafRightForeArmRoll5ROrder", 5, "zyx" );
-// 
+//
 // Node: HIKState2GlobalSK
-// 
+//
 setNodeNiceNameResource( "HIKState2GlobalSK", "HIKState 2Global SK" );
 setAttrNiceNameResource( "HIKState2GlobalSK", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKState2GlobalSK", "InputCharacterState", "“ü—ÍƒLƒƒƒ‰ƒNƒ^‚Ìó‘Ô" );
@@ -19770,9 +19770,9 @@ setAttrNiceNameResource( "HIKState2GlobalSK", "LeafLeftForeArmRoll5GX", "¶‘O˜rƒ
 setAttrNiceNameResource( "HIKState2GlobalSK", "LeafRightArmRoll5GX", "‰E˜rƒ[ƒ‹ 5 ‚Ì GX ‰Â“®•”" );
 setAttrNiceNameResource( "HIKState2GlobalSK", "LeafRightForeArmRoll5GX", "‰E‘O˜rƒ[ƒ‹ 5 ‚Ì GX ‰Â“®•”" );
 setAttrNiceNameResource( "HIKState2GlobalSK", "fza", "ƒtƒŠ[ƒY‚Ì‰e‹¿‚ğó‚¯‚é" );
-// 
+//
 // Node: HIKEffector2State
-// 
+//
 setNodeNiceNameResource( "HIKEffector2State", "HIKEffector 2State" );
 setAttrNiceNameResource( "HIKEffector2State", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKEffector2State", "EFF", "o—ÍƒGƒtƒFƒNƒ^‚Ìó‘Ô" );
@@ -20178,9 +20178,9 @@ setAttrNiceNameResource( "HIKEffector2State", "rightHandFloorGX", "‰Eè‚ÌƒtƒƒA‚
 setAttrNiceNameResource( "HIKEffector2State", "leftFootFloorGX", "¶‘«‚ÌƒtƒƒA‚Ì GX" );
 setAttrNiceNameResource( "HIKEffector2State", "rightFootFloorGX", "‰E‘«‚ÌƒtƒƒA‚Ì GX" );
 setAttrNiceNameResource( "HIKEffector2State", "fza", "ƒtƒŠ[ƒY‚Ì‰e‹¿‚ğó‚¯‚é" );
-// 
+//
 // Node: HIKState2Effector
-// 
+//
 setNodeNiceNameResource( "HIKState2Effector", "HIKState 2Effector" );
 setAttrNiceNameResource( "HIKState2Effector", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKState2Effector", "InputEffectorState", "“ü—ÍƒGƒtƒFƒNƒ^‚Ìó‘Ô" );
@@ -20449,9 +20449,9 @@ setAttrNiceNameResource( "HIKState2Effector", "RightFootExtraFingerEffectorpivot
 setAttrNiceNameResource( "HIKState2Effector", "RightFootExtraFingerEffectorpivotOffsetY", "‰E‘«’Ç‰Áw‚ÌƒGƒtƒFƒNƒ^ƒsƒ{ƒbƒg ƒIƒtƒZƒbƒg Y" );
 setAttrNiceNameResource( "HIKState2Effector", "RightFootExtraFingerEffectorpivotOffsetZ", "‰E‘«’Ç‰Áw‚ÌƒGƒtƒFƒNƒ^ƒsƒ{ƒbƒg ƒIƒtƒZƒbƒg Z" );
 setAttrNiceNameResource( "HIKState2Effector", "fza", "ƒtƒŠ[ƒY‚Ì‰e‹¿‚ğó‚¯‚é" );
-// 
+//
 // Node: HIKProperty2State
-// 
+//
 setNodeNiceNameResource( "HIKProperty2State", "HIKProperty 2State" );
 setAttrNiceNameResource( "HIKProperty2State", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKProperty2State", "OutputPropertySetState", "o—ÍƒvƒƒpƒeƒB ƒZƒbƒg‚Ìó‘Ô" );
@@ -20955,9 +20955,9 @@ setAttrEnumResource( "HIKProperty2State", "LeftArmFullRollExtractionMode", 0, "ƒ
 setAttrEnumResource( "HIKProperty2State", "LeftArmFullRollExtractionMode", 1, "ƒIƒ“" );
 setAttrEnumResource( "HIKProperty2State", "RightArmFullRollExtractionMode", 0, "ƒIƒt" );
 setAttrEnumResource( "HIKProperty2State", "RightArmFullRollExtractionMode", 1, "ƒIƒ“" );
-// 
+//
 // Node: HIKPinning2State
-// 
+//
 setNodeNiceNameResource( "HIKPinning2State", "HIKPinning 2State" );
 setAttrNiceNameResource( "HIKPinning2State", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "HIKPinning2State", "OutputEffectorState", "o—ÍƒGƒtƒFƒNƒ^‚Ìó‘Ô" );
@@ -21053,9 +21053,9 @@ setAttrNiceNameResource( "HIKPinning2State", "RightFootPinkyEffectorPinR", "‰E‘«
 setAttrNiceNameResource( "HIKPinning2State", "RightFootExtraFingerEffectorPinT", "‰E‘«’Ç‰Áw‚ÌƒGƒtƒFƒNƒ^‚ÌŒÅ’è T" );
 setAttrNiceNameResource( "HIKPinning2State", "RightFootExtraFingerEffectorPinR", "‰E‘«’Ç‰Áw‚ÌƒGƒtƒFƒNƒ^‚ÌŒÅ’è R" );
 setAttrNiceNameResource( "HIKPinning2State", "fza", "ƒtƒŠ[ƒY‚Ì‰e‹¿‚ğó‚¯‚é" );
-// 
+//
 // Node: ComputeGlobal
-// 
+//
 setNodeNiceNameResource( "ComputeGlobal", "ƒOƒ[ƒoƒ‹‚ÅŒvZ" );
 setAttrNiceNameResource( "ComputeGlobal", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "ComputeGlobal", "T", "ˆÚ“®" );
@@ -21088,9 +21088,9 @@ setAttrEnumResource( "ComputeGlobal", "ro", 2, "zxy" );
 setAttrEnumResource( "ComputeGlobal", "ro", 3, "xzy" );
 setAttrEnumResource( "ComputeGlobal", "ro", 4, "yxz" );
 setAttrEnumResource( "ComputeGlobal", "ro", 5, "zyx" );
-// 
+//
 // Node: ComputeLocal
-// 
+//
 setNodeNiceNameResource( "ComputeLocal", "ƒ[ƒJƒ‹‚ÅŒvZ" );
 setAttrNiceNameResource( "ComputeLocal", "fzn", "ƒtƒŠ[ƒY" );
 setAttrNiceNameResource( "ComputeLocal", "T", "ˆÚ“®" );
@@ -21123,9 +21123,9 @@ setAttrEnumResource( "ComputeLocal", "ro", 2, "zxy" );
 setAttrEnumResource( "ComputeLocal", "ro", 3, "xzy" );
 setAttrEnumResource( "ComputeLocal", "ro", 4, "yxz" );
 setAttrEnumResource( "ComputeLocal", "ro", 5, "zyx" );
-// 
+//
 // Node: HIKCharacterStateClient
-// 
+//
 setNodeNiceNameResource( "HIKCharacterStateClient", "HIKCharacter State Client" );
 setAttrNiceNameResource( "HIKCharacterStateClient", "InputCharacterDefinition", "“ü—ÍƒLƒƒƒ‰ƒNƒ^’è‹`" );
 setAttrNiceNameResource( "HIKCharacterStateClient", "hipsScale", "ƒqƒbƒv ƒXƒP[ƒ‹" );

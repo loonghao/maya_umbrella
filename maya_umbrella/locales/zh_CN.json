@@ -1,5 +1,6 @@
 {
   "start_fix_issues": "开始修复与 Maya 病毒相关的所有问题 $name",
+  "finish_fix_issues": "修复结束.",
   "init_message": "成功加载 <hl>maya_umbrella</hl> 保护中.",
   "init_standalone_message": "-----------------------成功加载 maya_umbrella-----------------------",
   "report_issue": "$name：被恶意感染！",
@@ -9,6 +10,10 @@
   "infected_files": "被感染的脚本：$name",
   "infected_reference_files": "被感染的参考文件：$name",
   "fix_infected_files": "清理被感染的文件：$name",
+  "fix_infected_nodes": "删除被感染的节点：$name",
+  "fix_infected_reference_nodes": "尝试修复被感染的参考节点：$name",
   "delete": "删除感染文件：$name",
+  "remove_file": "删除文件：$name",
+  "remove_path": "删除文件夹：$name",
   "fix_script_job": "删除被感染的节点：$name"
 }

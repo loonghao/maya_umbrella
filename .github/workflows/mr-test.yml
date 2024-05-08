@@ -27,6 +27,3 @@ jobs:
       - name: isort
         run: |
           nox -s isort_check
-      - name: make-zip
-        run: |
-          nox -s make-zip -- --version 0.5.0
