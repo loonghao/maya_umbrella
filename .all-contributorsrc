@@ -68,6 +68,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "cundesi",
+      "name": "cundesi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15829469?v=4",
+      "profile": "https://github.com/cundesi",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
