@@ -128,8 +128,8 @@ exclude = [
     "site-packages",
     "venv",
     "dev",
+    "maya_umbrella/_vendor/",
     "noxfile.py",
-    "maya_umbrella/_vendor/"
 ]
 line-length = 120
 

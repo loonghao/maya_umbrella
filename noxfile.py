@@ -15,7 +15,7 @@ ROOT = os.path.dirname(__file__)
 def _setup_maya(maya_version):
     """Set up the appropriate Maya version for testing."""
     try:
-        import winreg  # noqa: F401
+        import winreg
     except ImportError:
         return {}
     try:
@@ -196,7 +196,7 @@ def add_dynamic_maya_standalone_session(maya_version, mayapy, command):
     @nox.session(name=session_name, python=False)
     def dynamic_session(session: nox.Session):
         parser = argparse.ArgumentParser(prog=f"nox -s maya-{maya_version}-s")
-        parser.add_argument("pattern",  type=str)
+        parser.add_argument("pattern", type=str)
         args = parser.parse_args(session.posargs)
         session.run(
             mayapy,
@@ -256,5 +256,5 @@ pause
             for file in files:
                 zip_obj.write(os.path.join(root, file),
                               os.path.relpath(os.path.join(root, file),
-                                              os.path.join(build_root, '.')))
+                                              os.path.join(build_root, ".")))
     print("Saving to %s" % zip_file)
