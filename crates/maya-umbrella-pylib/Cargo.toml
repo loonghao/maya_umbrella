@@ -1,0 +1,13 @@
+[package]
+name = "maya-umbrella-pylib"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "maya_umbrella_rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+cpython = "0.7.1"
+maya-unmbrella = { path = "../maya-unmbrella" }
