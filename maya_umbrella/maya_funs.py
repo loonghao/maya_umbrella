@@ -10,6 +10,7 @@ try:
     import maya.api.OpenMaya as om
     import maya.cmds as cmds
     import maya.mel as mel
+    import maya.standalone as maya_standalone
 except ImportError:
     # Backward compatibility to support test in uinstalled maya.
     try:
@@ -21,8 +22,10 @@ except ImportError:
     cmds = MagicMock()
     om = MagicMock()
     mel = MagicMock()
+    maya_standalone = MagicMock()
 
 # Import built-in modules
+from contextlib import contextmanager
 from functools import wraps
 
 
@@ -99,6 +102,7 @@ def block_prompt(func):
     Returns:
         function: The decorated function.
     """
+
     @wraps(func)
     def wrap(*args, **kwargs):
         # Grabs the initial value.
@@ -134,3 +138,10 @@ def save_as_file(file_name):
     """
     cmds.file(rename=file_name)
     cmds.file(s=True, f=True)
+
+
+@contextmanager
+def maya_standalone_context():
+    maya_standalone.initialize()
+    yield cmds
+    maya_standalone.uninitialize()
