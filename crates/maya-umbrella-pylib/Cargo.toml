@@ -10,4 +10,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 cpython = "0.7.1"
-maya-unmbrella = { path = "../maya-unmbrella" }
+maya-umbrella = { path = "../maya-umbrella" }
