@@ -1,3 +1,10 @@
+## v0.7.0 (2024-05-09)
+
+### Feat
+
+- Add new setup to allow use nox command launch maya standalone
+- Add new function to setup maya standalone
+
 ## v0.6.2 (2024-05-08)
 
 ### Fix
