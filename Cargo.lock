@@ -85,7 +85,7 @@ dependencies = [
  "libc",
  "num-traits",
  "paste",
- "python3-sys",
+ "python27-sys",
 ]
 
 [[package]]
@@ -222,6 +222,7 @@ version = "0.1.0"
 dependencies = [
  "cpython",
  "maya-umbrella",
+ "tokio",
 ]
 
 [[package]]
@@ -295,10 +296,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "python3-sys"
-version = "0.7.1"
+name = "python27-sys"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49f8b50d72fb3015735aa403eebf19bbd72c093bfeeae24ee798be5f2f1aab52"
+checksum = "94670354e264300dde81a5864cbb6bfc9d56ac3dcf3a278c32cb52f816f4dfd1"
 dependencies = [
  "libc",
  "regex",

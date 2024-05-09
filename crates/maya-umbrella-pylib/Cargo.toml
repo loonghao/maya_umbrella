@@ -9,5 +9,10 @@ name = "maya_umbrella_rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-cpython = "0.7.1"
+tokio = { version = "1", features = ["rt-multi-thread"] }
 maya-umbrella = { path = "../maya-umbrella" }
+
+[dependencies.cpython]
+version = "*"
+default-features = false
+features = ["python27-sys"]
