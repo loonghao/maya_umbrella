@@ -129,6 +129,12 @@ MAYA_UMBRELLA_LANG
 ```shell
 MAYA_UMBRELLA_IGNORE_BACKUP
 ```
+
+如果是便携版Maya，可以通过添加 `MAYA_LOCATION` 环境变量指定Maya路径
+```shell
+SET MAYA_LOCATION=d:/your/path/maya_version/
+```
+
 如果忽略请设置为
 ```shell
 SET MAYA_UMBRELLA_IGNORE_BACKUP=true
