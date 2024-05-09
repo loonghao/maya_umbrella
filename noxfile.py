@@ -190,6 +190,22 @@ def add_dynamic_maya_test_session(maya_version, mayapy, command):
         )
 
 
+def add_dynamic_maya_standalone_session(maya_version, mayapy, command):
+    session_name = f"maya-{maya_version}-s"
+
+    @nox.session(name=session_name, python=False)
+    def dynamic_session(session: nox.Session):
+        parser = argparse.ArgumentParser(prog=f"nox -s maya-{maya_version}-s")
+        parser.add_argument("pattern",  type=str)
+        args = parser.parse_args(session.posargs)
+        session.run(
+            mayapy,
+            command,
+            args.pattern,
+            env={"PYTHONPATH": ROOT},
+        )
+
+
 # Dynamic to set up nox sessions for Maya 2018-2026.
 # For example, to run tests for Maya 2018, run:
 # nox -s maya-2018
@@ -200,6 +216,8 @@ for maya_version in range(2018, 2026):
         maya_python = os.path.join(maya_setup["bin_root"], "mayapy.exe")
         test_runner = os.path.join(ROOT, "tests", "_test_runner.py")
         add_dynamic_maya_test_session(maya_version, maya_python, test_runner)
+        standalone_runner = os.path.join(ROOT, "run_maya_standalone.py")
+        add_dynamic_maya_standalone_session(maya_version, maya_python, standalone_runner)
 
 
 @nox.session(name="make-zip")
@@ -237,6 +255,6 @@ pause
         for root, _, files in os.walk(build_root):
             for file in files:
                 zip_obj.write(os.path.join(root, file),
-                          os.path.relpath(os.path.join(root, file),
-                                          os.path.join(build_root, '.')))
+                              os.path.relpath(os.path.join(root, file),
+                                              os.path.join(build_root, '.')))
     print("Saving to %s" % zip_file)
