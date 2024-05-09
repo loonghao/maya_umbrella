@@ -116,7 +116,7 @@ MAYA_UMBRELLA_LOG_LEVEL
 修改杀毒后文件的备份文件夹名称， 默认是`_virus`
 比如:
 你文件路径是  `c:/your/path/file.ma`
-那么备份文件路径是 `c:/your/path/_maya_umbrella/file.ma`
+那么备份文件路径是 `c:/your/path/_virus/file.ma`
 ```shell
 MAYA_UMBRELLA_BACKUP_FOLDER_NAME
 ```
@@ -144,13 +144,23 @@ api = MayaVirusDefender()
 print(api.get_unfixed_references())
 ```
 
-批量修复文件
+批量修复文件, 通过正则表达式
 ```python
 from maya_umbrella import MayaVirusScanner
 
 api = MayaVirusScanner()
 print(api.scan_files_from_pattern("your/path/*.m[ab]"))
 
+```
+
+# 案例
+如果你想要快速通过maya standalone去批量清理maya文件，可以`下载`或者`git clone`当前`main`分支的工程，
+根据上面指引设置好开发环境
+通过`nox`命令去启动maya standalone环境，maya版本根据你当前本地安装的maya为准，比如你本地安装了`2018`,
+那么就是 `nox -s maya-2018-s`
+下面的语法是启动一个maya-2020的环境去动态从`c:/test`文件夹下去查杀病毒
+```shell
+nox -s maya-2020-s -- c:/test/*.m[ab]
 ```
 
 ## Contributors ✨
