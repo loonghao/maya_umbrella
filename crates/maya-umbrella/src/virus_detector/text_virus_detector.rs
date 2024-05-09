@@ -13,7 +13,7 @@ impl VirusDetector for TextSpecimen {
 
         signatures
             .into_iter()
-            .all(|signature| signature.is_match(self))
+            .any(|signature| signature.is_match(self))
     }
 }
 

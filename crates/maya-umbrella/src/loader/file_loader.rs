@@ -4,7 +4,8 @@ use async_trait::async_trait;
 
 use crate::{FileSpecimen, Loader, TextSpecimen};
 
-type FileSpecimenResult<T> = Result<T, io::Error>;
+pub type FileSpecimenResult<T> = Result<T, io::Error>;
+pub type FileSpecimenResults<T> = Vec<FileSpecimenResult<T>>;
 
 #[derive(Debug)]
 pub struct FileLoader;
@@ -53,17 +54,17 @@ mod tests {
     async fn should_file_loader_works() {
         let file_loader = FileLoader;
 
-        match fs::read_dir("../../tests/virus/") {
+        match fs::read_dir("../../tests/data/") {
             Ok(entries) => {
                 let paths: Vec<_> = entries
                     .filter_map(|entry| entry.ok().map(|e| e.path()))
                     .collect();
 
-                let res: Vec<FileSpecimenResult<TextSpecimen>> =
+                let res: FileSpecimenResults<TextSpecimen> =
                     file_loader.multiple_load(&paths).await;
 
                 assert_eq!(
-                    vec![true; res.len()],
+                    vec![true, true, true, true, true, true, true],
                     res.into_iter().map(|r| r.is_ok()).collect::<Vec<bool>>()
                 );
             }

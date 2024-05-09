@@ -1,7 +1,13 @@
 use std::{
     fmt::{self, Display, Formatter},
+    io,
     ops::Deref,
+    path::Path,
 };
+
+use async_trait::async_trait;
+use encoding_rs::GBK;
+use tokio::{fs::File, io::AsyncReadExt};
 
 use crate::{FileSpecimen, Specimen};
 
@@ -28,7 +34,25 @@ impl TextSpecimen {
     }
 }
 
-impl FileSpecimen for TextSpecimen {}
+#[async_trait]
+impl FileSpecimen for TextSpecimen {
+    async fn read_file<P: AsRef<Path> + Send>(&mut self, path: P) -> Result<(), io::Error> {
+        let mut file = File::open(path).await?;
+        if let Err(e) = file.read_to_string(&mut self.contents).await {
+            match e.kind() {
+                io::ErrorKind::InvalidData => {
+                    let mut buf: Vec<u8> = Vec::new();
+                    file.read_to_end(&mut buf).await?;
+                    let (decoded, _, _) = GBK.decode(&buf);
+                    self.contents = decoded.to_string();
+                }
+                _ => return Err(e),
+            }
+        }
+
+        Ok(())
+    }
+}
 
 impl Default for TextSpecimen {
     fn default() -> Self {
