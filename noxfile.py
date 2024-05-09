@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import sys
 import shutil
 
 import nox
@@ -14,26 +15,36 @@ ROOT = os.path.dirname(__file__)
 
 def _setup_maya(maya_version):
     """Set up the appropriate Maya version for testing."""
-    try:
-        import winreg  # noqa: F401
-    except ImportError:
-        return {}
-    try:
-        key = winreg.OpenKey(
-            winreg.HKEY_LOCAL_MACHINE,
-            f"SOFTWARE\\Autodesk\\Maya\\{maya_version}\\Setup\\InstallPath",
-        )
-        root, _ = winreg.QueryValueEx(key, "MAYA_INSTALL_LOCATION")
-        if not os.path.isdir(root):
-            print("Failed to locate the appropriate Maya path in the registration list.")
-    except OSError:
-        return
+    root = _get_registry("MAYA_INSTALL_LOCATION",
+                         f"SOFTWARE\\Autodesk\\Maya\\{maya_version}\\Setup\\InstallPath"
+                         )
+    if not root:
+        maya_location = os.environ.get("MAYA_LOCATION")
+
+        if maya_location:
+            root = os.path.join(maya_location, f"Maya{maya_version}")
+        else:
+            return
+
     bin_root = os.path.join(root, "bin")
     return {"maya_root": root, "bin_root": bin_root}
 
 
 def _assemble_env_paths(*paths):
     return ";".join(paths)
+
+
+def _get_registry(key_name, path):
+    try:
+        import winreg  # noqa: F401
+    except ImportError:
+        return {}
+    try:
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path) as key:
+            value, _ = winreg.QueryValueEx(key, key_name)
+            return value
+    except WindowsError:
+        return None
 
 
 @nox.session
@@ -193,13 +204,13 @@ def add_dynamic_maya_test_session(maya_version, mayapy, command):
 # Dynamic to set up nox sessions for Maya 2018-2026.
 # For example, to run tests for Maya 2018, run:
 # nox -s maya-2018
-for maya_version in range(2018, 2026):
-    maya_setup = _setup_maya(maya_version)
-    if maya_setup:
-        add_dynamic_maya_session(f"maya-{maya_version}", os.path.join(maya_setup["bin_root"], "maya.exe"))
-        maya_python = os.path.join(maya_setup["bin_root"], "mayapy.exe")
-        test_runner = os.path.join(ROOT, "tests", "_test_runner.py")
-        add_dynamic_maya_test_session(maya_version, maya_python, test_runner)
+maya_version = sys.argv[-1].split('-')[-1]
+maya_setup = _setup_maya(maya_version)
+if maya_setup:
+    add_dynamic_maya_session(f"maya-{maya_version}", os.path.join(maya_setup["bin_root"], "maya.exe"))
+    maya_python = os.path.join(maya_setup["bin_root"], "mayapy.exe")
+    test_runner = os.path.join(ROOT, "tests", "_test_runner.py")
+    add_dynamic_maya_test_session(maya_version, maya_python, test_runner)
 
 
 @nox.session(name="make-zip")
