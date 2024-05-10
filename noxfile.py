@@ -7,41 +7,15 @@ import os
 from pathlib import Path
 from typing import Iterator, Tuple
 import zipfile
+from maya_umbrella.filesystem import get_maya_install_root
 
 PACKAGE_NAME = "maya_umbrella"
 ROOT = os.path.dirname(__file__)
 
 
-def _setup_maya(maya_version):
-    """Set up the appropriate Maya version for testing."""
-    root = _get_registry("MAYA_INSTALL_LOCATION",
-                         f"SOFTWARE\\Autodesk\\Maya\\{maya_version}\\Setup\\InstallPath"
-                         )
-
-    maya_location = os.environ.get("MAYA_LOCATION", root)
-    if not maya_location:
-        print("maya not found.")
-        return
-
-    bin_root = os.path.join(maya_location, "bin")
-    return {"maya_root": root, "bin_root": bin_root}
-
 
 def _assemble_env_paths(*paths):
     return ";".join(paths)
-
-
-def _get_registry(key_name, path):
-    try:
-        import winreg  # noqa: F401
-    except ImportError:
-        return {}
-    try:
-        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path) as key:
-            value, _ = winreg.QueryValueEx(key, key_name)
-            return value
-    except WindowsError:
-        return None
 
 
 @nox.session
@@ -214,21 +188,68 @@ def add_dynamic_maya_standalone_session(maya_version, mayapy, command):
         )
 
 
-# Dynamic to set up nox sessions for Maya 2018-2026.
-# For example, to run tests for Maya 2018, run:
-# nox -s maya-2018
-parser = argparse.ArgumentParser()
-parser.add_argument('-s')
-args = parser.parse_args()
-maya_version = "".join(filter(str.isdigit, args.s))
-maya_setup = _setup_maya(maya_version)
-if maya_setup:
-    add_dynamic_maya_session(f"maya-{maya_version}", os.path.join(maya_setup["bin_root"], "maya.exe"))
-    maya_python = os.path.join(maya_setup["bin_root"], "mayapy.exe")
-    test_runner = os.path.join(ROOT, "tests", "_test_runner.py")
-    add_dynamic_maya_test_session(maya_version, maya_python, test_runner)
+@nox.session(name="maya", python=False)
+def run_maya(session: nox.Session):
+    parser = argparse.ArgumentParser(prog="nox -s maya")
+    parser.add_argument("version", type=int)
+    parser.add_argument("--test", action="store_true", default=False)
+    parser.add_argument("--standalone", action="store_true", default=False)
+    parser.add_argument("--install-root", type=str, default=None)
+    parser.add_argument("--pattern", type=str)
+    args = parser.parse_args(session.posargs)
+    maya_version = str(args.version)
+    maya_root = get_maya_install_root(maya_version)
     standalone_runner = os.path.join(ROOT, "run_maya_standalone.py")
-    add_dynamic_maya_standalone_session(maya_version, maya_python, standalone_runner)
+    if maya_root:
+        maya_bin_root = os.path.join(maya_root, "bin")
+        maya_exe_root = os.path.join(maya_bin_root, "maya.exe")
+        mayapy = os.path.join(maya_bin_root, "mayapy.exe")
+        if args.test:
+            test_runner = os.path.join(ROOT, "tests", "_test_runner.py")
+            temp_dir = os.path.join(session._runner.envdir, "test", "site-packages")
+            os.makedirs(temp_dir, exist_ok=True)
+            pip_py_name = "get-pip.py"
+            if args.version <= 2020:
+                pip_py_name = "get-pip-2.7.py"
+            session.run_install(mayapy, os.path.join(ROOT, "dev", pip_py_name))
+            session.run_install(
+                mayapy,
+                "-m",
+                "pip",
+                "install",
+                "--ignore-installed",
+                "pytest",
+                "pytest-cov",
+                "pytest-mock",
+                "--target",
+                temp_dir,
+            )
+            test_root = os.path.join(ROOT, "tests")
+            session.run(
+                mayapy,
+                test_runner,
+                f"--cov={PACKAGE_NAME}",
+                f"--rootdir={test_root}",
+                env={"PYTHONPATH": f"{ROOT};{temp_dir}"},
+            )
+
+        elif args.standalone:
+            session.run(
+                mayapy,
+                standalone_runner,
+                args.pattern,
+                env={"PYTHONPATH": ROOT},
+            )
+        else:
+            # Launch maya
+            print(_assemble_env_paths(ROOT, os.path.join(ROOT, "maya")))
+            session.run(
+                maya_exe_root,
+                env={
+                    "PYTHONPATH": _assemble_env_paths(ROOT, os.path.join(ROOT, "maya")),
+                    "MAYA_UMBRELLA_LOG_LEVEL": "DEBUG",
+                },
+            )
 
 
 @nox.session(name="make-zip")
