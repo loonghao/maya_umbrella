@@ -1,3 +1,9 @@
+## v0.8.0 (2024-05-10)
+
+### Feat
+
+- Add support for the portable version of maya, which can be found by adding the MAYA_LOCATION environment variable.
+
 ## v0.7.0 (2024-05-09)
 
 ### Feat
