@@ -12,7 +12,7 @@ def this_root():
 @pytest.fixture(autouse=True)
 def mock_environment(monkeypatch, tmpdir):
     if platform.system() != "Windows":
-        monkeypatch.setenv("APPDATA", tmpdir)
+        monkeypatch.setenv("APPDATA", str(tmpdir))
 
 
 @pytest.fixture
