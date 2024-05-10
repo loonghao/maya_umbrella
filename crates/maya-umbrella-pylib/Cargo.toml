@@ -10,6 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 tokio = { version = "1", features = ["rt-multi-thread"] }
+lazy_static = "1"
 maya-umbrella = { path = "../maya-umbrella" }
 
 [dependencies.cpython]
