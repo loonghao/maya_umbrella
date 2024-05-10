@@ -28,10 +28,15 @@ It ensures a secure and seamless user experience by proactively scanning for thr
 It can be provided as an API for seamless integration into your existing pipeline.
 
 # 安装
+
+## pip 安装
 maya_umbrella是以标准pipy包去发布的，所以我们可以通过pip install去安装
 ```shell
 your/maya-root/mayapy -m pip install maya-umbrella
 ```
+## 一键安装
+在release里面下载对应版本的zip包，解压后双击`install.bat`即可安装
+
 更新版本
 ```shell
 your/maya-root/mayapy -m pip install maya-umbrella --upgrade
@@ -55,13 +60,15 @@ pip install nox poetry
 # 开发调试
 
 ```shell
-nox -s maya-2020
+nox -s maya -- 2020 --test
 ```
 
 ## 在maya中测试
 
-通过`nox -s maya-xxx`, 启动maya.
-nox会动态根据你本地安装得maya去注册nox session, 比如你本地安装了`maya-2020`，那么通过`nox -s maya-2018`
+通过`nox -s maya -- <maya version>`, 启动maya.
+nox会动态根据你本地安装得maya去注册nox session, 比如你本地安装了`maya-2020`，
+
+那么通过`nox -s maya -- 2018`, **注意：maya 与 版本号之间有 俩个`-`**
 
 启动maya后在脚本编辑器中执行下面得代码，就会动态的从`<repo>/tests/virus/`里面去open ma文件去进行测试.
 
@@ -87,7 +94,7 @@ nox -s ruff_check
 # 生成安装包
 
 执行下面的命令可以在<repo>/.zip下面创建zip，参数 `--version` 当前工具的版本号
-
+ **注意：`make-zip` 与 `--version`之间有 俩个`-`**
 ```shell
 nox -s make-zip -- --version 0.5.0
 ```
@@ -162,8 +169,8 @@ print(api.scan_files_from_pattern("your/path/*.m[ab]"))
 # 案例
 如果你想要快速通过maya standalone去批量清理maya文件，可以`下载`或者`git clone`当前`main`分支的工程，
 根据上面指引设置好开发环境
-通过`nox`命令去启动maya standalone环境，maya版本根据你当前本地安装的maya为准，比如你本地安装了`2018`,
-那么就是 `nox -s maya-2018-s`
+通过`nox`命令去启动maya `standalone`环境，maya版本根据你当前本地安装的maya为准，比如你本地安装了`2018`,
+那么就是 `nox -s maya -- 2018 --standalone`
 下面的语法是启动一个maya-2020的环境去动态从`c:/test`文件夹下去查杀病毒
 ```shell
 nox -s maya-2020-s -- c:/test/*.m[ab]
