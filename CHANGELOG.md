@@ -1,3 +1,13 @@
+## v0.9.0 (2024-05-10)
+
+### Feat
+
+- Add new function to get maya install root
+
+### Fix
+
+- fix to run nox command
+
 ## v0.8.0 (2024-05-10)
 
 ### Feat
