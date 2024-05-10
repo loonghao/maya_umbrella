@@ -12,7 +12,7 @@
 > 环境变量按需配置
 >
 
-Python(Maya Python) 目录存在 ```includes``` ```libs```
+Python(Maya Python) 目录存在 ```include``` ```libs```
 
 VSCode Settings
 
