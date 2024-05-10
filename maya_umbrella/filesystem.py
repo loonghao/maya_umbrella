@@ -97,7 +97,6 @@ def atomic_writes(src, mode, **options):
         shutil.move(temp_path, src)
 
 
-
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     """Generate a random string of the given size using the given characters."""
     return "".join(random.choice(chars) for _ in range(size))
@@ -266,3 +265,30 @@ def get_backup_path(path, root_path=None):
     except (OSError, IOError):  # noqa: UP024
         pass
     return os.path.join(backup_path, filename)
+
+
+def get_maya_install_root(maya_version):
+    """Get the Maya install root path."""
+    try:
+        # Import built-in modules
+        import winreg
+    except ImportError:
+        return {}
+    try:
+        key = winreg.OpenKey(
+            winreg.HKEY_LOCAL_MACHINE,
+            "SOFTWARE\\Autodesk\\Maya\\{maya_version}\\Setup\\InstallPath".format(maya_version=maya_version),
+        )
+        root, _ = winreg.QueryValueEx(key, "MAYA_INSTALL_LOCATION")
+        if not os.path.isdir(root):
+            print("Failed to locate the appropriate Maya path in the registration list.")
+    except OSError:
+        return
+    maya_location = os.environ.get("MAYA_LOCATION", root)
+    if not maya_location:
+        print("maya not found.")
+        return
+    maya_exe = os.path.join(maya_location, "bin", "maya.exe")
+    if not os.path.exists(maya_exe):
+        print("maya.exe not found in {maya_location}.".format(maya_location=maya_location))
+    return maya_location
