@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 from typing import Iterator, Tuple
 import zipfile
-from maya_umbrella.filesystem import get_maya_install_root
+
 
 PACKAGE_NAME = "maya_umbrella"
 ROOT = os.path.dirname(__file__)
@@ -56,7 +56,7 @@ def ruff_check(session: nox.Session) -> None:
 
 @nox.session
 def pytest(session: nox.Session) -> None:
-    session.install("pytest", "pytest_cov")
+    session.install("pytest", "pytest_cov", "pytest_mock")
     test_root = os.path.join(ROOT, "tests")
     session.run("pytest", f"--cov={PACKAGE_NAME}",
                 "--cov-report=xml:coverage.xml",
@@ -126,51 +126,6 @@ def vendoring(session: nox.Session) -> None:
         # release.commit_file(session, ".", message=message)
 
 
-def add_dynamic_maya_session(session_name, command):
-    @nox.session(name=session_name, python=False)
-    def dynamic_session(session: nox.Session):
-        print(_assemble_env_paths(ROOT, os.path.join(ROOT, "maya")))
-        session.run(
-            command,
-            env={
-                "PYTHONPATH": _assemble_env_paths(ROOT, os.path.join(ROOT, "maya")),
-                "MAYA_UMBRELLA_LOG_LEVEL": "DEBUG",
-            },
-        )
-
-
-def add_dynamic_maya_test_session(maya_version, mayapy, command):
-    session_name = f"maya-{maya_version}-test"
-
-    @nox.session(name=session_name, python=False)
-    def dynamic_session(session: nox.Session):
-        temp_dir = os.path.join(session._runner.envdir, "test", "site-packages")
-        os.makedirs(temp_dir, exist_ok=True)
-        pip_py_name = "get-pip.py"
-        if maya_version <= 2020:
-            pip_py_name = "get-pip-2.7.py"
-        session.run_install(mayapy, os.path.join(ROOT, "dev", pip_py_name))
-        session.run_install(
-            mayapy,
-            "-m",
-            "pip",
-            "install",
-            "--ignore-installed",
-            "pytest",
-            "pytest-cov",
-            "pytest-mock",
-            "--target",
-            temp_dir,
-        )
-        test_root = os.path.join(ROOT, "tests")
-        session.run(
-            mayapy,
-            command,
-            f"--cov={PACKAGE_NAME}",
-            f"--rootdir={test_root}",
-            env={"PYTHONPATH": f"{ROOT};{temp_dir}"},
-        )
-
 
 def add_dynamic_maya_standalone_session(maya_version, mayapy, command):
     session_name = f"maya-{maya_version}-s"
@@ -198,6 +153,10 @@ def run_maya(session: nox.Session):
     parser.add_argument("--pattern", type=str)
     args = parser.parse_args(session.posargs)
     maya_version = str(args.version)
+    try:
+        from maya_umbrella.filesystem import get_maya_install_root
+    except ImportError:
+        session.run("poetry", "install")
     maya_root = get_maya_install_root(maya_version)
     standalone_runner = os.path.join(ROOT, "run_maya_standalone.py")
     if maya_root:

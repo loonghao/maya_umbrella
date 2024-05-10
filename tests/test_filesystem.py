@@ -1,5 +1,3 @@
-import os.path
-
 from maya_umbrella.filesystem import check_virus_file_by_signature
 from maya_umbrella.constants import FILE_VIRUS_SIGNATURES
 from maya_umbrella.filesystem import remove_virus_file_by_signature
@@ -61,6 +59,6 @@ def test_get_backup_path_and_root_path(tmpdir):
 
 def test_get_maya_install_root(monkeypatch, mocker):
     assert not get_maya_install_root("2029")
-    monkeypatch.setenv("MAYA_INSTALL_ROOT", "your/maya/install/root")
-    mocker.patch(os.path.exists, returnn_value=True)
+    monkeypatch.setenv("MAYA_LOCATION", "your/maya/install/root")
+    mocker.patch("os.path.exists", returnn_value=True)
     assert get_maya_install_root("1234") == "your/maya/install/root"

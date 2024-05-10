@@ -269,11 +269,12 @@ def get_backup_path(path, root_path=None):
 
 def get_maya_install_root(maya_version):
     """Get the Maya install root path."""
+    maya_location = os.environ.get("MAYA_LOCATION")
     try:
         # Import built-in modules
         import winreg
     except ImportError:
-        return {}
+        return maya_location
     try:
         key = winreg.OpenKey(
             winreg.HKEY_LOCAL_MACHINE,
@@ -283,8 +284,8 @@ def get_maya_install_root(maya_version):
         if not os.path.isdir(root):
             print("Failed to locate the appropriate Maya path in the registration list.")
     except OSError:
-        return
-    maya_location = os.environ.get("MAYA_LOCATION", root)
+        return maya_location
+    maya_location = maya_location or root
     if not maya_location:
         print("maya not found.")
         return
