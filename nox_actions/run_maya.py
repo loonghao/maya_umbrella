@@ -13,8 +13,9 @@ import requests
 
 # Ensure maya_umbrella is importable.
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 # Import local modules
-from maya_umbrella.filesystem import get_maya_install_root
+from maya_umbrella.filesystem import get_maya_install_root  # noqa: E402
 
 
 def run_maya(session: nox.Session):

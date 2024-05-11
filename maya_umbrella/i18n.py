@@ -16,6 +16,7 @@ class Translator(object):
         data (dict): Dictionary containing translation data for different locales.
         locale (str): The current locale.
     """
+
     def __init__(self, file_format="json", default_locale=None):
         """Initialize the Translator.
 
@@ -24,8 +25,7 @@ class Translator(object):
             default_locale (str, optional): Default locale to use for translations. Defaults to None,
             which uses the MAYA_UMBRELLA_LANG environment variable or the Maya UI language.
         """
-        _default_locale = os.getenv("MAYA_UMBRELLA_LANG", maya_ui_language())
-        default_locale = default_locale or _default_locale
+        default_locale = default_locale or os.getenv("MAYA_UMBRELLA_LANG", maya_ui_language())
         self.data = {}
         self.locale = default_locale
         translations_folder = os.path.join(this_root(), "locales")

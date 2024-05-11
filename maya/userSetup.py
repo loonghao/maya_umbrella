@@ -1,5 +1,7 @@
-# Import local modules
+# Import third-party modules
 import maya.cmds as cmds
+
+# Import local modules
 from maya_umbrella import MayaVirusDefender
 
 

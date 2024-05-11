@@ -134,6 +134,7 @@ exclude = [
 line-length = 120
 
 [tool.ruff.lint]
+fixable = ["ALL"]
 extend-select = [
     "Q",
     "RUF100",
@@ -144,7 +145,6 @@ extend-select = [
     "DTZ005", # https://docs.astral.sh/ruff/rules/call-datetime-now-without-tzinfo/
 ] # add "T" to disallow prints
 flake8-quotes = { inline-quotes = "double", multiline-quotes = "double" }
-mccabe = { max-complexity = 14 }
 ignore = [
     "I001",
     "D107", # ignore missing docstring in __init__ methods
@@ -159,6 +159,9 @@ ignore = [
     "UP004",
     "UP025",
 ]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 45
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

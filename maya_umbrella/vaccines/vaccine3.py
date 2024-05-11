@@ -41,14 +41,15 @@ class Vaccine(AbstractVaccine):
         # check usersetup.mel
         # C:/Users/hallong/Documents/maya/scripts/usersetup.mel
         # C:/Users/hallong/Documents/maya/xxxx/scripts/usersetup.mel
-        for usersetup_mel in [
+        usersetup_mel_paths = [
             os.path.join(self.api.local_script_path, "usersetup.mel"),
             os.path.join(self.api.user_script_path, "usersetup.mel"),
-        ]:
-            if os.path.exists(usersetup_mel):
-                if check_virus_file_by_signature(usersetup_mel):
-                    self.report_issue(usersetup_mel)
-                    self.api.add_infected_file(usersetup_mel)
+        ]
+
+        for usersetup_mel in usersetup_mel_paths:
+            if os.path.exists(usersetup_mel) and check_virus_file_by_signature(usersetup_mel):
+                self.report_issue(usersetup_mel)
+                self.api.add_infected_file(usersetup_mel)
 
     def collect_script_jobs(self):
         """Collect all script jobs related to the virus."""

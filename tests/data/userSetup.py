@@ -1,6 +1,9 @@
+# Import built-in modules
 import sys
 
+# Import third-party modules
 import maya.cmds as cmds
+
 
 maya_path = cmds.internalVar(userAppDir=True) + "/scripts"
 

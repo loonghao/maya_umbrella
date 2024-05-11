@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
+# Import third-party modules
 import pytest
 
+# Import local modules
 from maya_umbrella import i18n
 
 

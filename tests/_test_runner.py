@@ -4,8 +4,8 @@
 import sys
 
 # Import third-party modules
-import pytest
 import maya.standalone
+import pytest
 
 
 def run_test():

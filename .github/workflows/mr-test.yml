@@ -19,11 +19,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install -U pip poetry nox
+          python -m pip -r requirements-dev.txt
           poetry --version
       - name: lint
         run: |
-          nox -s ruff_check
-      - name: isort
-        run: |
-          nox -s isort_check
+          nox -s lint

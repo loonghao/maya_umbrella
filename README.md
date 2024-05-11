@@ -88,7 +88,12 @@ manual_test_in_maya.start()
 我们可以利用封装好的`nox`命令去执行进行代码检查
 
 ```shell
-nox -s ruff_check
+nox -s lint
+```
+
+进行代码整理
+```shell
+nox -s lint-fx
 ```
 
 # 生成安装包

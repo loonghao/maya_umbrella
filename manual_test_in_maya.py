@@ -1,7 +1,13 @@
-import os
+# Import built-in modules
 import glob
+import os
+
+# Import third-party modules
 import maya.cmds as cmds
+
+# Import local modules
 from maya_umbrella.maya_funs import open_maya_file
+
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
