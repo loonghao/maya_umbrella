@@ -18,23 +18,24 @@ class Vaccine(AbstractVaccine):
 
     virus_name = "Virus2024429"
 
+    @staticmethod
+    def is_infected(script_node):
+        if "_gene" in script_node:
+            return True
+        if "uifiguration" in script_node:
+            for attr_name in ("before", "notes"):
+                script_string = get_attr_value(script_node, attr_name)
+                if script_string and check_virus_by_signature(script_string, JOB_SCRIPTS_VIRUS_SIGNATURES):
+                    return True
+        return False
+
     def collect_infected_nodes(self):
         """Collect all bad nodes related to the virus."""
         for script_node in cmds.ls(type="script"):
-            # check vaccine
-            if "_gene" in script_node:
+            if self.is_infected(script_node):
                 self.report_issue(script_node)
                 self.api.add_infected_node(script_node)
                 self.api.add_infected_reference_file(get_reference_file_by_node(script_node))
-            if "uifiguration" in script_node:
-                for attr_name in ("before", "notes"):
-                    script_string = get_attr_value(script_node, attr_name)
-                    if not script_string:
-                        continue
-                if check_virus_by_signature(script_string, JOB_SCRIPTS_VIRUS_SIGNATURES):
-                    self.report_issue(script_node)
-                    self.api.add_infected_node(script_node)
-                    self.api.add_infected_reference_file(get_reference_file_by_node(script_node))
 
     def collect_infected_mel_files(self):
         """Collect all bad MEL files related to the virus."""

@@ -15,7 +15,7 @@ import requests
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import local modules
-from maya_umbrella.filesystem import get_maya_install_root  # noqa: E402
+from maya_umbrella.filesystem import get_maya_install_root
 
 
 def run_maya(session: nox.Session):
@@ -28,7 +28,7 @@ def run_maya(session: nox.Session):
     args = parser.parse_args(session.posargs)
     maya_version = str(args.maya_version)
     session.install("requests")
-    maya_root = get_maya_install_root(maya_version)
+    maya_root = args.install_root or get_maya_install_root(maya_version)
     standalone_runner = os.path.join(THIS_ROOT, "run_maya_standalone.py")
     if maya_root:
         maya_bin_root = os.path.join(maya_root, "bin")
@@ -76,12 +76,14 @@ def run_maya(session: nox.Session):
                 standalone_runner,
                 args.pattern,
                 env={"PYTHONPATH": THIS_ROOT},
+                external=True,
             )
         else:
             # Launch maya
             print(_assemble_env_paths(THIS_ROOT, os.path.join(THIS_ROOT, "maya")))
             session.run(
                 maya_exe_root,
+                external=True,
                 env={
                     "PYTHONPATH": _assemble_env_paths(THIS_ROOT, os.path.join(THIS_ROOT, "maya")),
                     "MAYA_UMBRELLA_LOG_LEVEL": "DEBUG",

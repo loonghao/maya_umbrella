@@ -1,5 +1,5 @@
 # Import built-in modules
-import os.path
+import os
 
 # Import local modules
 from maya_umbrella.constants import JOB_SCRIPTS_VIRUS_SIGNATURES
@@ -42,10 +42,12 @@ class Vaccine(AbstractVaccine):
 
     def collect_infected_user_setup_py(self):
         """Collect all bad userSetup.py files related to the virus."""
-        for user_setup_py in [
+        user_setup_py_files = [
             os.path.join(self.api.local_script_path, "userSetup.py"),
             os.path.join(self.api.user_script_path, "userSetup.py"),
-        ]:
+        ]
+
+        for user_setup_py in user_setup_py_files:
             if os.path.exists(user_setup_py):
                 if check_virus_file_by_signature(user_setup_py):
                     self.report_issue(user_setup_py)
