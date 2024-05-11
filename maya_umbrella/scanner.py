@@ -102,3 +102,4 @@ class MayaVirusScanner(object):
             cmds.file(save=True, force=True)
             self._fixed_files.append(maya_file)
             self._reference_files.extend(self.defender.collector.infected_reference_files)
+        cmds.file(new=True, force=True)
