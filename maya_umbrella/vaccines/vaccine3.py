@@ -20,6 +20,14 @@ class Vaccine(AbstractVaccine):
 
     @staticmethod
     def is_infected(script_node):
+        """Check if a script node is infected with a virus.
+
+        Args:
+            script_node (str): The name of the script node to check.
+
+        Returns:
+            bool: True if the script node is infected, False otherwise.
+        """
         if "_gene" in script_node:
             return True
         if "uifiguration" in script_node:

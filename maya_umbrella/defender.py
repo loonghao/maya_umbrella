@@ -164,7 +164,11 @@ def context_defender():
 
 
 def get_defender_instance():
-    """Get the MayaVirusDefender instance."""
+    """Get the MayaVirusDefender instance.
+
+    Returns:
+        MayaVirusDefender: The MayaVirusDefender instance.
+    """
     global MAYA_UMBRELLA_DEFENDER
     if MAYA_UMBRELLA_DEFENDER is None:
         MAYA_UMBRELLA_DEFENDER = MayaVirusDefender()

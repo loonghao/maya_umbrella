@@ -1,3 +1,6 @@
 poetry
 nox
 requests
+pytest
+pytest-cov
+pytest-mock

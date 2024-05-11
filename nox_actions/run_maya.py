@@ -48,16 +48,18 @@ def run_maya(session: nox.Session):
             r = requests.get(get_pip_url)  # create HTTP response object
             with open(get_pip_py, "wb") as f:
                 f.write(r.content)
+
+            # Use mayapy to install pip.
             session.run_install(mayapy, get_pip_py)
+
             session.run_install(
                 mayapy,
                 "-m",
                 "pip",
                 "install",
                 "--ignore-installed",
-                "pytest",
-                "pytest-cov",
-                "pytest-mock",
+                "-r",
+                os.path.join(THIS_ROOT, "requirements-dev.txt"),
                 "--target",
                 temp_dir,
             )
@@ -67,7 +69,8 @@ def run_maya(session: nox.Session):
                 test_runner,
                 f"--cov={PACKAGE_NAME}",
                 f"--rootdir={test_root}",
-                env={"PYTHONPATH": f"{THIS_ROOT};{temp_dir}"},
+                external=True,
+                env={"PYTHONPATH": _assemble_env_paths(THIS_ROOT, temp_dir)},
             )
 
         elif args.standalone:
@@ -80,12 +83,13 @@ def run_maya(session: nox.Session):
             )
         else:
             # Launch maya
-            print(_assemble_env_paths(THIS_ROOT, os.path.join(THIS_ROOT, "maya")))
+            paths = _assemble_env_paths(THIS_ROOT, os.path.join(THIS_ROOT, "maya"))
+            print(f"PYTHONPATH: {paths}")
             session.run(
                 maya_exe_root,
                 external=True,
                 env={
-                    "PYTHONPATH": _assemble_env_paths(THIS_ROOT, os.path.join(THIS_ROOT, "maya")),
+                    "PYTHONPATH": paths,
                     "MAYA_UMBRELLA_LOG_LEVEL": "DEBUG",
                 },
             )
