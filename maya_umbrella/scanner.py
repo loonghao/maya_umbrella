@@ -99,7 +99,6 @@ class MayaVirusScanner(object):
             backup_path = get_backup_path(maya_file, root_path=self.output_path)
             self.logger.debug("Backup saved to: {backup_path}".format(backup_path=backup_path))
             shutil.copy2(maya_file, backup_path)
-            cmds.file(s=True, f=True)
+            cmds.file(save=True, force=True)
             self._fixed_files.append(maya_file)
             self._reference_files.extend(self.defender.collector.infected_reference_files)
-        cmds.file(new=True, force=True)
