@@ -1,3 +1,18 @@
+## v0.10.0 (2024-05-11)
+
+### Feat
+
+- Add new function to get instance of defender.
+- Split all nox sessions
+
+### Fix
+
+- setup new file after cleanup
+
+### Refactor
+
+- use `codecs` as backup method to read and write files
+
 ## v0.9.0 (2024-05-10)
 
 ### Feat
