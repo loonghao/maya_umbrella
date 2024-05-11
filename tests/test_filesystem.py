@@ -36,6 +36,7 @@ def test_check_virus_file_by_signature(get_test_data, file_name, result):
         ("userSetup.py", True, False),
         ("userSetup2.mel", True, False),
         ("mayaHIK.pres.mel", False, False),
+        ("virus_mayaHIK.pres.mel", True, False),
     ],
 )
 def test_remove_virus_file_by_signature(get_test_data, file_name, tmpdir, virus, result):
