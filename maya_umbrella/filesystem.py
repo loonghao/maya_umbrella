@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import glob
 import importlib
 import json
+import logging
 import os
 import random
 import re
@@ -43,10 +44,20 @@ def safe_rmtree(path):
 
 
 def _codes_open(path, encoding="utf-8"):
-    # Import built-in modules
-    with codecs.open(path, "r", encoding) as file_:
-        return file_.read()
+    """Open and read the content of a file using the specified encoding.
 
+    Args:
+        path (str): Path to the file.
+        encoding (str, optional): The encoding to use when reading the file. Defaults to "utf-8".
+
+    Returns:
+        str: The content of the file, or an empty string if the file could not be read.
+    """
+    try:
+        with codecs.open(path, "r", encoding) as file_:
+            return file_.read()
+    except (OSError, IOError):  # noqa: UP024
+        return ""
 
 def read_file(path):
     """Read the content of the file at the given path."""
@@ -78,12 +89,6 @@ def write_file(path, content):
         file_.write(content)
 
 
-def _codes_write(path, content, encoding="utf-8"):
-    # Import built-in modules
-    with codecs.open(path, "w", encoding) as file_:
-        file_.write(content)
-
-
 @contextmanager
 def atomic_writes(src, mode, **options):
     """Context manager for atomic writes to a file.
@@ -102,7 +107,7 @@ def atomic_writes(src, mode, **options):
         AttributeError: If the os module does not have the 'replace' function (Python 2 compatibility).
     """
     temp_path = os.path.join(os.path.dirname(src), "._{}".format(id_generator()))
-    open_func = open if PY3 else _codes_open
+    open_func = open if PY3 else codecs.open
     with open_func(temp_path, mode, **options) as f:
         yield f
     try:
@@ -295,6 +300,7 @@ def get_backup_path(path, root_path=None):
 
 def get_maya_install_root(maya_version):
     """Get the Maya install root path."""
+    logger = logging.getLogger(__name__)
     maya_location = os.getenv("MAYA_LOCATION")
     try:
         # Import built-in modules
@@ -308,14 +314,14 @@ def get_maya_install_root(maya_version):
         )
         root, _ = winreg.QueryValueEx(key, "MAYA_INSTALL_LOCATION")
         if not os.path.isdir(root):
-            print("Failed to locate the appropriate Maya path in the registration list.")
+            logger.info("Failed to locate the appropriate Maya path in the registration list.")
     except OSError:
         return maya_location
     maya_location = maya_location or root
     if not maya_location:
-        print("maya not found.")
+        logger.info("maya not found.")
         return
     maya_exe = os.path.join(maya_location, "bin", "maya.exe")
     if not os.path.exists(maya_exe):
-        print("maya.exe not found in {maya_location}.".format(maya_location=maya_location))
+        logger.info("maya.exe not found in {maya_location}.".format(maya_location=maya_location))
     return maya_location

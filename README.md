@@ -53,6 +53,8 @@ and it is recommended to use Python 3.8 or higher versions.
 
 通过虚拟环境去设置开发环境, 推荐python-3.8以上的版本
 
+通过pip安装相关开发依赖
+
 ```shell
 pip install -r requirements-dev.txt
 ```
@@ -103,13 +105,15 @@ nox -s lint
 
 进行代码整理
 ```shell
-nox -s lint-fx
+nox -s lint-fix
 ```
 
 # 生成安装包
 
 执行下面的命令可以在<repo>/.zip下面创建zip，参数 `--version` 当前工具的版本号
- **注意：`make-zip` 与 `--version`之间有 俩个`-`**
+
+**注意：`make-zip` 与 `--version`之间有 俩个`-`**
+
 ```shell
 nox -s make-zip -- --version 0.5.0
 ```
@@ -188,13 +192,16 @@ print(api.scan_files_from_pattern("your/path/*.m[ab]"))
 ```
 
 # 案例
-如果你想要快速通过maya standalone去批量清理maya文件，可以`下载`或者`git clone`当前`main`分支的工程，
-根据上面指引设置好开发环境
-通过`nox`命令去启动maya `standalone`环境，maya版本根据你当前本地安装的maya为准，比如你本地安装了`2018`,
+如果你想要快速通过maya standalone去批量清理maya文件，
+可以`下载`或者`git clone`当前`main`分支的工程，
+根据上面指引设置好开发环境,
+通过`nox`命令去启动maya `standalone`环境，maya版本根据你当前本地安装的maya为准，
+比如你本地安装了`2018`,
 那么就是 `nox -s maya -- 2018 --standalone`
 下面的语法是启动一个maya-2020的环境去动态从`c:/test`文件夹下去查杀病毒
+
 ```shell
-nox -s maya-2020-s -- c:/test/*.m[ab]
+nox -s maya -- 2018 --standalone --pattern c:/test/*.m[ab]
 ```
 
 ## Contributors ✨
