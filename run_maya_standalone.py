@@ -1,6 +1,10 @@
-from maya_umbrella.maya_funs import maya_standalone_context
-from maya_umbrella import MayaVirusScanner
+# Import built-in modules
 import sys
+
+# Import local modules
+from maya_umbrella import MayaVirusScanner
+from maya_umbrella.maya_funs import maya_standalone_context
+
 
 pattern = sys.argv[-1]
 print("Current pattern: {}".format(pattern))

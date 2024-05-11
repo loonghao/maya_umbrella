@@ -1,4 +1,7 @@
+# Import third-party modules
 import pytest
+
+# Import local modules
 from maya_umbrella.defender import context_defender
 from maya_umbrella.maya_funs import open_maya_file
 

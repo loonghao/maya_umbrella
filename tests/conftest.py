@@ -1,6 +1,11 @@
+# Import built-in modules
 import os.path
 import platform
+
+# Import third-party modules
 import pytest
+
+# Import local modules
 from maya_umbrella.maya_funs import cmds
 
 

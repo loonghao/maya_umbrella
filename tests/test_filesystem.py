@@ -1,9 +1,12 @@
-from maya_umbrella.filesystem import check_virus_file_by_signature
+# Import third-party modules
+import pytest
+
+# Import local modules
 from maya_umbrella.constants import FILE_VIRUS_SIGNATURES
-from maya_umbrella.filesystem import remove_virus_file_by_signature
+from maya_umbrella.filesystem import check_virus_file_by_signature
 from maya_umbrella.filesystem import get_backup_path
 from maya_umbrella.filesystem import get_maya_install_root
-import pytest
+from maya_umbrella.filesystem import remove_virus_file_by_signature
 
 
 @pytest.mark.parametrize(

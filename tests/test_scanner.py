@@ -1,8 +1,10 @@
-import os
+# Import built-in modules
 import glob
+import os
 
-from maya_umbrella.scanner import MayaVirusScanner
+# Import local modules
 from maya_umbrella.filesystem import write_file
+from maya_umbrella.scanner import MayaVirusScanner
 
 
 def test_scan_files_from_pattern(this_root):

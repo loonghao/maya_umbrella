@@ -1,5 +1,7 @@
 # Import built-in modules
-import logging.handlers
+from logging import Formatter
+from logging import getLogger
+from logging import handlers
 import os
 
 # Import local modules
@@ -20,18 +22,18 @@ def setup_logger(logger=None, logfile=None, log_level=None):
     Returns:
         logging.Logger: The set up logger.
     """
-    logger = logger or logging.getLogger(PACKAGE_NAME)
+    logger = logger or getLogger(PACKAGE_NAME)
     log_level = log_level or os.getenv("MAYA_UMBRELLA_LOG_LEVEL", "INFO")
     logger.setLevel(log_level)
     logfile = logfile or get_log_file()
     if not len(logger.handlers):
-        filehandler = logging.handlers.RotatingFileHandler(
+        filehandler = handlers.RotatingFileHandler(
             logfile,
             mode="a",
             backupCount=7,
             delay=True,
             maxBytes=LOG_MAX_BYTES,
         )
-        filehandler.setFormatter(logging.Formatter(LOG_FORMAT))
+        filehandler.setFormatter(Formatter(LOG_FORMAT))
         logger.addHandler(filehandler)
     return logger

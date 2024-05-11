@@ -30,7 +30,7 @@ class MayaVirusScanner(object):
 
         Args:
             output_path (str, optional): Path to save the fixed files. Defaults to None, which overwrites the original
-            files.
+                files.
             env (dict, optional): Custom environment variables. Defaults to None,
             which sets the 'MAYA_COLOR_MANAGEMENT_SYNCOLOR' variable to '1'.
         """
