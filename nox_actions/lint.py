@@ -4,8 +4,7 @@ from nox_actions.utils import PACKAGE_NAME
 
 
 def lint(session: nox.Session) -> None:
-    session.install("wemake-python-styleguide", "isort", "ruff")
-    session.run("flake8", PACKAGE_NAME)
+    session.install("isort", "ruff")
     session.run("isort", "--check-only", PACKAGE_NAME)
     session.run("ruff", "check")
 

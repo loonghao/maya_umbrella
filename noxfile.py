@@ -14,10 +14,10 @@ if ROOT not in sys.path:
     sys.path.append(ROOT)
 
 # Import third-party modules
+from nox_actions import codetest  # noqa: E402
 from nox_actions import lint  # noqa: E402
 from nox_actions import release  # noqa: E402
 from nox_actions import run_maya  # noqa: E402
-from nox_actions import codetest  # noqa: E402
 
 
 nox.session(run_maya.run_maya, name="maya")
