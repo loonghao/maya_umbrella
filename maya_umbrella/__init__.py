@@ -6,5 +6,12 @@ from maya_umbrella.defender import context_defender
 from maya_umbrella.defender import get_defender_instance
 from maya_umbrella.scanner import MayaVirusScanner
 
-
-__all__ = ["MayaVirusDefender", "MayaVirusCleaner", "MayaVirusCollector", "MayaVirusScanner", "context_defender", "get_defender_instance"]
+# All public APIs.
+__all__ = [
+    "MayaVirusDefender",
+    "MayaVirusCleaner",
+    "MayaVirusCollector",
+    "MayaVirusScanner",
+    "context_defender",
+    "get_defender_instance",
+]

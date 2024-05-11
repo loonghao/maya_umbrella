@@ -142,14 +142,20 @@ MAYA_UMBRELLA_LANG
 MAYA_UMBRELLA_IGNORE_BACKUP
 ```
 
+如果忽略请设置为
+```shell
+SET MAYA_UMBRELLA_IGNORE_BACKUP=true
+```
+
 如果是便携版Maya，可以通过添加 `MAYA_LOCATION` 环境变量指定Maya路径
 ```shell
 SET MAYA_LOCATION=d:/your/path/maya_version/
 ```
+也可以通过命令行指定目录
 
-如果忽略请设置为
 ```shell
-SET MAYA_UMBRELLA_IGNORE_BACKUP=true
+nox -s maya -- 2018 --install-root /your/local/maya/root
+
 ```
 
 # API
