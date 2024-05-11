@@ -10,11 +10,11 @@ import zipfile
 # Import third-party modules
 import nox
 from nox_actions.utils import PACKAGE_NAME
-from nox_actions.utils import ROOT
+from nox_actions.utils import THIS_ROOT
 
 
 def make_install_zip(session: nox.Session) -> None:
-    temp_dir = os.path.join(ROOT, ".zip")
+    temp_dir = os.path.join(THIS_ROOT, ".zip")
     build_root = os.path.join(temp_dir, "maya_umbrella")
     script_dir = os.path.join(build_root, "scripts")
     shutil.rmtree(temp_dir, ignore_errors=True)
@@ -34,12 +34,12 @@ pause
     version = str(args.version)
     print(f"make zip to current version: {version}")
 
-    shutil.copytree(os.path.join(ROOT, "maya_umbrella"),
+    shutil.copytree(os.path.join(THIS_ROOT, "maya_umbrella"),
                     os.path.join(script_dir, "maya_umbrella"))
     with open(os.path.join(build_root, "install.bat"), "w") as f:
         f.write(bat_template.format(version=version))
 
-    shutil.copy2(os.path.join(ROOT, "maya", "userSetup.py"),
+    shutil.copy2(os.path.join(THIS_ROOT, "maya", "userSetup.py"),
                  os.path.join(script_dir, "userSetup.py"))
 
     zip_file = os.path.join(temp_dir, f"{PACKAGE_NAME}-{version}.zip")

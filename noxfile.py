@@ -13,7 +13,7 @@ ROOT = os.path.dirname(__file__)
 if ROOT not in sys.path:
     sys.path.append(ROOT)
 
-# Import local modules
+# Import third-party modules
 from nox_actions import lint  # noqa: E402
 from nox_actions import release  # noqa: E402
 from nox_actions import run_maya  # noqa: E402
