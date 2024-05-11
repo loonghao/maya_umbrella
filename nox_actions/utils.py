@@ -3,7 +3,8 @@ import os
 
 
 PACKAGE_NAME = "maya_umbrella"
-ROOT = os.path.dirname(os.path.dirname(__file__))
+THIS_ROOT = os.path.dirname(os.path.dirname(__file__))
+PROJECT_ROOT = os.path.dirname(THIS_ROOT)
 
 
 def _assemble_env_paths(*paths):

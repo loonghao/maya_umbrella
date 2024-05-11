@@ -6,7 +6,7 @@ import sys
 # Import third-party modules
 import nox
 from nox_actions.utils import PACKAGE_NAME
-from nox_actions.utils import ROOT
+from nox_actions.utils import THIS_ROOT
 from nox_actions.utils import _assemble_env_paths
 import requests
 
@@ -29,13 +29,13 @@ def run_maya(session: nox.Session):
     maya_version = str(args.maya_version)
     session.install("requests")
     maya_root = get_maya_install_root(maya_version)
-    standalone_runner = os.path.join(ROOT, "run_maya_standalone.py")
+    standalone_runner = os.path.join(THIS_ROOT, "run_maya_standalone.py")
     if maya_root:
         maya_bin_root = os.path.join(maya_root, "bin")
         maya_exe_root = os.path.join(maya_bin_root, "maya.exe")
         mayapy = os.path.join(maya_bin_root, "mayapy.exe")
         if args.test:
-            test_runner = os.path.join(ROOT, "tests", "_test_runner.py")
+            test_runner = os.path.join(THIS_ROOT, "tests", "_test_runner.py")
             temp_dir = os.path.join(session._runner.envdir, "test", "site-packages")
             pip_py_name = "get-pip.py"
             dev_dir = os.path.join(session._runner.envdir, "dev")
@@ -61,13 +61,13 @@ def run_maya(session: nox.Session):
                 "--target",
                 temp_dir,
             )
-            test_root = os.path.join(ROOT, "tests")
+            test_root = os.path.join(THIS_ROOT, "tests")
             session.run(
                 mayapy,
                 test_runner,
                 f"--cov={PACKAGE_NAME}",
                 f"--rootdir={test_root}",
-                env={"PYTHONPATH": f"{ROOT};{temp_dir}"},
+                env={"PYTHONPATH": f"{THIS_ROOT};{temp_dir}"},
             )
 
         elif args.standalone:
@@ -75,15 +75,15 @@ def run_maya(session: nox.Session):
                 mayapy,
                 standalone_runner,
                 args.pattern,
-                env={"PYTHONPATH": ROOT},
+                env={"PYTHONPATH": THIS_ROOT},
             )
         else:
             # Launch maya
-            print(_assemble_env_paths(ROOT, os.path.join(ROOT, "maya")))
+            print(_assemble_env_paths(THIS_ROOT, os.path.join(THIS_ROOT, "maya")))
             session.run(
                 maya_exe_root,
                 env={
-                    "PYTHONPATH": _assemble_env_paths(ROOT, os.path.join(ROOT, "maya")),
+                    "PYTHONPATH": _assemble_env_paths(THIS_ROOT, os.path.join(THIS_ROOT, "maya")),
                     "MAYA_UMBRELLA_LOG_LEVEL": "DEBUG",
                 },
             )

@@ -14,7 +14,7 @@ jobs:
           python-version: '3.10'
       - name: Install dependencies
         run: |
-          python -m pip -r requirements-dev.txt
+          python -m pip install -r requirements-dev.txt
           poetry --version
       - name: Run tests and collect coverage
         run: |

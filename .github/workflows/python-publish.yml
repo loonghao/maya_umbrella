@@ -29,7 +29,7 @@ jobs:
         python-version: '3.x'
     - name: Install dependencies
       run: |
-        python -m pip -r requirements-dev.txt
+        python -m pip install -r requirements-dev.txt
         poetry --version
         poetry build
     # Note that we don't need credentials.
