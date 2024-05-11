@@ -137,7 +137,7 @@ def save_as_file(file_name):
         file_name (str): Path to the output file.
     """
     cmds.file(rename=file_name)
-    cmds.file(s=True, f=True)
+    cmds.file(save=True, force=True)
 
 
 @contextmanager

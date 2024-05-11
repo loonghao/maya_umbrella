@@ -15,6 +15,7 @@ from maya_umbrella.maya_funs import om
 
 # Global list to store IDs of Maya callbacks
 MAYA_UMBRELLA_CALLBACK_IDS = []
+MAYA_UMBRELLA_DEFENDER = None
 
 
 def _add_callbacks_id(id_):
@@ -115,10 +116,11 @@ class MayaVirusDefender(object):
 
     def stop(self):
         """Stop the MayaVirusDefender."""
-        for ids in MAYA_UMBRELLA_CALLBACK_IDS:
-            self.logger.debug("remove callback. %s", ids)
-            om.MSceneMessage.removeCallback(ids)
-            MAYA_UMBRELLA_CALLBACK_IDS.remove(ids)
+        while MAYA_UMBRELLA_CALLBACK_IDS:
+            for ids in MAYA_UMBRELLA_CALLBACK_IDS:
+                self.logger.debug("remove callback. %s", ids)
+                om.MSceneMessage.removeCallback(ids)
+                MAYA_UMBRELLA_CALLBACK_IDS.remove(ids)
 
     def get_unfixed_references(self):
         """Get the list of unfixed reference files.
@@ -155,7 +157,15 @@ def context_defender():
     Yields:
         MayaVirusDefender: An instance of MayaVirusDefender.
     """
-    defender = MayaVirusDefender()
+    defender = get_defender_instance()
     defender.stop()
     yield defender
     defender.setup()
+
+
+def get_defender_instance():
+    """Get the MayaVirusDefender instance."""
+    global MAYA_UMBRELLA_DEFENDER
+    if MAYA_UMBRELLA_DEFENDER is None:
+        MAYA_UMBRELLA_DEFENDER = MayaVirusDefender()
+    return MAYA_UMBRELLA_DEFENDER
