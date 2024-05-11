@@ -54,7 +54,7 @@ and it is recommended to use Python 3.8 or higher versions.
 通过虚拟环境去设置开发环境, 推荐python-3.8以上的版本
 
 ```shell
-pip install nox poetry
+pip install -r requirements-dev.txt
 ```
 
 # 开发调试
