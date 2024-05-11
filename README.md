@@ -59,16 +59,17 @@ pip install -r requirements-dev.txt
 
 # 开发调试
 
-```shell
-nox -s maya -- 2020 --test
-```
 
 ## 在maya中测试
 
 通过`nox -s maya -- <maya version>`, 启动maya.
 nox会动态根据你本地安装得maya去注册nox session, 比如你本地安装了`maya-2020`，
+那么通过可以启动带有测试环境的maya
+```shell
+nox -s maya -- 2018
+```
 
-那么通过`nox -s maya -- 2018`, **注意：maya 与 版本号之间有 俩个`-`**
+**注意：maya 与 版本号之间有 俩个`-`**
 
 启动maya后在脚本编辑器中执行下面得代码，就会动态的从`<repo>/tests/virus/`里面去open ma文件去进行测试.
 
@@ -77,6 +78,15 @@ import manual_test_in_maya
 
 manual_test_in_maya.start()
 ```
+
+也可以通过pytest去执行对应的测试，也需要本地安装了对应的maya
+
+```shell
+nox -s maya -- 2018 --test
+```
+
+**注意：在maya-2022 (PY2) 以下的版本可能会出现命令行crash的情况**
+
 
 ## 增加新的疫苗
 
