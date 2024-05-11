@@ -1,4 +1,5 @@
 # Import built-in modules
+import codecs
 from contextlib import contextmanager
 import glob
 import importlib
@@ -41,6 +42,12 @@ def safe_rmtree(path):
         pass
 
 
+def _codes_open(path, encoding="utf-8"):
+    # Import built-in modules
+    with codecs.open(path, "r", encoding) as file_:
+        return file_.read()
+
+
 def read_file(path):
     """Read the content of the file at the given path."""
     options = {"encoding": "utf-8"} if PY3 else {}
@@ -71,6 +78,12 @@ def write_file(path, content):
         file_.write(content)
 
 
+def _codes_write(path, content, encoding="utf-8"):
+    # Import built-in modules
+    with codecs.open(path, "w", encoding) as file_:
+        file_.write(content)
+
+
 @contextmanager
 def atomic_writes(src, mode, **options):
     """Context manager for atomic writes to a file.
@@ -89,7 +102,8 @@ def atomic_writes(src, mode, **options):
         AttributeError: If the os module does not have the 'replace' function (Python 2 compatibility).
     """
     temp_path = os.path.join(os.path.dirname(src), "._{}".format(id_generator()))
-    with open(temp_path, mode, **options) as f:
+    open_func = open if PY3 else _codes_open
+    with open_func(temp_path, mode, **options) as f:
         yield f
     try:
         os.replace(temp_path, src)
@@ -173,7 +187,7 @@ def get_log_file():
     return os.path.join(root, "{name}.log".format(name=name))
 
 
-def remove_virus_file_by_signature(file_path, signatures, output_file_path=None):
+def remove_virus_file_by_signature(file_path, signatures, output_file_path=None, auto_remove=True):
     """Remove virus content from a file by matching signatures.
 
     Args:
@@ -181,11 +195,23 @@ def remove_virus_file_by_signature(file_path, signatures, output_file_path=None)
         signatures (list): List of signatures to match and remove.
         output_file_path (str, optional): Path to the cleaned output file.
          Defaults to None, which overwrites the input file.
+        auto_remove: If True, remove the input file if the output file is empty.
+
     """
-    data = read_file(file_path)
+    try:
+        data = read_file(file_path)
+    except (OSError, IOError):  # noqa: UP024
+        return False
+    except UnicodeDecodeError:
+        data = _codes_open(file_path)
     if check_virus_by_signature(data, signatures):
-        fixed_data = replace_content_by_signatures(data, signatures)
-        write_file(output_file_path or file_path, fixed_data)
+        fixed_data = replace_content_by_signatures(data, signatures).strip()
+        if fixed_data:
+            write_file(output_file_path or file_path, fixed_data)
+        else:
+            # Auto remove empty files.
+            if auto_remove:
+                os.remove(file_path)
 
 
 def replace_content_by_signatures(content, signatures):
@@ -216,11 +242,11 @@ def check_virus_file_by_signature(file_path, signatures=None):
     signatures = signatures or FILE_VIRUS_SIGNATURES
     try:
         data = read_file(file_path)
-        return check_virus_by_signature(data, signatures)
     except (OSError, IOError):  # noqa: UP024
         return False
     except UnicodeDecodeError:
-        return True
+        data = _codes_open(file_path)
+    return check_virus_by_signature(data, signatures)
 
 
 def check_virus_by_signature(content, signatures=None):
@@ -269,7 +295,7 @@ def get_backup_path(path, root_path=None):
 
 def get_maya_install_root(maya_version):
     """Get the Maya install root path."""
-    maya_location = os.environ.get("MAYA_LOCATION")
+    maya_location = os.getenv("MAYA_LOCATION")
     try:
         # Import built-in modules
         import winreg
