@@ -3,6 +3,8 @@ import glob
 import logging
 import os
 import shutil
+from tempfile import mkdtemp
+import time
 
 # Import local modules
 from maya_umbrella import maya_funs
@@ -45,14 +47,18 @@ class MayaVirusScanner(object):
             "MAYA_COLOR_MANAGEMENT_SYNCOLOR": "1"
         }
 
-    def scan_files_from_pattern(self, pattern):
+    def scan_files_from_pattern(self, pattern, glob_options=None):
         """Scan and fix Maya files matching a given pattern.
 
         Args:
             pattern (str): The file pattern to match.
+            glob_options (dict): Optional keyword arguments for the glob module.
+                if py3, we can pass a dict with the keyword arguments. {"recursive": True}
+
         """
+        glob_options = glob_options or {}
         os.environ.update(self._env)
-        return self.scan_files_from_list(glob.iglob(pattern))
+        return self.scan_files_from_list(glob.iglob(pattern, **glob_options))
 
     def scan_files_from_list(self, files):
         """Scan and fix Maya files from a given list.
