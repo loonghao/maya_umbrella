@@ -102,13 +102,3 @@ def vendoring(session: nox.Session) -> None:
 
         # synchronize the contents
         session.run("vendoring", "sync", ".")
-
-        # Determine the correct message
-        message = f"Upgrade {name} to {new_version}"
-
-        # Write our news fragment
-        news_file = Path("news") / (name + ".vendor.rst")
-        news_file.write_text(message + "\n")  # "\n" appeases end-of-line-fixer
-
-        # Commit the changes
-        # release.commit_file(session, ".", message=message)

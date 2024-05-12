@@ -18,5 +18,8 @@ def get_virus_files():
 
 def start():
     for maya_file in get_virus_files():
-        open_maya_file(maya_file)
+        try:
+            open_maya_file(maya_file)
+        except RuntimeError:
+            pass
         cmds.file(new=True, force=True)

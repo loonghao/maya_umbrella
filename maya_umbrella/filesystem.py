@@ -1,5 +1,4 @@
 # Import built-in modules
-import codecs
 from contextlib import contextmanager
 import glob
 import importlib
@@ -10,16 +9,12 @@ import random
 import re
 import shutil
 import string
-import sys
 import tempfile
 
 # Import local modules
-from maya_umbrella.constants import FILE_VIRUS_SIGNATURES
+from maya_umbrella._vendor import six
 from maya_umbrella.constants import PACKAGE_NAME
-
-
-PY2 = sys.version_info[0] == 2
-PY3 = sys.version_info[0] == 3
+from maya_umbrella.signatures import FILE_VIRUS_SIGNATURES
 
 
 def this_root():
@@ -43,37 +38,24 @@ def safe_rmtree(path):
         pass
 
 
-def _codes_open(path, encoding="utf-8"):
-    """Open and read the content of a file using the specified encoding.
+def read_file(path):
+    """Read the file content.
 
     Args:
-        path (str): Path to the file.
-        encoding (str, optional): The encoding to use when reading the file. Defaults to "utf-8".
+        path (str): File path of source.
 
     Returns:
-        str: The content of the file, or an empty string if the file could not be read.
-    """
-    try:
-        with codecs.open(path, "r", encoding) as file_:
-            return file_.read()
-    except (OSError, IOError):  # noqa: UP024
-        return ""
+         str: The contents of the file path.
 
-def read_file(path):
-    """Read the content of the file at the given path."""
-    options = {"encoding": "utf-8"} if PY3 else {}
-    with open(path, **options) as file_:
-        try:
-            content = file_.read()
-        # maya-2022 UnicodeDecodeError from `plug-ins/mayaHIK.pres.mel`
-        except UnicodeDecodeError:
-            return ""
+    """
+    with open(path, "rb") as file_stream:
+        content = file_stream.read()
     return content
 
 
 def read_json(path):
     """Read the content of the file at the given path."""
-    options = {"encoding": "utf-8"} if PY3 else {}
+    options = {"encoding": "utf-8"} if six.PY3 else {}
     with open(path, **options) as file_:
         try:
             content = json.load(file_)
@@ -84,13 +66,12 @@ def read_json(path):
 
 def write_file(path, content):
     """Write the given content to the file at the given path."""
-    options = {"encoding": "utf-8"} if PY3 else {}
-    with atomic_writes(path, "w", **options) as file_:
-        file_.write(content)
+    with atomic_writes(path, "wb") as file_:
+        file_.write(six.ensure_binary(content))
 
 
 @contextmanager
-def atomic_writes(src, mode, **options):
+def atomic_writes(src, mode):
     """Context manager for atomic writes to a file.
 
     This context manager ensures that the file is only written to disk if the write operation completes without errors.
@@ -107,14 +88,12 @@ def atomic_writes(src, mode, **options):
         AttributeError: If the os module does not have the 'replace' function (Python 2 compatibility).
     """
     temp_path = os.path.join(os.path.dirname(src), "._{}".format(id_generator()))
-    open_func = open if PY3 else codecs.open
-    with open_func(temp_path, mode, **options) as f:
+    with open(temp_path, mode) as f:
         yield f
     try:
         os.replace(temp_path, src)
     except AttributeError:
         shutil.move(temp_path, src)
-
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     """Generate a random string of the given size using the given characters."""
@@ -203,12 +182,7 @@ def remove_virus_file_by_signature(file_path, signatures, output_file_path=None,
         auto_remove: If True, remove the input file if the output file is empty.
 
     """
-    try:
-        data = read_file(file_path)
-    except (OSError, IOError):  # noqa: UP024
-        return False
-    except UnicodeDecodeError:
-        data = _codes_open(file_path)
+    data = read_file(file_path)
     if check_virus_by_signature(data, signatures):
         fixed_data = replace_content_by_signatures(data, signatures).strip()
         if fixed_data:
@@ -230,7 +204,7 @@ def replace_content_by_signatures(content, signatures):
         str: The cleaned content.
     """
     for signature in signatures:
-        content = re.sub(signature, "", content)
+        content = re.sub(*map(six.ensure_binary, [signature, "", content]))
     return content
 
 
@@ -250,7 +224,7 @@ def check_virus_file_by_signature(file_path, signatures=None):
     except (OSError, IOError):  # noqa: UP024
         return False
     except UnicodeDecodeError:
-        data = _codes_open(file_path)
+        data = ""
     return check_virus_by_signature(data, signatures)
 
 
@@ -266,7 +240,7 @@ def check_virus_by_signature(content, signatures=None):
     """
     signatures = signatures or FILE_VIRUS_SIGNATURES
     for signature in signatures:
-        if re.search(signature, content):
+        if re.search(*map(six.ensure_binary, [signature, content])):
             return True
     return False
 
