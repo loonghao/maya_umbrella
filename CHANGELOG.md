@@ -1,3 +1,11 @@
+## v0.11.0 (2024-05-12)
+
+### Feat
+
+- setup new nox session for update vendor packages
+- Add glob options for py3 to recursive files.
+- Add six as vendor.
+
 ## v0.10.0 (2024-05-11)
 
 ### Feat
