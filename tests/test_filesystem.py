@@ -18,6 +18,7 @@ from maya_umbrella.filesystem import remove_virus_file_by_signature
         ("maya_2020.mel", False),
         ("userSetup.py", True),
         ("userSetup2.mel", True),
+        ("userSetup3.mel", True),
     ],
 )
 def test_check_virus_file_by_signature(get_test_data, file_name, result):
@@ -35,6 +36,7 @@ def test_check_virus_file_by_signature(get_test_data, file_name, result):
         ("maya_2020.mel", False, False),
         ("userSetup.py", True, False),
         ("userSetup2.mel", True, False),
+        ("userSetup3.mel", True, False),
         ("mayaHIK.pres.mel", False, False),
         ("virus_mayaHIK.pres.mel", True, False),
     ],
@@ -44,7 +46,7 @@ def test_remove_virus_file_by_signature(get_test_data, file_name, tmpdir, virus,
     mel_file = get_test_data(file_name)
     assert check_virus_file_by_signature(mel_file, FILE_VIRUS_SIGNATURES) == virus
     fixed_mel_file = str(tmpdir.join(file_name))
-    remove_virus_file_by_signature(mel_file, FILE_VIRUS_SIGNATURES, fixed_mel_file)
+    remove_virus_file_by_signature(mel_file, FILE_VIRUS_SIGNATURES, fixed_mel_file, auto_remove=False)
     assert check_virus_file_by_signature(fixed_mel_file, FILE_VIRUS_SIGNATURES) == result
 
 
