@@ -11,4 +11,5 @@ exclude_lines =
 ignore_errors = True
 omit =
     tests/*
+    maya_umbrella/_vendor/*
     maya_umbrella/maya_funs.py

@@ -3,11 +3,10 @@ import glob
 import logging
 import os
 import shutil
-from tempfile import mkdtemp
-import time
 
 # Import local modules
 from maya_umbrella import maya_funs
+from maya_umbrella._vendor.six import PY2
 from maya_umbrella.defender import context_defender
 from maya_umbrella.filesystem import get_backup_path
 from maya_umbrella.filesystem import read_file
@@ -55,8 +54,13 @@ class MayaVirusScanner(object):
             glob_options (dict): Optional keyword arguments for the glob module.
                 if py3, we can pass a dict with the keyword arguments. {"recursive": True}
 
+        Raises:
+            ValueError: If py2, recursive is not supported.
+
         """
         glob_options = glob_options or {}
+        if "recursive" in glob_options and PY2:
+            raise ValueError("recursive is not supported in python2")
         os.environ.update(self._env)
         return self.scan_files_from_list(glob.iglob(pattern, **glob_options))
 

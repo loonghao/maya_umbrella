@@ -29,6 +29,7 @@ exclude =
     # This contains builds of flake8 that we don't want to check
     dist,
     venv,
-    docs
+    docs,
+    maya_umbrella/_vendor
 
 max-line-length = 120

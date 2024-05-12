@@ -2,12 +2,12 @@
 import os
 
 # Import local modules
-from maya_umbrella.constants import JOB_SCRIPTS_VIRUS_SIGNATURES
 from maya_umbrella.filesystem import check_virus_by_signature
 from maya_umbrella.filesystem import check_virus_file_by_signature
 from maya_umbrella.maya_funs import check_reference_node_exists
 from maya_umbrella.maya_funs import cmds
 from maya_umbrella.maya_funs import get_attr_value
+from maya_umbrella.signatures import JOB_SCRIPTS_VIRUS_SIGNATURES
 from maya_umbrella.vaccine import AbstractVaccine
 
 

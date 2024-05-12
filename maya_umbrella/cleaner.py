@@ -5,13 +5,13 @@ import os
 import re
 
 # Import local modules
-from maya_umbrella.constants import FILE_VIRUS_SIGNATURES
 from maya_umbrella.filesystem import remove_virus_file_by_signature
 from maya_umbrella.filesystem import safe_remove_file
 from maya_umbrella.filesystem import safe_rmtree
 from maya_umbrella.i18n import Translator
 from maya_umbrella.maya_funs import check_reference_node_exists
 from maya_umbrella.maya_funs import cmds
+from maya_umbrella.signatures import FILE_VIRUS_SIGNATURES
 
 
 class MayaVirusCleaner(object):
