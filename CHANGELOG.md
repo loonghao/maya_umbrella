@@ -1,3 +1,13 @@
+## v0.12.0 (2024-05-14)
+
+### Feat
+
+- Add new hook for fix no scene name
+
+### Fix
+
+- Remove `delay` option for fix #43
+
 ## v0.11.0 (2024-05-12)
 
 ### Feat
