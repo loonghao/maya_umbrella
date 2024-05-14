@@ -31,7 +31,6 @@ def setup_logger(logger=None, logfile=None, log_level=None):
             logfile,
             mode="a",
             backupCount=7,
-            delay=True,
             maxBytes=LOG_MAX_BYTES,
         )
         filehandler.setFormatter(Formatter(LOG_FORMAT))
