@@ -1,18 +1,16 @@
 # Import built-in modules
-from contextlib import contextmanager
 import glob
 import importlib
 import json
 import logging
 import os
-import random
 import re
 import shutil
-import string
 import tempfile
 
 # Import local modules
 from maya_umbrella._vendor import six
+from maya_umbrella._vendor.atomicwrites import atomic_write
 from maya_umbrella.constants import PACKAGE_NAME
 from maya_umbrella.signatures import FILE_VIRUS_SIGNATURES
 
@@ -66,48 +64,13 @@ def read_json(path):
 
 def write_file(path, content):
     """Write the given content to the file at the given path."""
-    with atomic_writes(path, "wb") as file_:
+    root = os.path.dirname(path)
+    if not os.path.exists(root):
+        os.makedirs(root)
+    with atomic_write(path, mode="wb", overwrite=True) as file_:
         file_.write(six.ensure_binary(content))
 
 
-@contextmanager
-def atomic_writes(src, mode):
-    """Context manager for atomic writes to a file.
-
-    This context manager ensures that the file is only written to disk if the write operation completes without errors.
-
-    Args:
-        src (str): Path to the file to be written.
-        mode (str): Mode in which the file is opened, like 'r', 'w', 'a', etc.
-        **options: Arbitrary keyword arguments that are passed to the built-in open() function.
-
-    Yields:
-        file object: The opened file object.
-
-    Raises:
-        AttributeError: If the os module does not have the 'replace' function (Python 2 compatibility).
-    """
-    temp_path = os.path.join(os.path.dirname(src), "._{}".format(id_generator()))
-    with open(temp_path, mode) as f:
-        yield f
-    try:
-        os.replace(temp_path, src)
-    except AttributeError:
-        shutil.move(temp_path, src)
-
-def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
-    """Generate a random string of the given size using the given characters."""
-    return "".join(random.choice(chars) for _ in range(size))
-
-
-def rename(src):
-    """Rename the file at the given path to a random name and return the new path."""
-    dst = os.path.join(os.path.dirname(src), "._{}".format(id_generator()))
-    try:
-        os.rename(src, dst)
-    except (OSError, IOError):  # noqa: UP024
-        return src
-    return dst
 
 
 def load_hook(hook_file):
@@ -187,6 +150,7 @@ def remove_virus_file_by_signature(file_path, signatures, output_file_path=None,
         fixed_data = replace_content_by_signatures(data, signatures).strip()
         if fixed_data:
             write_file(output_file_path or file_path, fixed_data)
+
         else:
             # Auto remove empty files.
             if auto_remove:
