@@ -74,7 +74,7 @@ class MayaVirusCollector(object):
     @property
     def maya_install_root(self):
         """Return the Maya installation root directory."""
-        return os.environ["MAYA_LOCATION"]
+        return os.environ.get("MAYA_LOCATION", "")
 
     @property
     def user_script_path(self):
