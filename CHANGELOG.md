@@ -1,3 +1,13 @@
+## v0.13.0 (2024-05-16)
+
+### Feat
+
+- Add new vendor `atomicwrites`
+
+### Fix
+
+- fix collect infected hik files.
+
 ## v0.12.1 (2024-05-16)
 
 ### Fix
