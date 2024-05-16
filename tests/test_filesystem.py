@@ -1,6 +1,4 @@
 # Import third-party modules
-
-# Import third-party modules
 import pytest
 
 # Import local modules
