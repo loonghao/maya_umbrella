@@ -71,7 +71,7 @@ class Vaccine(AbstractVaccine):
                 if virus in script_job:
                     self.api.add_infected_script_job(script_job)
 
-    def fix_bad_hik_files(self):
+    def collect_infected_hik_files(self):
         """Fix all bad HIK files related to the virus."""
         pattern = os.path.join(self.api.maya_install_root, "resources/l10n/*/plug-ins/mayaHIK.pres.mel")
         for hik_mel in glob.glob(pattern):
@@ -83,8 +83,8 @@ class Vaccine(AbstractVaccine):
         """Collect all issues related to the virus."""
         self.api.add_malicious_file(os.path.join(os.getenv("APPDATA"), "syssst"))
         self.collect_infected_mel_files()
+        self.collect_infected_hik_files()
         self.collect_infected_nodes()
         # This only works for Maya Gui model.
         if not is_maya_standalone():
             self.collect_script_jobs()
-        self.api.add_additionally_fix_function(self.fix_bad_hik_files)
