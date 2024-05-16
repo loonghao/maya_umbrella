@@ -45,7 +45,7 @@ def read_file(path):
         path (str): File path of source.
 
     Returns:
-         str: The contents of the file path.
+         bytes: The contents of the file path.
 
     """
     with open(path, "rb") as file_stream:
