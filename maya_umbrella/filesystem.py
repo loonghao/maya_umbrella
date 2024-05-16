@@ -16,12 +16,20 @@ from maya_umbrella.signatures import FILE_VIRUS_SIGNATURES
 
 
 def this_root():
-    """Return the absolute path of the current file's directory."""
+    """Return the absolute path of the current file's directory.
+
+    Returns:
+        str: The absolute path of the current file's directory.
+    """
     return os.path.abspath(os.path.dirname(__file__))
 
 
 def safe_remove_file(file_path):
-    """Remove the file at the given path without raising an error if the file does not exist."""
+    """Remove the file at the given path without raising an error if the file does not exist.
+
+    Args:
+        file_path (str): Path to the file to remove.
+    """
     try:
         os.remove(file_path)
     except (OSError, IOError):  # noqa: UP024
@@ -29,7 +37,11 @@ def safe_remove_file(file_path):
 
 
 def safe_rmtree(path):
-    """Remove the directory at the given path without raising an error if the directory does not exist."""
+    """Remove the directory at the given path without raising an error if the directory does not exist.
+
+    Args:
+        path (str): Path to the directory to remove.
+    """
     try:
         shutil.rmtree(path)
     except (OSError, IOError):  # noqa: UP024
@@ -52,7 +64,14 @@ def read_file(path):
 
 
 def read_json(path):
-    """Read the content of the file at the given path."""
+    """Read the content of a JSON file at the given path.
+
+    Args:
+        path (str): Path to the JSON file.
+
+    Returns:
+        dict: The content of the JSON file as a dictionary, or an empty dictionary if the file could not be read.
+    """
     options = {"encoding": "utf-8"} if six.PY3 else {}
     with open(path, **options) as file_:
         try:
@@ -63,7 +82,12 @@ def read_json(path):
 
 
 def write_file(path, content):
-    """Write the given content to the file at the given path."""
+    """Write the given content to the file at the given path.
+
+    Args:
+        path (str): Path to the file to write.
+        content (str): Content to write to the file.
+    """
     root = os.path.dirname(path)
     if not os.path.exists(root):
         os.makedirs(root)
@@ -71,10 +95,15 @@ def write_file(path, content):
         file_.write(six.ensure_binary(content))
 
 
-
-
 def load_hook(hook_file):
-    """Load the Python module from the given hook file."""
+    """Load the Python module from the given hook file.
+
+    Args:
+        hook_file (str): Path to the Python file to load.
+
+    Returns:
+        module: The loaded Python module.
+    """
     hook_name = os.path.basename(hook_file).split(".py")[0]
     if hasattr(importlib, "machinery"):
         # Python 3
@@ -95,7 +124,11 @@ def load_hook(hook_file):
 
 
 def get_hooks():
-    """Return a list of paths to all hook files in the 'hooks' directory."""
+    """Return a list of paths to all hook files in the 'hooks' directory.
+
+    Returns:
+        list: A list of paths to all hook files in the 'hooks' directory.
+    """
     pattern = os.path.join(this_root(), "hooks", "*.py")
     return [hook for hook in glob.glob(pattern) if "__init__" not in hook]
 
@@ -237,7 +270,14 @@ def get_backup_path(path, root_path=None):
 
 
 def get_maya_install_root(maya_version):
-    """Get the Maya install root path."""
+    """Get the Maya install root path for the specified version.
+
+    Args:
+        maya_version (str): The version of Maya to find the install root for.
+
+    Returns:
+        str: The Maya install root path, or None if not found.
+    """
     logger = logging.getLogger(__name__)
     maya_location = os.getenv("MAYA_LOCATION")
     try:
