@@ -1,3 +1,9 @@
+## v0.12.1 (2024-05-16)
+
+### Fix
+
+- fix decode bytes for `scan_files_from_file`
+
 ## v0.12.0 (2024-05-14)
 
 ### Feat
