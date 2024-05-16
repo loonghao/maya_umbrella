@@ -84,7 +84,7 @@ class MayaVirusScanner(object):
         Args:
             text_file (str): Path to the text file containing the list of file paths.
         """
-        file_data = read_file(text_file)
+        file_data = read_file(text_file).decode()
         files = file_data.splitlines()
         return self.scan_files_from_list(files)
 
