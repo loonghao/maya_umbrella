@@ -15,5 +15,6 @@
   "delete": "删除感染文件：$name",
   "remove_file": "删除文件：$name",
   "remove_path": "删除文件夹：$name",
-  "fix_script_job": "删除被感染的节点：$name"
+  "fix_script_job": "删除被感染的节点：$name",
+  "file_not_writable": "文件不可写：$name"
 }

@@ -15,5 +15,6 @@
   "delete": "Deleting: $name",
   "remove_file": "Deleting file：$name",
   "remove_path": "Deleting path：$name",
-  "fix_script_job": "Kill script job: %s"
+  "fix_script_job": "Kill script job: %s",
+  "file_not_writable": "File not writable: $name"
 }

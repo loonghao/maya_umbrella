@@ -22,6 +22,7 @@ class MayaVirusCleaner(object):
         translator (Translator): Translator object for translation purposes.
         collector (MayaVirusCollector): MayaVirusCollector object for collecting issues.
     """
+
     def __init__(self, collector, logger=None):
         """Initialize the MayaVirusCleaner.
 
@@ -50,6 +51,9 @@ class MayaVirusCleaner(object):
     def fix_malicious_files(self):
         """Fix malicious files."""
         for file_ in self.collector.malicious_files:
+            if not os.access(file_, os.W_OK):
+                self.logger.debug(self.translator.translate("file_not_writable", name=file_))
+                continue
             if os.path.exists(file_):
                 if os.path.isfile(file_):
                     self.logger.debug(self.translator.translate("remove_file", name=file_))
@@ -94,6 +98,9 @@ class MayaVirusCleaner(object):
         """Fix infected files."""
         for file_path in self.collector.infected_files:
             self.logger.info(self.translator.translate("fix_infected_files", name=file_path))
+            if not os.access(file_path, os.W_OK):
+                self.logger.debug(self.translator.translate("file_not_writable", name=file_path))
+                continue
             remove_virus_file_by_signature(file_path, FILE_VIRUS_SIGNATURES)
             self.collector.remove_infected_file(file_path)
 
