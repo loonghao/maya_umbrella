@@ -102,3 +102,8 @@ def vendoring(session: nox.Session) -> None:
 
         # synchronize the contents
         session.run("vendoring", "sync", ".")
+
+
+def translate(session: nox.Session) -> None:
+    session.install("deepl", "maya-umbrella")
+    session.run("python", os.path.join(THIS_ROOT, "scripts", "translate_i18n.py"), THIS_ROOT)
