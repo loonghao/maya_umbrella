@@ -1,3 +1,13 @@
+## v0.14.0 (2024-05-20)
+
+### Feat
+
+- Add new setup to auto translate locales.
+
+### Refactor
+
+- ensure have permission to delete the file
+
 ## v0.13.0 (2024-05-16)
 
 ### Feat
