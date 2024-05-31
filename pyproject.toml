@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "maya_umbrella"
 version = "0.14.0"
-description = "Check and fix maya virus."
+description = "A better Autodesk Maya antivirus tool detects and removes malicious."
 homepage = "https://github.com/loonghao/maya_umbrella"
 repository = "https://github.com/loonghao/maya_umbrella"
 documentation = "https://github.com/loonghao/maya_umbrella"
-keywords = ["notifiers", "python", "Maya", "dcc"]
+keywords = ["Autodesk Maya", "python", "Maya", "dcc", "antivirus", "Security Tools", "maya_umbrella"]
 authors = ["longhao <hal.long@outlook.com>"]
 license = "MIT"
 readme = "README.md"
