@@ -1,6 +1,4 @@
-<p align="center">
-<img src="https://i.imgur.com/zeQ5azW.png" alt="logo">
-</p>
+![maya_umbrella.ing Banner](https://raw.githubusercontent.com/loonghao/maya_umbrella/main/resources/banner.png)
 
 [![Python Version](https://img.shields.io/pypi/pyversions/maya-umbrella)](https://img.shields.io/pypi/pyversions/maya-umbrella)
 [![Nox](https://img.shields.io/badge/%F0%9F%A6%8A-Nox-D85E00.svg)](https://github.com/wntrblm/nox)
