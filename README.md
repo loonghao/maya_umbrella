@@ -1,4 +1,6 @@
-# maya-umbrella
+<p align="center">
+<img src="https://i.imgur.com/zeQ5azW.png" alt="logo">
+</p>
 
 [![Python Version](https://img.shields.io/pypi/pyversions/maya-umbrella)](https://img.shields.io/pypi/pyversions/maya-umbrella)
 [![Nox](https://img.shields.io/badge/%F0%9F%A6%8A-Nox-D85E00.svg)](https://github.com/wntrblm/nox)
@@ -21,6 +23,8 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
+A better Autodesk Maya antivirus tool detects and removes malicious.
+
 This tool is designed to provide a robust solution for identifying and resolving any potential viruses within Autodesk
 Maya.
 It ensures a secure and seamless user experience by proactively scanning for threats and effectively neutralizing them.
@@ -30,11 +34,15 @@ It can be provided as an API for seamless integration into your existing pipelin
 # 安装
 
 ## pip 安装
+maya_umbrella is distributed as a standard pipy package, so we can install it via pip install.
+
 maya_umbrella是以标准pipy包去发布的，所以我们可以通过pip install去安装
 ```shell
 your/maya-root/mayapy -m pip install maya-umbrella
 ```
 ## 一键安装
+Download the corresponding version of the zip package in the release, unzip it and double-click `install.bat` to install it.
+
 在release里面下载对应版本的zip包，解压后双击`install.bat`即可安装
 
 更新版本
@@ -63,13 +71,21 @@ pip install -r requirements-dev.txt
 
 
 ## 在maya中测试
+With `nox -s maya -- <maya version>`, start maya.
+Nox will dynamically register a nox session based on your local installation of maya, 
+e.g. if you have `maya-2020` installed locally, then you can start maya with a test environment.
+Then you can start maya with a test environment via
 
 通过`nox -s maya -- <maya version>`, 启动maya.
 nox会动态根据你本地安装得maya去注册nox session, 比如你本地安装了`maya-2020`，
 那么通过可以启动带有测试环境的maya
+
 ```shell
 nox -s maya -- 2018
 ```
+**Note: there are two `-` between maya and the version number**.
+
+Starting maya and executing the following code in the script editor will dynamically open the ma file from `<repo>/tests/virus/` to test it.
 
 **注意：maya 与 版本号之间有 俩个`-`**
 
@@ -80,22 +96,28 @@ import manual_test_in_maya
 
 manual_test_in_maya.start()
 ```
+It is also possible to execute the corresponding tests via pytest, which also requires a local installation of the corresponding maya
 
 也可以通过pytest去执行对应的测试，也需要本地安装了对应的maya
 
 ```shell
 nox -s maya -- 2018 --test
 ```
+**Note: Command line crash may occur in versions below maya-2022 (PY2)**.
 
 **注意：在maya-2022 (PY2) 以下的版本可能会出现命令行crash的情况**
 
 
 ## 增加新的疫苗
+Create a new py in `<repo>/maya_umbrella/vaccines/`, since many viruses don't have a specific name, we'll use `vaccine<id>.py`.
+Inherit `from maya_umbrella.vaccine import AbstractVaccine` and call the class `Vaccine`, and then write the virus collection logic.
 
 在`<repo>/maya_umbrella/vaccines/` 新建一个py, 因为有很多病毒没有具体的名字代号，我们统一以`vaccine<id>.py`
 继承`from maya_umbrella.vaccine import AbstractVaccine`并且class名字叫`Vaccine`即可, 然后去写具体的收集病毒逻辑
 
 ## 代码检查
+
+We can use the encapsulated `nox` command to perform a code check.
 
 我们可以利用封装好的`nox`命令去执行进行代码检查
 
@@ -109,6 +131,9 @@ nox -s lint-fix
 ```
 
 # 生成安装包
+Execute the following command to create a zip under <repo>/.zip, with `--version` the version number of the current tool.
+
+**Note: between `make-zip` and `--version` there are two `-`**.
 
 执行下面的命令可以在<repo>/.zip下面创建zip，参数 `--version` 当前工具的版本号
 
