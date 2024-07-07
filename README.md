@@ -18,7 +18,7 @@
 [![maya-2018](https://img.shields.io/badge/maya-2018-green)](https://img.shields.io/badge/maya-2018-green)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 A better Autodesk Maya antivirus tool detects and removes malicious.
@@ -247,6 +247,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Wenfeng-Zhang"><img src="https://avatars.githubusercontent.com/u/54899080?v=4?s=100" width="100px;" alt="Wenfeng Zhang"/><br /><sub><b>Wenfeng Zhang</b></sub></a><br /><a href="https://github.com/loonghao/maya_umbrella/commits?author=Wenfeng-Zhang" title="Tests">⚠️</a> <a href="https://github.com/loonghao/maya_umbrella/commits?author=Wenfeng-Zhang" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/rickdave"><img src="https://avatars.githubusercontent.com/u/37840466?v=4?s=100" width="100px;" alt="rickdave"/><br /><sub><b>rickdave</b></sub></a><br /><a href="https://github.com/loonghao/maya_umbrella/issues?q=author%3Arickdave" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
