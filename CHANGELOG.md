@@ -1,3 +1,9 @@
+## v0.14.1 (2024-07-07)
+
+### Fix
+
+- fix get `APPDATA` path error from Linux. (#51)
+
 ## v0.14.0 (2024-05-20)
 
 ### Feat
