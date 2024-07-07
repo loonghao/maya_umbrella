@@ -1,6 +1,7 @@
 # Import built-in modules
 import glob
 import os
+import platform
 
 # Import local modules
 from maya_umbrella.filesystem import check_virus_by_signature
@@ -81,7 +82,8 @@ class Vaccine(AbstractVaccine):
 
     def collect_issues(self):
         """Collect all issues related to the virus."""
-        self.api.add_malicious_file(os.path.join(os.getenv("APPDATA"), "syssst"))
+        if platform.system() == "Windows":
+            self.api.add_malicious_file(os.path.join(os.getenv("APPDATA"), "syssst"))
         self.collect_infected_mel_files()
         self.collect_infected_hik_files()
         self.collect_infected_nodes()

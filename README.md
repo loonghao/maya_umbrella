@@ -70,7 +70,7 @@ pip install -r requirements-dev.txt
 
 ## 在maya中测试
 With `nox -s maya -- <maya version>`, start maya.
-Nox will dynamically register a nox session based on your local installation of maya, 
+Nox will dynamically register a nox session based on your local installation of maya,
 e.g. if you have `maya-2020` installed locally, then you can start maya with a test environment.
 Then you can start maya with a test environment via
 
