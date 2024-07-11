@@ -71,11 +71,11 @@ pip install -r requirements-dev.txt
 ## 在maya中测试
 With `nox -s maya -- <maya version>`, start maya.
 Nox will dynamically register a nox session based on your local installation of maya,
-e.g. if you have `maya-2020` installed locally, then you can start maya with a test environment.
+e.g. if you have `maya-2018` installed locally, then you can start maya with a test environment.
 Then you can start maya with a test environment via
 
 通过`nox -s maya -- <maya version>`, 启动maya.
-nox会动态根据你本地安装得maya去注册nox session, 比如你本地安装了`maya-2020`，
+nox会动态根据你本地安装得maya去注册nox session, 比如你本地安装了`maya-2018`，
 那么通过可以启动带有测试环境的maya
 
 ```shell
@@ -142,6 +142,11 @@ nox -s make-zip -- --version 0.5.0
 ```
 
 # 环境变量
+We can use the following environment variables to modify some of the settings of maya_umbrella, 
+
+so that companies with pipelines can better integrate them.
+
+Modify the log saving directory of maya umbrella, the default is the windows temp directory.
 
 我们可以通过下列环境变量去修改maya_umbrella的一些设置，方便有pipeline的公司可以更好的集成
 
@@ -150,6 +155,7 @@ nox -s make-zip -- --version 0.5.0
 ```shell
 MAYA_UMBRELLA_LOG_ROOT
 ```
+Change the name of the log file for maya umbrella, default is `maya_umbrella`.
 
 修改maya umbrella的日志文件名称, 默认是`maya_umbrella`
 
@@ -157,11 +163,21 @@ MAYA_UMBRELLA_LOG_ROOT
 MAYA_UMBRELLA_LOG_NAME
 ```
 
-设置日志级别，默认是info, 可以是debug可以看到更多的日志信息
+Set the log level, the default is info, can be debug can see more log information.
+
+设置日志级别，默认是info, 可以是debug可以看到更多的日志信息.
 
 ```shell
 MAYA_UMBRELLA_LOG_LEVEL
 ```
+Change the name of the backup folder for antivirus files, default is `_virus`.
+
+For example:
+
+Your file path is `c:/your/path/file.ma`.
+
+Then the backup file path is `c:/your/path/_virus/file.ma`.
+
 修改杀毒后文件的备份文件夹名称， 默认是`_virus`
 比如:
 你文件路径是  `c:/your/path/file.ma`
@@ -169,25 +185,43 @@ MAYA_UMBRELLA_LOG_LEVEL
 ```shell
 MAYA_UMBRELLA_BACKUP_FOLDER_NAME
 ```
-默认的显示语言，包含日志打印输出等，默认是根据你当前maya的界面语言来设置的，当然我们也可以通过下面的环境变量去设置
+The default display language, including logging printouts, etc.
+
+is set by default according to your current maya interface language, 
+
+but of course we can also set it via the following environment variables.
+
+默认的显示语言，包含日志打印输出等，默认是根据你当前maya的界面语言来设置的，当然我们也可以通过下面的环境变量去设置.
 ```shell
 MAYA_UMBRELLA_LANG
 ```
+Ignore saving to the backup folder,
+*please note that if you are not clear about the consequences of this please do not modify it easily*, 
+the default batch antivirus will automatically back up the source file to the current file's backup folder 
+after the batch antivirus.
 
 忽略保存到备份文件夹，*请注意，如果你不清楚这个会导致的后果请不要轻易修改*，默认批量杀毒后会把源文件自动备份到当前文件的备份文件夹.
+
 ```shell
 MAYA_UMBRELLA_IGNORE_BACKUP
 ```
+If ignored please set to
 
 如果忽略请设置为
 ```shell
 SET MAYA_UMBRELLA_IGNORE_BACKUP=true
 ```
 
+For the portable version of Maya, 
+you can specify the Maya path by adding the `MAYA_LOCATION` environment variable.
+
 如果是便携版Maya，可以通过添加 `MAYA_LOCATION` 环境变量指定Maya路径
+
 ```shell
 SET MAYA_LOCATION=d:/your/path/maya_version/
 ```
+You can also specify a directory from the command line.
+
 也可以通过命令行指定目录
 
 ```shell
@@ -196,6 +230,9 @@ nox -s maya -- 2018 --install-root /your/local/maya/root
 ```
 
 # API
+
+Get virus files that have not been repaired in the current scenario.
+
 获取当前场景没有被修复的病毒文件
 
 ```python
@@ -204,6 +241,8 @@ from maya_umbrella import MayaVirusDefender
 api = MayaVirusDefender()
 print(api.get_unfixed_references())
 ```
+
+Batch repair of files, via regular expressions.
 
 批量修复文件, 通过正则表达式
 ```python
@@ -215,6 +254,18 @@ print(api.scan_files_from_pattern("your/path/*.m[ab]"))
 ```
 
 # 案例
+
+If you want to quickly go through maya standalone and batch clean up maya files.
+
+You can either `download` or `git clone` the current `main` branch.
+
+Set up your development environment according to the guidelines above,
+and Use the `nox` command to start the maya `standalone` environment,
+the version of maya is based on your current local installation of maya.
+For example, if you have `2018` installed locally, Then `nox -s maya -- 2018 --standalone`.
+
+The following syntax starts a maya-2020 environment to dynamically check for viruses from the `c:/test` folder.
+
 如果你想要快速通过maya standalone去批量清理maya文件，
 可以`下载`或者`git clone`当前`main`分支的工程，
 根据上面指引设置好开发环境,
