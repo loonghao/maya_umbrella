@@ -5,7 +5,7 @@ import maya.cmds as cmds
 from maya_umbrella import get_defender_instance
 
 
-def main():
+def setup_maya_umbrella():
     defender = get_defender_instance()
     defender.setup()
     if not cmds.about(batch=True):
@@ -16,4 +16,4 @@ def main():
 
 
 if __name__ == "__main__":
-    cmds.evalDeferred(main)
+    cmds.evalDeferred(setup_maya_umbrella)
