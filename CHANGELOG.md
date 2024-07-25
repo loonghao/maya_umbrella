@@ -1,3 +1,9 @@
+## v0.14.2 (2024-07-25)
+
+### Refactor
+
+- rename `main` to `setup_maya_umbrella` in `userSetup.py`
+
 ## v0.14.1 (2024-07-07)
 
 ### Fix
