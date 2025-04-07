@@ -1,6 +1,6 @@
 ![Maya Umbrella Banner](https://raw.githubusercontent.com/loonghao/maya_umbrella/main/resources/banner.png)
 
-[English](README.md) | [中文](README_zh.md)
+[English](https://github.com/loonghao/maya_umbrella/blob/main/README.md) | [中文](https://github.com/loonghao/maya_umbrella/blob/main/README_zh.md)
 
 [![Python Version](https://img.shields.io/pypi/pyversions/maya-umbrella)](https://img.shields.io/pypi/pyversions/maya-umbrella)
 [![Nox](https://img.shields.io/badge/%F0%9F%A6%8A-Nox-D85E00.svg)](https://github.com/wntrblm/nox)
