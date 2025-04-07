@@ -1,4 +1,4 @@
-![maya_umbrella.ing Banner](https://raw.githubusercontent.com/loonghao/maya_umbrella/main/resources/banner.png)
+![Maya Umbrella Banner](https://raw.githubusercontent.com/loonghao/maya_umbrella/main/resources/banner.png)
 
 [English](README.md) | [中文](README_zh.md)
 
