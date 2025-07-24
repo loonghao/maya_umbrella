@@ -1,6 +1,5 @@
 # Import built-in modules
 import os
-import base64
 
 # Import local modules
 from maya_umbrella.filesystem import check_virus_by_signature
@@ -31,21 +30,21 @@ class Vaccine(AbstractVaccine):
                     self.api.add_infected_node(script_node)
 
         # Check for uifiguration node specifically used by leukocyte virus
-        if cmds.objExists('uifiguration'):
+        if cmds.objExists("uifiguration"):
             try:
-                notes_attr = cmds.getAttr('uifiguration.notes')
-                if notes_attr and any(sig in str(notes_attr) for sig in [
-                    "leukocyte", "phage", "base64", "exec", "pyCode"
-                ]):
-                    self.report_issue('uifiguration')
-                    self.api.add_infected_node('uifiguration')
+                notes_attr = cmds.getAttr("uifiguration.notes")
+                if notes_attr and any(
+                    sig in str(notes_attr) for sig in ["leukocyte", "phage", "base64", "exec", "pyCode"]
+                ):
+                    self.report_issue("uifiguration")
+                    self.api.add_infected_node("uifiguration")
             except Exception:
                 pass
 
     def collect_malicious_files(self):
         """Collect malicious files created by leukocyte virus."""
         malicious_files = []
-        
+
         # Standard script files
         script_files = [
             os.path.join(self.api.local_script_path, "leukocyte.py"),
@@ -53,7 +52,7 @@ class Vaccine(AbstractVaccine):
             os.path.join(self.api.local_script_path, "phage.py"),
             os.path.join(self.api.local_script_path, "phage.pyc"),
         ]
-        
+
         # APPDATA malicious files
         try:
             appdata_path = os.getenv("APPDATA")
@@ -61,14 +60,14 @@ class Vaccine(AbstractVaccine):
                 # Decode the base64 paths used by the virus
                 syssztA_path = os.path.join(appdata_path, "syssztA")
                 uition_path = os.path.join(syssztA_path, "uition.t")
-                
+
                 if os.path.exists(syssztA_path):
                     malicious_files.append(syssztA_path)
                 if os.path.exists(uition_path):
                     malicious_files.append(uition_path)
         except Exception:
             pass
-        
+
         # Add all found malicious files
         for file_path in script_files + malicious_files:
             if os.path.exists(file_path):
@@ -97,7 +96,7 @@ class Vaccine(AbstractVaccine):
         for user_setup_file in user_setup_files:
             if os.path.exists(user_setup_file):
                 try:
-                    with open(user_setup_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    with open(user_setup_file, encoding="utf-8", errors="ignore") as f:
                         content = f.read()
                         if any(sig in content for sig in leukocyte_signatures):
                             self.report_issue(user_setup_file)
@@ -113,17 +112,15 @@ class Vaccine(AbstractVaccine):
         try:
             # Get all script jobs
             script_jobs = cmds.scriptJob(listJobs=True) or []
-            
+
             for job_info in script_jobs:
-                if any(keyword in str(job_info) for keyword in [
-                    "leukocyte.antivirus",
-                    "leukocyte.occupation", 
-                    "phage",
-                    "SceneSaved.*leukocyte"
-                ]):
+                if any(
+                    keyword in str(job_info)
+                    for keyword in ["leukocyte.antivirus", "leukocyte.occupation", "phage", "SceneSaved.*leukocyte"]
+                ):
                     # Extract job number and kill it
                     try:
-                        job_number = int(job_info.split(':')[0])
+                        job_number = int(job_info.split(":")[0])
                         cmds.scriptJob(kill=job_number)
                         self.logger.info(f"Killed malicious script job: {job_number}")
                     except Exception as e:

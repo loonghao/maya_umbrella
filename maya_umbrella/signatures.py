@@ -14,7 +14,9 @@ leukocyte_sig1 = VirusSignature("leukocyte", r"class\s+phage:")
 leukocyte_sig2 = VirusSignature("leukocyte", r"leukocyte\s*=\s*phage\(\)")
 leukocyte_sig3 = VirusSignature("leukocyte", r"leukocyte\.occupation\(\)")
 leukocyte_sig4 = VirusSignature("leukocyte", r"leukocyte\.antivirus\(\)")
-leukocyte_sig5 = VirusSignature("leukocyte", r"cmds\.scriptJob\(event=\[\"SceneSaved\",\s*\"leukocyte\.antivirus\(\)\"\]")
+leukocyte_sig5 = VirusSignature(
+    "leukocyte", r"cmds\.scriptJob\(event=\[\"SceneSaved\",\s*\"leukocyte\.antivirus\(\)\"\]"
+)
 
 JOB_SCRIPTS_VIRUS_SIGNATURES = [
     "petri_dish_path.+cmds.internalVar.+",

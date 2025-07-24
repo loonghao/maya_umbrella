@@ -3,7 +3,7 @@ import argparse
 import os
 from pathlib import Path
 import shutil
-from typing import Iterator
+from collections.abc import Iterator
 from typing import Tuple
 import zipfile
 
