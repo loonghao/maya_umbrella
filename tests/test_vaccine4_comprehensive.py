@@ -93,20 +93,24 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
     @patch('maya_umbrella.vaccines.vaccine4.os.getenv')
     def test_collect_malicious_files_with_appdata_files(self, mock_getenv, mock_exists):
         """Test collection of malicious files including APPDATA files."""
-        mock_getenv.return_value = "C:\\mock\\appdata"
+        mock_appdata = "/mock/appdata"
+        mock_local_scripts = "/mock/local/scripts"
+
+        mock_getenv.return_value = mock_appdata
 
         def exists_side_effect(path):
-            # Match the actual paths that would be constructed
-            return path in [
-                "C:\\mock\\local\\scripts\\leukocyte.py",
-                "C:\\mock\\appdata\\syssztA",
-                "C:\\mock\\appdata\\syssztA\\uition.t"
+            # Use os.path.join to construct expected paths
+            expected_paths = [
+                os.path.join(mock_local_scripts, "leukocyte.py"),
+                os.path.join(mock_appdata, "syssztA"),
+                os.path.join(mock_appdata, "syssztA", "uition.t")
             ]
+            return path in expected_paths
 
         mock_exists.side_effect = exists_side_effect
 
         # Set up the API paths to match our mock
-        self.mock_api.local_script_path = "C:\\mock\\local\\scripts"
+        self.mock_api.local_script_path = mock_local_scripts
 
         self.vaccine.collect_malicious_files()
 
