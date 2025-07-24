@@ -99,13 +99,14 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         mock_getenv.return_value = mock_appdata
 
         def exists_side_effect(path):
-            # Use os.path.join to construct expected paths
+            # Use os.path.normpath for cross-platform path comparison
+            normalized_path = os.path.normpath(path)
             expected_paths = [
-                os.path.join(mock_local_scripts, "leukocyte.py"),
-                os.path.join(mock_appdata, "syssztA"),
-                os.path.join(mock_appdata, "syssztA", "uition.t")
+                os.path.normpath(os.path.join(mock_local_scripts, "leukocyte.py")),
+                os.path.normpath(os.path.join(mock_appdata, "syssztA")),
+                os.path.normpath(os.path.join(mock_appdata, "syssztA", "uition.t"))
             ]
-            return path in expected_paths
+            return normalized_path in expected_paths
 
         mock_exists.side_effect = exists_side_effect
 
