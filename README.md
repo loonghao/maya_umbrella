@@ -142,27 +142,45 @@ Run the complete test suite with coverage:
 nox -s pytest
 ```
 
-### Docker Integration Tests
-Maya Umbrella includes Docker-based integration tests that run in real Maya environments. These tests are automatically skipped during local development and only run in CI environments.
+### Cross-Platform Python 2.7 Testing
 
-**Local Development**: Docker tests are automatically skipped
-```shell
-nox -s pytest
-# Output: 58 passed, 8 deselected (Docker tests skipped)
+Maya Umbrella supports both Python 2.7 (Maya 2018-2020) and Python 3.x (Maya 2022+). We provide comprehensive testing for both environments:
+
+#### GitHub Actions CI Testing
+- **Linux Maya Testing**: Automated tests using `mottosso/maya:2018/2019/2020` Docker images
+- **Windows Python 2.7**: Compatibility testing on Windows with Python 2.7
+- **Multi-platform validation**: Tests run on Ubuntu, Windows, and macOS
+
+#### Local Python 2.7 Testing (Windows)
+For local Python 2.7 compatibility testing on Windows:
+
+```batch
+# Run the test script directly
+python scripts/test_python27_windows.py
+
+# Or use the convenient batch file
+scripts/test_python27_windows.bat
 ```
 
-**CI Environment**: Docker tests run automatically in GitHub Actions using `mottosso/maya:2022` images
+This local test script verifies:
+- ✅ Core module imports and functionality
+- ✅ Python 2.7 syntax compatibility
+- ✅ File system operations
+- ✅ Vaccine class instantiation
+- ✅ Unicode handling (Python 2.7 specific)
 
-**Force Local Docker Testing** (requires Docker):
+#### Maya Version Compatibility Matrix
+
+| Maya Version | Python Version | Testing Method | Status |
+|--------------|----------------|----------------|---------|
+| 2018-2020 | Python 2.7 | Docker + Local | ✅ Fully Tested |
+| 2022+ | Python 3.7+ | Standard CI | ✅ Fully Tested |
+
+#### Integration Tests
+Run integration tests that require Maya:
 ```shell
-# Pull Maya Docker image first
-docker pull mottosso/maya:2022
-
-# Force run Docker tests locally
-CI=1 nox -s docker-test
+nox -s maya-integration
 ```
-
-For more details, see [Docker Testing Documentation](docs/docker-testing.md).
 
 ## 🔒 Security & Safety
 

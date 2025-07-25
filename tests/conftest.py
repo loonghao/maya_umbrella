@@ -94,18 +94,10 @@ def maya_cmds():
     return cmds
 
 
-# Docker Maya Integration Test Fixtures
-
 def pytest_configure(config):
     """Configure pytest with custom markers."""
     config.addinivalue_line(
-        "markers", "docker: mark test to run with Docker Maya (CI only, skipped locally)"
-    )
-    config.addinivalue_line(
         "markers", "integration: mark test as integration test"
-    )
-    config.addinivalue_line(
-        "markers", "ci_only: mark test to run only in CI environment"
     )
 
 

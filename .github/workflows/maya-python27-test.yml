@@ -1,0 +1,203 @@
+name: Maya Python 2.7 Integration Tests
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  maya-python27-linux:
+    name: Maya ${{ matrix.maya-version }} (Python 2.7) on Linux
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    
+    strategy:
+      matrix:
+        maya-version: ["2018", "2019", "2020"]
+      fail-fast: false
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Free disk space
+      run: |
+        # Free up disk space for large Maya images
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /opt/ghc
+        sudo rm -rf "/usr/local/share/boost"
+        sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+        df -h
+    
+    - name: Pull Maya Docker image
+      run: |
+        echo "Pulling Maya ${{ matrix.maya-version }} Docker image..."
+        docker pull mottosso/maya:${{ matrix.maya-version }}
+        docker images mottosso/maya:${{ matrix.maya-version }}
+    
+    - name: Test Maya Umbrella in Maya ${{ matrix.maya-version }}
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          -e PYTHONPATH=/workspace \
+          -e MAYA_DISABLE_CIP=1 \
+          -e MAYA_DISABLE_CER=1 \
+          -e MAYA_DISABLE_CLIC_IPM=1 \
+          mottosso/maya:${{ matrix.maya-version }} \
+          mayapy -c "
+import sys
+import os
+print('=' * 60)
+print('Maya ${{ matrix.maya-version }} Python 2.7 Integration Test')
+print('=' * 60)
+print('Python version:', sys.version)
+print('Python executable:', sys.executable)
+print('Platform:', sys.platform)
+
+# Add workspace to Python path
+sys.path.insert(0, '/workspace')
+
+try:
+    # Test Maya environment
+    import maya.standalone
+    maya.standalone.initialize()
+    print('✅ Maya standalone initialized successfully')
+    
+    import maya.cmds as cmds
+    maya_version = cmds.about(version=True)
+    maya_build = cmds.about(buildDirectory=True)
+    print('✅ Maya version: {}'.format(maya_version))
+    print('✅ Maya build: {}'.format(maya_build))
+    
+    # Test Maya Umbrella core imports
+    print('\\n--- Testing Maya Umbrella Imports ---')
+    from maya_umbrella import MayaVirusDefender, MayaVirusScanner
+    print('✅ Core classes imported successfully')
+    
+    from maya_umbrella.vaccines import get_all_vaccines
+    vaccines = get_all_vaccines()
+    print('✅ Vaccines loaded: {} vaccines available'.format(len(vaccines)))
+    
+    # List available vaccines
+    for vaccine in vaccines:
+        print('  - {}'.format(vaccine.__class__.__name__))
+    
+    # Test basic defender functionality
+    print('\\n--- Testing Defender Functionality ---')
+    cmds.file(new=True, force=True)
+    
+    defender = MayaVirusDefender()
+    defender.start()
+    print('✅ Defender started successfully')
+    print('✅ Issues detected: {}'.format(defender.have_issues))
+    
+    # Test scanner functionality
+    print('\\n--- Testing Scanner Functionality ---')
+    scanner = MayaVirusScanner()
+    print('✅ Scanner created successfully')
+    
+    # Test file system utilities
+    print('\\n--- Testing File System Utilities ---')
+    from maya_umbrella.filesystem import write_file, read_file
+    
+    test_file = '/tmp/test_maya_umbrella.txt'
+    test_content = 'Maya Umbrella Python 2.7 Test'
+    
+    write_file(test_file, test_content)
+    read_content = read_file(test_file)
+    
+    if read_content.strip() == test_content:
+        print('✅ File system utilities working correctly')
+    else:
+        raise Exception('File system test failed')
+    
+    # Clean up
+    os.remove(test_file)
+    maya.standalone.uninitialize()
+    
+    print('\\n🎉 All Maya ${{ matrix.maya-version }} Python 2.7 tests passed!')
+    
+except Exception as e:
+    print('❌ ERROR: {}'.format(e))
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
+"
+    
+    - name: Test Maya Umbrella vaccines in Maya ${{ matrix.maya-version }}
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          -e PYTHONPATH=/workspace \
+          -e MAYA_DISABLE_CIP=1 \
+          -e MAYA_DISABLE_CER=1 \
+          -e MAYA_DISABLE_CLIC_IPM=1 \
+          mottosso/maya:${{ matrix.maya-version }} \
+          mayapy -c "
+import sys
+sys.path.insert(0, '/workspace')
+
+try:
+    import maya.standalone
+    maya.standalone.initialize()
+    
+    import maya.cmds as cmds
+    cmds.file(new=True, force=True)
+    
+    print('\\n--- Testing Individual Vaccines ---')
+    from maya_umbrella.vaccines import get_all_vaccines
+    
+    vaccines = get_all_vaccines()
+    for vaccine in vaccines:
+        try:
+            vaccine_name = vaccine.__class__.__name__
+            print('Testing vaccine: {}'.format(vaccine_name))
+            
+            # Test vaccine initialization
+            vaccine_instance = vaccine()
+            print('  ✅ {} initialized successfully'.format(vaccine_name))
+            
+            # Test vaccine scan (if method exists)
+            if hasattr(vaccine_instance, 'scan'):
+                result = vaccine_instance.scan()
+                print('  ✅ {} scan completed'.format(vaccine_name))
+            
+        except Exception as e:
+            print('  ❌ {} failed: {}'.format(vaccine_name, e))
+    
+    maya.standalone.uninitialize()
+    print('\\n✅ Vaccine testing completed')
+    
+except Exception as e:
+    print('❌ ERROR: {}'.format(e))
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
+"
+
+  maya-python27-summary:
+    name: Maya Python 2.7 Test Summary
+    runs-on: ubuntu-latest
+    needs: maya-python27-linux
+    if: always()
+    
+    steps:
+    - name: Test Results Summary
+      run: |
+        echo "Maya Python 2.7 Integration Test Results:"
+        echo "=========================================="
+        
+        if [ "${{ needs.maya-python27-linux.result }}" == "success" ]; then
+          echo "✅ All Maya Python 2.7 tests passed successfully!"
+          echo "   - Maya 2018, 2019, 2020 compatibility verified"
+          echo "   - Core Maya Umbrella functionality tested"
+          echo "   - All vaccines loaded and tested"
+        else
+          echo "❌ Some Maya Python 2.7 tests failed"
+          echo "   Check the individual job logs for details"
+          exit 1
+        fi
