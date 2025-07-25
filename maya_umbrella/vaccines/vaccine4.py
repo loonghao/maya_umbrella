@@ -114,10 +114,49 @@ class Vaccine(AbstractVaccine):
             script_jobs = cmds.scriptJob(listJobs=True) or []
 
             for job_info in script_jobs:
-                if any(
-                    keyword in str(job_info)
-                    for keyword in ["leukocyte.antivirus", "leukocyte.occupation", "phage", "SceneSaved.*leukocyte"]
-                ):
+                job_content = str(job_info)
+                is_malicious = False
+
+                # Check for obvious virus keywords
+                obvious_keywords = ["leukocyte.antivirus", "leukocyte.occupation", "phage", "SceneSaved.*leukocyte"]
+                if any(keyword in job_content for keyword in obvious_keywords):
+                    is_malicious = True
+                    self.logger.info(f"Detected malicious scriptJob with obvious keyword: {job_info}")
+
+                # Check for base64 and suspicious patterns
+                suspicious_patterns = [
+                    "base64.b64decode",
+                    "base64.urlsafe_b64decode",
+                    "exec(",
+                    "eval(",
+                    "import base64",
+                    "binascii.a2b_base64",
+                    "uifiguration.notes",
+                    "APPDATA",
+                    "syssztA",
+                    "uition.t"
+                ]
+
+                if any(pattern in job_content for pattern in suspicious_patterns):
+                    is_malicious = True
+                    self.logger.info(f"Detected suspicious scriptJob with base64/exec pattern: {job_info}")
+
+                # Check for long base64-like strings (potential encoded payloads)
+                import re
+                base64_pattern = r'[A-Za-z0-9+/]{50,}={0,2}'
+                if re.search(base64_pattern, job_content):
+                    is_malicious = True
+                    self.logger.info(f"Detected scriptJob with potential base64 payload: {job_info}")
+
+                # Use virus signature checking on scriptJob content
+                from maya_umbrella.filesystem import check_virus_by_signature
+                from maya_umbrella.signatures import JOB_SCRIPTS_VIRUS_SIGNATURES, FILE_VIRUS_SIGNATURES
+
+                if check_virus_by_signature(job_content, JOB_SCRIPTS_VIRUS_SIGNATURES + FILE_VIRUS_SIGNATURES):
+                    is_malicious = True
+                    self.logger.info(f"Detected scriptJob matching virus signature: {job_info}")
+
+                if is_malicious:
                     # Extract job number and kill it
                     try:
                         job_number = int(job_info.split(":")[0])
@@ -125,6 +164,7 @@ class Vaccine(AbstractVaccine):
                         self.logger.info(f"Killed malicious script job: {job_number}")
                     except Exception as e:
                         self.logger.warning(f"Failed to kill script job: {e}")
+
         except Exception as e:
             self.logger.warning(f"Error checking script jobs: {e}")
 

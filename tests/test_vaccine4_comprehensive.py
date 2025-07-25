@@ -4,9 +4,6 @@ import sys
 import unittest
 from unittest.mock import Mock, patch, mock_open, call
 
-# Add project root to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 # Import local modules
 from maya_umbrella.vaccines.vaccine4 import Vaccine
 
@@ -224,6 +221,52 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
 
         # Should not raise exception
         self.vaccine.collect_script_jobs()
+
+    @patch('maya_umbrella.vaccines.vaccine4.cmds')
+    def test_collect_script_jobs_base64_detection(self, mock_cmds):
+        """Test detection of scriptJobs with base64 encoded payloads."""
+        mock_script_jobs = [
+            "123: SceneSaved -> python('import base64; exec(base64.b64decode(\"payload\"))')",
+            "124: SceneSaved -> normal_function()",
+            "125: SceneSaved -> eval(base64.urlsafe_b64decode('aW1wb3J0IG9z'))",
+            "126: SceneSaved -> python('aW1wb3J0IGJhc2U2NA==')",  # Long base64 string
+            "127: SceneSaved -> cmds.getAttr('uifiguration.notes')",
+            "128: SceneSaved -> os.path.join(os.getenv('APPDATA'), 'syssztA')"
+        ]
+        mock_cmds.scriptJob.return_value = mock_script_jobs
+
+        self.vaccine.collect_script_jobs()
+
+        # Should kill suspicious jobs (123, 125, 126, 127, 128)
+        expected_kill_calls = [
+            call(kill=123),  # base64.b64decode + exec
+            call(kill=125),  # base64.urlsafe_b64decode + eval
+            call(kill=126),  # long base64 string
+            call(kill=127),  # uifiguration.notes
+            call(kill=128)   # APPDATA + syssztA
+        ]
+        mock_cmds.scriptJob.assert_has_calls(expected_kill_calls, any_order=True)
+
+    @patch('maya_umbrella.vaccines.vaccine4.cmds')
+    def test_collect_script_jobs_virus_signature_detection(self, mock_cmds):
+        """Test detection of scriptJobs matching virus signatures."""
+        mock_script_jobs = [
+            "123: SceneSaved -> python('class phage: pass')",
+            "124: SceneSaved -> normal_function()",
+            "125: SceneSaved -> python('leukocyte = phage()')",
+            "126: SceneSaved -> python('petri_dish_path = cmds.internalVar(userAppDir=True)')"
+        ]
+        mock_cmds.scriptJob.return_value = mock_script_jobs
+
+        self.vaccine.collect_script_jobs()
+
+        # Should kill jobs matching virus signatures (123, 125, 126)
+        expected_kill_calls = [
+            call(kill=123),  # class phage
+            call(kill=125),  # leukocyte = phage()
+            call(kill=126)   # petri_dish_path + cmds.internalVar
+        ]
+        mock_cmds.scriptJob.assert_has_calls(expected_kill_calls, any_order=True)
 
     @patch('maya_umbrella.vaccines.vaccine4.cmds')
     def test_collect_script_jobs_exception(self, mock_cmds):
