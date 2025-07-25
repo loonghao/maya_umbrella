@@ -46,88 +46,11 @@ jobs:
           -e MAYA_DISABLE_CIP=1 \
           -e MAYA_DISABLE_CER=1 \
           -e MAYA_DISABLE_CLIC_IPM=1 \
+          -e MAYA_VERSION=${{ matrix.maya-version }} \
           mottosso/maya:${{ matrix.maya-version }} \
-          mayapy -c "
-import sys
-import os
-print('=' * 60)
-print('Maya ${{ matrix.maya-version }} Python 2.7 Integration Test')
-print('=' * 60)
-print('Python version:', sys.version)
-print('Python executable:', sys.executable)
-print('Platform:', sys.platform)
-
-# Add workspace to Python path
-sys.path.insert(0, '/workspace')
-
-try:
-    # Test Maya environment
-    import maya.standalone
-    maya.standalone.initialize()
-    print('✅ Maya standalone initialized successfully')
+          mayapy scripts/test_maya_docker_integration.py --maya-version ${{ matrix.maya-version }}
     
-    import maya.cmds as cmds
-    maya_version = cmds.about(version=True)
-    maya_build = cmds.about(buildDirectory=True)
-    print('✅ Maya version: {}'.format(maya_version))
-    print('✅ Maya build: {}'.format(maya_build))
-    
-    # Test Maya Umbrella core imports
-    print('\\n--- Testing Maya Umbrella Imports ---')
-    from maya_umbrella import MayaVirusDefender, MayaVirusScanner
-    print('✅ Core classes imported successfully')
-    
-    from maya_umbrella.vaccines import get_all_vaccines
-    vaccines = get_all_vaccines()
-    print('✅ Vaccines loaded: {} vaccines available'.format(len(vaccines)))
-    
-    # List available vaccines
-    for vaccine in vaccines:
-        print('  - {}'.format(vaccine.__class__.__name__))
-    
-    # Test basic defender functionality
-    print('\\n--- Testing Defender Functionality ---')
-    cmds.file(new=True, force=True)
-    
-    defender = MayaVirusDefender()
-    defender.start()
-    print('✅ Defender started successfully')
-    print('✅ Issues detected: {}'.format(defender.have_issues))
-    
-    # Test scanner functionality
-    print('\\n--- Testing Scanner Functionality ---')
-    scanner = MayaVirusScanner()
-    print('✅ Scanner created successfully')
-    
-    # Test file system utilities
-    print('\\n--- Testing File System Utilities ---')
-    from maya_umbrella.filesystem import write_file, read_file
-    
-    test_file = '/tmp/test_maya_umbrella.txt'
-    test_content = 'Maya Umbrella Python 2.7 Test'
-    
-    write_file(test_file, test_content)
-    read_content = read_file(test_file)
-    
-    if read_content.strip() == test_content:
-        print('✅ File system utilities working correctly')
-    else:
-        raise Exception('File system test failed')
-    
-    # Clean up
-    os.remove(test_file)
-    maya.standalone.uninitialize()
-    
-    print('\\n🎉 All Maya ${{ matrix.maya-version }} Python 2.7 tests passed!')
-    
-except Exception as e:
-    print('❌ ERROR: {}'.format(e))
-    import traceback
-    traceback.print_exc()
-    sys.exit(1)
-"
-    
-    - name: Test Maya Umbrella vaccines in Maya ${{ matrix.maya-version }}
+    - name: Verify Maya Umbrella installation in Maya ${{ matrix.maya-version }}
       run: |
         docker run --rm \
           -v ${{ github.workspace }}:/workspace \
@@ -140,42 +63,12 @@ except Exception as e:
           mayapy -c "
 import sys
 sys.path.insert(0, '/workspace')
-
 try:
-    import maya.standalone
-    maya.standalone.initialize()
-    
-    import maya.cmds as cmds
-    cmds.file(new=True, force=True)
-    
-    print('\\n--- Testing Individual Vaccines ---')
-    from maya_umbrella.vaccines import get_all_vaccines
-    
-    vaccines = get_all_vaccines()
-    for vaccine in vaccines:
-        try:
-            vaccine_name = vaccine.__class__.__name__
-            print('Testing vaccine: {}'.format(vaccine_name))
-            
-            # Test vaccine initialization
-            vaccine_instance = vaccine()
-            print('  ✅ {} initialized successfully'.format(vaccine_name))
-            
-            # Test vaccine scan (if method exists)
-            if hasattr(vaccine_instance, 'scan'):
-                result = vaccine_instance.scan()
-                print('  ✅ {} scan completed'.format(vaccine_name))
-            
-        except Exception as e:
-            print('  ❌ {} failed: {}'.format(vaccine_name, e))
-    
-    maya.standalone.uninitialize()
-    print('\\n✅ Vaccine testing completed')
-    
+    from maya_umbrella import __version__
+    print('Maya Umbrella version: {}'.format(__version__))
+    print('✅ Maya Umbrella installation verified')
 except Exception as e:
-    print('❌ ERROR: {}'.format(e))
-    import traceback
-    traceback.print_exc()
+    print('❌ Installation verification failed: {}'.format(e))
     sys.exit(1)
 "
 
