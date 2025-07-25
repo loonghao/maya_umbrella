@@ -30,6 +30,8 @@ run_pycharm.bat
 coverage.xml
 .zip
 tests/virus/_virus/
+tests/virus/*.ma
+tests/virus/*.mb
 __pycache__/
 .ruff_cache
 .venv/

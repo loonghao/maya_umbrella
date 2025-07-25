@@ -1,6 +1,7 @@
 coverage:
   status:
     project: off
+  range: 50..100
 
 github_checks:
   annotations: false
@@ -8,3 +9,10 @@ github_checks:
 ignore:
   - "maya_umbrella/hooks"
   - "noxfile.py"
+  - "maya_umbrella/_vendor/*"
+  - "tests/*"
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: false

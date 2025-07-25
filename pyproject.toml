@@ -18,6 +18,9 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 include = [
     { path = "maya_umbrella/locales", format = ["sdist", "wheel"] },
@@ -212,3 +215,16 @@ setuptools = "pkg_resources"
 [tool.vendoring.license.fallback-urls]
 distlib = "https://bitbucket.org/pypa/distlib/raw/master/LICENSE.txt"
 webencodings = "https://github.com/SimonSapin/python-webencodings/raw/master/LICENSE"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+# Skip Docker tests by default (only run in CI)
+addopts = "-m 'not docker'"
+markers = [
+    "docker: marks tests as Docker integration tests (CI only)",
+    "integration: marks tests as integration tests",
+    "ci_only: marks tests to run only in CI environment",
+]

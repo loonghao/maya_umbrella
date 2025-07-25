@@ -15,3 +15,13 @@ def lint_fix(session: nox.Session) -> None:
     session.run("isort", ".")
     session.run("pre-commit", "run", "--all-files")
     session.run("autoflake", "--in-place", "--remove-all-unused-imports", "--remove-unused-variables")
+
+
+def ruff_check(session: nox.Session) -> None:
+    session.install("ruff")
+    session.run("ruff", "check")
+
+
+def isort_check(session: nox.Session) -> None:
+    session.install("isort")
+    session.run("isort", "--check-only", PACKAGE_NAME)

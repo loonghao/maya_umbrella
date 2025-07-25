@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 import shutil
 from collections.abc import Iterator
-from typing import Tuple
+
 import zipfile
 
 # Import third-party modules
@@ -66,7 +66,7 @@ def vendoring(session: nox.Session) -> None:
         session.run("vendoring", "sync", "-v")
         return
 
-    def pinned_requirements(path: Path) -> Iterator[Tuple[str, str]]:
+    def pinned_requirements(path: Path) -> Iterator[tuple[str, str]]:
         for line in path.read_text().splitlines(keepends=False):
             one, sep, two = line.partition("==")
             if not sep:

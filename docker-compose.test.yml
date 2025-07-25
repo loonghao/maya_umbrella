@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  maya-test:
+    image: mottosso/maya:2022
+    volumes:
+      - .:/workspace
+      - ./tests:/workspace/tests
+    working_dir: /workspace
+    environment:
+      - PYTHONPATH=/workspace
+      - MAYA_DISABLE_CIP=1
+      - MAYA_DISABLE_CER=1
+    command: tail -f /dev/null  # Keep container running for interactive testing
+    
+  maya-2023-test:
+    image: mottosso/maya:2023
+    volumes:
+      - .:/workspace
+      - ./tests:/workspace/tests
+    working_dir: /workspace
+    environment:
+      - PYTHONPATH=/workspace
+      - MAYA_DISABLE_CIP=1
+      - MAYA_DISABLE_CER=1
+    command: tail -f /dev/null
+    profiles:
+      - maya2023  # Only start with --profile maya2023
+      
+  maya-2024-test:
+    image: mottosso/maya:2024
+    volumes:
+      - .:/workspace
+      - ./tests:/workspace/tests
+    working_dir: /workspace
+    environment:
+      - PYTHONPATH=/workspace
+      - MAYA_DISABLE_CIP=1
+      - MAYA_DISABLE_CER=1
+    command: tail -f /dev/null
+    profiles:
+      - maya2024  # Only start with --profile maya2024

@@ -7,8 +7,8 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        os: [ 'windows-2022' ]
-        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
+        os: [ 'windows-2022', 'ubuntu-latest', 'macos-latest' ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12", "3.13" ]
       fail-fast: false
     steps:
       - name: Checkout
@@ -24,3 +24,6 @@ jobs:
       - name: lint
         run: |
           nox -s lint
+      - name: test
+        run: |
+          nox -s pytest

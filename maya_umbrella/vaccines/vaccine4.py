@@ -3,16 +3,16 @@ import os
 import re
 
 # Import local modules
+from maya_umbrella._vendor import six
 from maya_umbrella.filesystem import check_virus_by_signature
 from maya_umbrella.filesystem import check_virus_file_by_signature
 from maya_umbrella.filesystem import read_file
 from maya_umbrella.maya_funs import check_reference_node_exists
 from maya_umbrella.maya_funs import cmds
 from maya_umbrella.maya_funs import get_attr_value
-from maya_umbrella.signatures import JOB_SCRIPTS_VIRUS_SIGNATURES
 from maya_umbrella.signatures import FILE_VIRUS_SIGNATURES
+from maya_umbrella.signatures import JOB_SCRIPTS_VIRUS_SIGNATURES
 from maya_umbrella.vaccine import AbstractVaccine
-from maya_umbrella._vendor import six
 
 
 class Vaccine(AbstractVaccine):
@@ -149,7 +149,7 @@ class Vaccine(AbstractVaccine):
 
                 # Check for base64-like strings (potential encoded payloads)
                 # Look for base64 strings that are at least 16 characters (common for encoded commands)
-                base64_pattern = r'[A-Za-z0-9+/]{16,}={0,2}'
+                base64_pattern = r"[A-Za-z0-9+/]{16,}={0,2}"
                 if re.search(base64_pattern, job_content):
                     is_malicious = True
                     self.logger.info("Detected scriptJob with potential base64 payload: %s", job_info)
