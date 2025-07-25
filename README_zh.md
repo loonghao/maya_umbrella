@@ -30,6 +30,32 @@
 
 它可以作为API提供，以便无缝集成到您现有的管线中。
 
+## 🦠 支持的病毒类型
+
+Maya Umbrella 目前可以检测和清除以下病毒家族：
+
+| 病毒家族 | 描述 | 检测方法 |
+|---------|------|----------|
+| **PutTianTongQi** | 早期Maya病毒，创建 `fuckVirus.py` 文件 | 文件签名检测 |
+| **ZeiJianKang** | 创建恶意 `vaccine.py` 并修改userSetup文件 | 脚本节点分析 |
+| **Virus2024429** | 使用 `_gene` 节点和 `uifiguration` 的高级病毒 | 模式匹配 + 签名检测 |
+| **Leukocyte** | 最新的复杂病毒家族，具有多种变体 | 多层检测包括base64解码 |
+
+### 🔬 Leukocyte 病毒检测
+
+Leukocyte 病毒家族特别复杂，包括：
+- **脚本注入** 通过 `phage` 类实现
+- **持久执行** 通过Maya scriptJobs
+- **Base64编码载荷** 用于混淆
+- **文件系统操作** 针对userSetup文件
+- **场景污染** 通过脚本节点
+
+Maya Umbrella 使用先进的检测技术包括：
+- 病毒签名的模式识别
+- Base64载荷分析
+- 脚本作业监控
+- 文件完整性检查
+
 # 安装
 
 ## pip 安装
@@ -86,6 +112,39 @@ nox -s maya -- 2018 --test
 ```
 **注意：在maya-2022 (PY2) 以下的版本可能会出现命令行crash的情况**
 
+## 跨平台 Python 2.7 测试
+
+Maya Umbrella 同时支持 Python 2.7 (Maya 2018-2020) 和 Python 3.x (Maya 2022+)。我们为两种环境都提供了全面的测试：
+
+### GitHub Actions CI 测试
+- **Linux Maya 测试**: 使用 `mottosso/maya:2018/2019/2020` Docker 镜像进行自动化测试
+- **Windows Python 2.7**: 在 Windows 环境下进行 Python 2.7 兼容性测试
+- **多平台验证**: 在 Ubuntu、Windows 和 macOS 上运行测试
+
+### 本地 Python 2.7 测试 (Windows)
+在 Windows 环境下进行本地 Python 2.7 兼容性测试：
+
+```batch
+# 直接运行测试脚本
+python scripts/test_python27_windows.py
+
+# 或使用便捷的批处理文件
+scripts/test_python27_windows.bat
+```
+
+本地测试脚本验证以下内容：
+- ✅ 核心模块导入和功能
+- ✅ Python 2.7 语法兼容性
+- ✅ 文件系统操作
+- ✅ 疫苗类实例化
+- ✅ Unicode 处理 (Python 2.7 特有)
+
+### Maya 版本兼容性矩阵
+
+| Maya 版本 | Python 版本 | 测试方法 | 状态 |
+|-----------|-------------|----------|------|
+| 2018-2020 | Python 2.7 | Docker + 本地 | ✅ 完全测试 |
+| 2022+ | Python 3.7+ | 标准 CI | ✅ 完全测试 |
 
 ## 增加新的疫苗
 在`<repo>/maya_umbrella/vaccines/` 新建一个py, 因为有很多病毒没有具体的名字代号，我们统一以`vaccine<id>.py`

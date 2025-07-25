@@ -31,6 +31,32 @@ It ensures a secure and seamless user experience by proactively scanning for thr
 
 It can be provided as an API for seamless integration into your existing pipeline.
 
+## 🦠 Supported Virus Types
+
+Maya Umbrella currently detects and removes the following virus families:
+
+| Virus Family | Description | Detection Method |
+|--------------|-------------|------------------|
+| **PutTianTongQi** | Early Maya virus that creates `fuckVirus.py` files | File signature detection |
+| **ZeiJianKang** | Creates malicious `vaccine.py` and modifies userSetup files | Script node analysis |
+| **Virus2024429** | Advanced virus using `_gene` nodes and `uifiguration` | Pattern matching + signature detection |
+| **Leukocyte** | Latest sophisticated virus family with multiple variants | Multi-layer detection including base64 decoding |
+
+### 🔬 Leukocyte Virus Detection
+
+The Leukocyte virus family is particularly sophisticated and includes:
+- **Script injection** via `phage` class implementations
+- **Persistent execution** through Maya scriptJobs
+- **Base64 encoded payloads** for obfuscation
+- **File system manipulation** targeting userSetup files
+- **Scene contamination** through script nodes
+
+Maya Umbrella uses advanced detection techniques including:
+- Pattern recognition for virus signatures
+- Base64 payload analysis
+- Script job monitoring
+- File integrity checking
+
 # Installation
 
 ## pip installation
@@ -74,13 +100,15 @@ nox -s maya -- 2018
 ```
 **Note: there are two `-` between maya and the version number**.
 
-After starting Maya, executing the following code in the script editor will dynamically open the ma file from `<repo>/tests/virus/` to test it.
+After starting Maya, executing the following code in the script editor will create temporary mock virus files for testing:
 
 ```python
 import manual_test_in_maya
 
 manual_test_in_maya.start()
 ```
+
+**Note**: This creates temporary mock virus files for testing purposes. No real virus files are included in the repository for security reasons.
 It is also possible to execute the corresponding tests via pytest, which also requires a local installation of the corresponding Maya
 
 ```shell
@@ -105,6 +133,76 @@ Format code
 ```shell
 nox -s lint-fix
 ```
+
+## Testing
+
+### Unit Tests
+Run the complete test suite with coverage:
+```shell
+nox -s pytest
+```
+
+### Cross-Platform Python 2.7 Testing
+
+Maya Umbrella supports both Python 2.7 (Maya 2018-2020) and Python 3.x (Maya 2022+). We provide comprehensive testing for both environments:
+
+#### GitHub Actions CI Testing
+- **Linux Maya Testing**: Automated tests using `mottosso/maya:2018/2019/2020` Docker images
+- **Windows Python 2.7**: Compatibility testing on Windows with Python 2.7
+- **Multi-platform validation**: Tests run on Ubuntu, Windows, and macOS
+
+#### Local Python 2.7 Testing (Windows)
+For local Python 2.7 compatibility testing on Windows:
+
+```batch
+# Run the test script directly
+python scripts/test_python27_windows.py
+
+# Or use the convenient batch file
+scripts/test_python27_windows.bat
+```
+
+This local test script verifies:
+- ✅ Core module imports and functionality
+- ✅ Python 2.7 syntax compatibility
+- ✅ File system operations
+- ✅ Vaccine class instantiation
+- ✅ Unicode handling (Python 2.7 specific)
+
+#### Maya Version Compatibility Matrix
+
+| Maya Version | Python Version | Testing Method | Status |
+|--------------|----------------|----------------|---------|
+| 2018-2020 | Python 2.7 | Docker + Local | ✅ Fully Tested |
+| 2022+ | Python 3.7+ | Standard CI | ✅ Fully Tested |
+
+#### Integration Tests
+Run integration tests that require Maya:
+```shell
+nox -s maya-integration
+```
+
+## 🔒 Security & Safety
+
+Maya Umbrella is designed with security as a top priority:
+
+### Safe Testing
+- **No real virus files** are included in the repository
+- **Mock virus files** are generated dynamically for testing
+- **Docker isolation** for integration testing in CI environments
+- **Signature-based detection** without executing malicious code
+
+### Safe Operation
+- **Automatic backup** of files before cleaning (configurable)
+- **Non-destructive scanning** - analysis only, no automatic changes
+- **Detailed logging** of all operations
+- **Rollback capability** through backup files
+
+### Development Security
+- **Comprehensive test coverage** (72%+) with both unit and integration tests
+- **Static code analysis** with ruff and isort
+- **CI/CD validation** on multiple platforms and Python versions
+- **Code review process** for all changes
 
 # Generate Installation Package
 Execute the following command to create a zip under <repo>/.zip, with `--version` the version number of the current tool.

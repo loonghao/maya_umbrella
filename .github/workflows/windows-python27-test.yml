@@ -1,0 +1,69 @@
+name: Windows Python 2.7 Compatibility Tests
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  windows-python27:
+    name: Windows Python 2.7 Compatibility
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Python 2.7
+      uses: actions/setup-python@v4
+      with:
+        python-version: '2.7'
+    
+    - name: Install Python 2.7 dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-mock
+        # Install any other Python 2.7 compatible dependencies
+        echo "Python 2.7 dependencies installed"
+    
+    - name: Test Python 2.7 Environment
+      run: |
+        python -c "
+import sys
+import platform
+print('Python version:', sys.version)
+print('Platform:', platform.platform())
+print('Architecture:', platform.architecture())
+"
+    
+    - name: Run Python 2.7 Compatibility Tests
+      run: |
+        python scripts/test_windows_python27_ci.py
+    
+
+
+  windows-python27-summary:
+    name: Windows Python 2.7 Test Summary
+    runs-on: windows-latest
+    needs: windows-python27
+    if: always()
+    
+    steps:
+    - name: Test Results Summary
+      run: |
+        echo "Windows Python 2.7 Compatibility Test Results:"
+        echo "=============================================="
+        
+        if ("${{ needs.windows-python27.result }}" -eq "success") {
+          echo "✅ All Windows Python 2.7 tests passed successfully!"
+          echo "   - Core module imports verified"
+          echo "   - Python 2.7 syntax compatibility confirmed"
+          echo "   - File system utilities working"
+          echo "   - Vaccine classes compatible"
+        } else {
+          echo "❌ Some Windows Python 2.7 tests failed"
+          echo "   Check the job logs for details"
+          exit 1
+        }

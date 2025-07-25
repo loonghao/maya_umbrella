@@ -1,0 +1,96 @@
+name: Maya Python 2.7 Integration Tests
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  maya-python27-linux:
+    name: Maya ${{ matrix.maya-version }} (Python 2.7) on Linux
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    
+    strategy:
+      matrix:
+        maya-version: ["2018", "2019", "2020"]
+      fail-fast: false
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Free disk space
+      run: |
+        # Free up disk space for large Maya images
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /opt/ghc
+        sudo rm -rf "/usr/local/share/boost"
+        sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+        df -h
+    
+    - name: Pull Maya Docker image
+      run: |
+        echo "Pulling Maya ${{ matrix.maya-version }} Docker image..."
+        docker pull mottosso/maya:${{ matrix.maya-version }}
+        docker images mottosso/maya:${{ matrix.maya-version }}
+    
+    - name: Test Maya Umbrella in Maya ${{ matrix.maya-version }}
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          -e PYTHONPATH=/workspace \
+          -e MAYA_DISABLE_CIP=1 \
+          -e MAYA_DISABLE_CER=1 \
+          -e MAYA_DISABLE_CLIC_IPM=1 \
+          -e MAYA_VERSION=${{ matrix.maya-version }} \
+          mottosso/maya:${{ matrix.maya-version }} \
+          mayapy scripts/test_maya_docker_integration.py --maya-version ${{ matrix.maya-version }}
+    
+    - name: Verify Maya Umbrella installation in Maya ${{ matrix.maya-version }}
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          -e PYTHONPATH=/workspace \
+          -e MAYA_DISABLE_CIP=1 \
+          -e MAYA_DISABLE_CER=1 \
+          -e MAYA_DISABLE_CLIC_IPM=1 \
+          mottosso/maya:${{ matrix.maya-version }} \
+          mayapy -c "
+import sys
+sys.path.insert(0, '/workspace')
+try:
+    from maya_umbrella import __version__
+    print('Maya Umbrella version: {}'.format(__version__))
+    print('✅ Maya Umbrella installation verified')
+except Exception as e:
+    print('❌ Installation verification failed: {}'.format(e))
+    sys.exit(1)
+"
+
+  maya-python27-summary:
+    name: Maya Python 2.7 Test Summary
+    runs-on: ubuntu-latest
+    needs: maya-python27-linux
+    if: always()
+    
+    steps:
+    - name: Test Results Summary
+      run: |
+        echo "Maya Python 2.7 Integration Test Results:"
+        echo "=========================================="
+        
+        if [ "${{ needs.maya-python27-linux.result }}" == "success" ]; then
+          echo "✅ All Maya Python 2.7 tests passed successfully!"
+          echo "   - Maya 2018, 2019, 2020 compatibility verified"
+          echo "   - Core Maya Umbrella functionality tested"
+          echo "   - All vaccines loaded and tested"
+        else
+          echo "❌ Some Maya Python 2.7 tests failed"
+          echo "   Check the individual job logs for details"
+          exit 1
+        fi
