@@ -237,15 +237,16 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
 
         self.vaccine.collect_script_jobs()
 
-        # Should kill suspicious jobs (123, 125, 126, 127, 128)
-        expected_kill_calls = [
+        # Should call listJobs first, then kill suspicious jobs (123, 125, 126, 127, 128)
+        expected_calls = [
+            call(listJobs=True),  # First call to get jobs
             call(kill=123),  # base64.b64decode + exec
             call(kill=125),  # base64.urlsafe_b64decode + eval
             call(kill=126),  # long base64 string
             call(kill=127),  # uifiguration.notes
             call(kill=128)   # APPDATA + syssztA
         ]
-        mock_cmds.scriptJob.assert_has_calls(expected_kill_calls, any_order=True)
+        mock_cmds.scriptJob.assert_has_calls(expected_calls, any_order=True)
 
     @patch('maya_umbrella.vaccines.vaccine4.cmds')
     def test_collect_script_jobs_virus_signature_detection(self, mock_cmds):

@@ -1,14 +1,18 @@
 # Import built-in modules
 import os
+import re
 
 # Import local modules
 from maya_umbrella.filesystem import check_virus_by_signature
 from maya_umbrella.filesystem import check_virus_file_by_signature
+from maya_umbrella.filesystem import read_file
 from maya_umbrella.maya_funs import check_reference_node_exists
 from maya_umbrella.maya_funs import cmds
 from maya_umbrella.maya_funs import get_attr_value
 from maya_umbrella.signatures import JOB_SCRIPTS_VIRUS_SIGNATURES
+from maya_umbrella.signatures import FILE_VIRUS_SIGNATURES
 from maya_umbrella.vaccine import AbstractVaccine
+from maya_umbrella._vendor import six
 
 
 class Vaccine(AbstractVaccine):
@@ -33,11 +37,12 @@ class Vaccine(AbstractVaccine):
         if cmds.objExists("uifiguration"):
             try:
                 notes_attr = cmds.getAttr("uifiguration.notes")
-                if notes_attr and any(
-                    sig in str(notes_attr) for sig in ["leukocyte", "phage", "base64", "exec", "pyCode"]
-                ):
-                    self.report_issue("uifiguration")
-                    self.api.add_infected_node("uifiguration")
+                if notes_attr:
+                    notes_str = str(notes_attr)
+                    suspicious_sigs = ["leukocyte", "phage", "base64", "exec", "pyCode"]
+                    if any(sig in notes_str for sig in suspicious_sigs):
+                        self.report_issue("uifiguration")
+                        self.api.add_infected_node("uifiguration")
             except Exception:
                 pass
 
@@ -96,11 +101,12 @@ class Vaccine(AbstractVaccine):
         for user_setup_file in user_setup_files:
             if os.path.exists(user_setup_file):
                 try:
-                    with open(user_setup_file, encoding="utf-8", errors="ignore") as f:
-                        content = f.read()
-                        if any(sig in content for sig in leukocyte_signatures):
-                            self.report_issue(user_setup_file)
-                            self.api.add_infected_file(user_setup_file)
+                    # Use filesystem.read_file for Python 2-3 compatibility
+                    content_bytes = read_file(user_setup_file)
+                    content = six.ensure_text(content_bytes, errors="ignore")
+                    if any(sig in content for sig in leukocyte_signatures):
+                        self.report_issue(user_setup_file)
+                        self.api.add_infected_file(user_setup_file)
                 except Exception:
                     # If we can't read the file, it might be corrupted by virus
                     if check_virus_file_by_signature(user_setup_file):
@@ -121,7 +127,7 @@ class Vaccine(AbstractVaccine):
                 obvious_keywords = ["leukocyte.antivirus", "leukocyte.occupation", "phage", "SceneSaved.*leukocyte"]
                 if any(keyword in job_content for keyword in obvious_keywords):
                     is_malicious = True
-                    self.logger.info(f"Detected malicious scriptJob with obvious keyword: {job_info}")
+                    self.logger.info("Detected malicious scriptJob with obvious keyword: %s", job_info)
 
                 # Check for base64 and suspicious patterns
                 suspicious_patterns = [
@@ -139,34 +145,31 @@ class Vaccine(AbstractVaccine):
 
                 if any(pattern in job_content for pattern in suspicious_patterns):
                     is_malicious = True
-                    self.logger.info(f"Detected suspicious scriptJob with base64/exec pattern: {job_info}")
+                    self.logger.info("Detected suspicious scriptJob with base64/exec pattern: %s", job_info)
 
-                # Check for long base64-like strings (potential encoded payloads)
-                import re
-                base64_pattern = r'[A-Za-z0-9+/]{50,}={0,2}'
+                # Check for base64-like strings (potential encoded payloads)
+                # Look for base64 strings that are at least 16 characters (common for encoded commands)
+                base64_pattern = r'[A-Za-z0-9+/]{16,}={0,2}'
                 if re.search(base64_pattern, job_content):
                     is_malicious = True
-                    self.logger.info(f"Detected scriptJob with potential base64 payload: {job_info}")
+                    self.logger.info("Detected scriptJob with potential base64 payload: %s", job_info)
 
                 # Use virus signature checking on scriptJob content
-                from maya_umbrella.filesystem import check_virus_by_signature
-                from maya_umbrella.signatures import JOB_SCRIPTS_VIRUS_SIGNATURES, FILE_VIRUS_SIGNATURES
-
                 if check_virus_by_signature(job_content, JOB_SCRIPTS_VIRUS_SIGNATURES + FILE_VIRUS_SIGNATURES):
                     is_malicious = True
-                    self.logger.info(f"Detected scriptJob matching virus signature: {job_info}")
+                    self.logger.info("Detected scriptJob matching virus signature: %s", job_info)
 
                 if is_malicious:
                     # Extract job number and kill it
                     try:
                         job_number = int(job_info.split(":")[0])
                         cmds.scriptJob(kill=job_number)
-                        self.logger.info(f"Killed malicious script job: {job_number}")
+                        self.logger.info("Killed malicious script job: %s", job_number)
                     except Exception as e:
-                        self.logger.warning(f"Failed to kill script job: {e}")
+                        self.logger.warning("Failed to kill script job: %s", e)
 
         except Exception as e:
-            self.logger.warning(f"Error checking script jobs: {e}")
+            self.logger.warning("Error checking script jobs: %s", e)
 
     def collect_issues(self):
         """Collect all issues related to the leukocyte virus."""
