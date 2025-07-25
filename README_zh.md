@@ -30,6 +30,32 @@
 
 它可以作为API提供，以便无缝集成到您现有的管线中。
 
+## 🦠 支持的病毒类型
+
+Maya Umbrella 目前可以检测和清除以下病毒家族：
+
+| 病毒家族 | 描述 | 检测方法 |
+|---------|------|----------|
+| **PutTianTongQi** | 早期Maya病毒，创建 `fuckVirus.py` 文件 | 文件签名检测 |
+| **ZeiJianKang** | 创建恶意 `vaccine.py` 并修改userSetup文件 | 脚本节点分析 |
+| **Virus2024429** | 使用 `_gene` 节点和 `uifiguration` 的高级病毒 | 模式匹配 + 签名检测 |
+| **Leukocyte** | 最新的复杂病毒家族，具有多种变体 | 多层检测包括base64解码 |
+
+### 🔬 Leukocyte 病毒检测
+
+Leukocyte 病毒家族特别复杂，包括：
+- **脚本注入** 通过 `phage` 类实现
+- **持久执行** 通过Maya scriptJobs
+- **Base64编码载荷** 用于混淆
+- **文件系统操作** 针对userSetup文件
+- **场景污染** 通过脚本节点
+
+Maya Umbrella 使用先进的检测技术包括：
+- 病毒签名的模式识别
+- Base64载荷分析
+- 脚本作业监控
+- 文件完整性检查
+
 # 安装
 
 ## pip 安装

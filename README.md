@@ -31,6 +31,32 @@ It ensures a secure and seamless user experience by proactively scanning for thr
 
 It can be provided as an API for seamless integration into your existing pipeline.
 
+## 🦠 Supported Virus Types
+
+Maya Umbrella currently detects and removes the following virus families:
+
+| Virus Family | Description | Detection Method |
+|--------------|-------------|------------------|
+| **PutTianTongQi** | Early Maya virus that creates `fuckVirus.py` files | File signature detection |
+| **ZeiJianKang** | Creates malicious `vaccine.py` and modifies userSetup files | Script node analysis |
+| **Virus2024429** | Advanced virus using `_gene` nodes and `uifiguration` | Pattern matching + signature detection |
+| **Leukocyte** | Latest sophisticated virus family with multiple variants | Multi-layer detection including base64 decoding |
+
+### 🔬 Leukocyte Virus Detection
+
+The Leukocyte virus family is particularly sophisticated and includes:
+- **Script injection** via `phage` class implementations
+- **Persistent execution** through Maya scriptJobs
+- **Base64 encoded payloads** for obfuscation
+- **File system manipulation** targeting userSetup files
+- **Scene contamination** through script nodes
+
+Maya Umbrella uses advanced detection techniques including:
+- Pattern recognition for virus signatures
+- Base64 payload analysis
+- Script job monitoring
+- File integrity checking
+
 # Installation
 
 ## pip installation
@@ -74,13 +100,15 @@ nox -s maya -- 2018
 ```
 **Note: there are two `-` between maya and the version number**.
 
-After starting Maya, executing the following code in the script editor will dynamically open the ma file from `<repo>/tests/virus/` to test it.
+After starting Maya, executing the following code in the script editor will create temporary mock virus files for testing:
 
 ```python
 import manual_test_in_maya
 
 manual_test_in_maya.start()
 ```
+
+**Note**: This creates temporary mock virus files for testing purposes. No real virus files are included in the repository for security reasons.
 It is also possible to execute the corresponding tests via pytest, which also requires a local installation of the corresponding Maya
 
 ```shell
@@ -105,6 +133,58 @@ Format code
 ```shell
 nox -s lint-fix
 ```
+
+## Testing
+
+### Unit Tests
+Run the complete test suite with coverage:
+```shell
+nox -s pytest
+```
+
+### Docker Integration Tests
+Maya Umbrella includes Docker-based integration tests that run in real Maya environments. These tests are automatically skipped during local development and only run in CI environments.
+
+**Local Development**: Docker tests are automatically skipped
+```shell
+nox -s pytest
+# Output: 58 passed, 8 deselected (Docker tests skipped)
+```
+
+**CI Environment**: Docker tests run automatically in GitHub Actions using `mottosso/maya:2022` images
+
+**Force Local Docker Testing** (requires Docker):
+```shell
+# Pull Maya Docker image first
+docker pull mottosso/maya:2022
+
+# Force run Docker tests locally
+CI=1 nox -s docker-test
+```
+
+For more details, see [Docker Testing Documentation](docs/docker-testing.md).
+
+## 🔒 Security & Safety
+
+Maya Umbrella is designed with security as a top priority:
+
+### Safe Testing
+- **No real virus files** are included in the repository
+- **Mock virus files** are generated dynamically for testing
+- **Docker isolation** for integration testing in CI environments
+- **Signature-based detection** without executing malicious code
+
+### Safe Operation
+- **Automatic backup** of files before cleaning (configurable)
+- **Non-destructive scanning** - analysis only, no automatic changes
+- **Detailed logging** of all operations
+- **Rollback capability** through backup files
+
+### Development Security
+- **Comprehensive test coverage** (72%+) with both unit and integration tests
+- **Static code analysis** with ruff and isort
+- **CI/CD validation** on multiple platforms and Python versions
+- **Code review process** for all changes
 
 # Generate Installation Package
 Execute the following command to create a zip under <repo>/.zip, with `--version` the version number of the current tool.
