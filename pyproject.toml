@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "maya_umbrella"
-version = "0.14.2"
+version = "0.15.0"
 description = "A better Autodesk Maya antivirus tool detects and removes malicious."
 homepage = "https://github.com/loonghao/maya_umbrella"
 repository = "https://github.com/loonghao/maya_umbrella"

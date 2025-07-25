@@ -1,3 +1,40 @@
+## v0.15.0 (2025-01-25)
+
+### Feat
+
+- Add comprehensive Leukocyte virus detection and removal
+  - New vaccine4.py with advanced detection techniques
+  - Support for base64 encoded payloads and obfuscated scripts
+  - Enhanced scriptJob monitoring and cleanup
+  - Multi-layer signature detection for sophisticated virus variants
+
+- Add Docker integration testing infrastructure
+  - Docker-based tests using mottosso/maya images for real Maya environment validation
+  - CI-only testing that automatically skips locally for better developer experience
+  - Support for multiple Maya versions (2022, 2023, 2024)
+  - Comprehensive integration test suite covering all major functionality
+
+- Enhance testing safety and security
+  - Replace real virus files with dynamically generated mock files
+  - Remove all virus samples from repository for improved security
+  - Add comprehensive mock virus file generation in test fixtures
+  - Maintain full test coverage while eliminating security risks
+
+### Improve
+
+- Add Python 3.13 support across all CI environments
+- Expand CI testing to multiple platforms (Windows, Ubuntu, macOS)
+- Enhance code quality with improved linting and formatting
+- Add comprehensive documentation for virus types and testing procedures
+- Improve README with virus family descriptions and security information
+
+### Fix
+
+- Resolve CI test failures and improve test reliability
+- Fix import sorting and code style issues
+- Update GitHub Actions to latest versions
+- Improve test coverage configuration and reporting
+
 ## v0.14.2 (2024-07-25)
 
 ### Refactor
