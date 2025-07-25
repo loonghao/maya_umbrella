@@ -57,38 +57,38 @@ jobs:
           -e MAYA_DISABLE_CER=1 \
           mottosso/maya:${{ matrix.maya-version }} \
           mayapy -c "
-          import sys
-          sys.path.insert(0, '/workspace')
+import sys
+sys.path.insert(0, '/workspace')
 
-          try:
-              import maya.standalone
-              maya.standalone.initialize()
+try:
+    import maya.standalone
+    maya.standalone.initialize()
 
-              # Test Maya Umbrella imports
-              from maya_umbrella import MayaVirusDefender, MayaVirusScanner
-              from maya_umbrella.vaccines import get_all_vaccines
+    # Test Maya Umbrella imports
+    from maya_umbrella import MayaVirusDefender, MayaVirusScanner
+    from maya_umbrella.vaccines import get_all_vaccines
 
-              print('SUCCESS: Maya Umbrella imports successful')
-              print(f'Available vaccines: {len(get_all_vaccines())}')
+    print('SUCCESS: Maya Umbrella imports successful')
+    print('Available vaccines: {}'.format(len(get_all_vaccines())))
 
-              # Test basic defender functionality
-              import maya.cmds as cmds
-              cmds.file(new=True, force=True)
+    # Test basic defender functionality
+    import maya.cmds as cmds
+    cmds.file(new=True, force=True)
 
-              defender = MayaVirusDefender()
-              defender.start()
+    defender = MayaVirusDefender()
+    defender.start()
 
-              print(f'Defender test - Issues detected: {defender.have_issues}')
-              print('SUCCESS: Docker integration test completed')
+    print('Defender test - Issues detected: {}'.format(defender.have_issues))
+    print('SUCCESS: Docker integration test completed')
 
-              maya.standalone.uninitialize()
+    maya.standalone.uninitialize()
 
-          except Exception as e:
-              print(f'ERROR: {e}')
-              import traceback
-              traceback.print_exc()
-              sys.exit(1)
-          "
+except Exception as e:
+    print('ERROR: {}'.format(e))
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
+"
     
     - name: Test basic Maya functionality
       run: |
@@ -184,22 +184,22 @@ jobs:
             -e MAYA_DISABLE_CER=1 \
             mottosso/maya:${{ matrix.maya-version }} \
             mayapy -c "
-            import sys
-            sys.path.insert(0, '/workspace')
+import sys
+sys.path.insert(0, '/workspace')
 
-            try:
-                import maya.standalone
-                maya.standalone.initialize()
+try:
+    import maya.standalone
+    maya.standalone.initialize()
 
-                from maya_umbrella import MayaVirusDefender
-                print('SUCCESS: Maya ${{ matrix.maya-version }} integration test passed')
+    from maya_umbrella import MayaVirusDefender
+    print('SUCCESS: Maya ${{ matrix.maya-version }} integration test passed')
 
-                maya.standalone.uninitialize()
+    maya.standalone.uninitialize()
 
-            except Exception as e:
-                print(f'ERROR: {e}')
-                sys.exit(1)
-            "
+except Exception as e:
+    print('ERROR: {}'.format(e))
+    sys.exit(1)
+"
         else
           echo "Maya ${{ matrix.maya-version }} image not available, skipping"
         fi
