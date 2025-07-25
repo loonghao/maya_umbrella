@@ -1,6 +1,5 @@
 # Import built-in modules
 import os
-import sys
 import unittest
 from unittest.mock import Mock, patch, mock_open, call
 
@@ -25,10 +24,10 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         """Test that the virus name is correctly set."""
         self.assertEqual(self.vaccine.virus_name, "leukocyte")
 
-    @patch('maya_umbrella.vaccines.vaccine4.cmds')
-    @patch('maya_umbrella.vaccines.vaccine4.check_reference_node_exists')
-    @patch('maya_umbrella.vaccines.vaccine4.get_attr_value')
-    @patch('maya_umbrella.vaccines.vaccine4.check_virus_by_signature')
+    @patch("maya_umbrella.vaccines.vaccine4.cmds")
+    @patch("maya_umbrella.vaccines.vaccine4.check_reference_node_exists")
+    @patch("maya_umbrella.vaccines.vaccine4.get_attr_value")
+    @patch("maya_umbrella.vaccines.vaccine4.check_virus_by_signature")
     def test_collect_infected_nodes_with_virus_signatures(
         self, mock_check_virus, mock_get_attr, mock_check_ref, mock_cmds
     ):
@@ -49,7 +48,7 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         self.assertEqual(mock_get_attr.call_count, 4)  # 2 nodes * 2 attributes each
         self.mock_api.add_infected_node.assert_called_once_with("script2")
 
-    @patch('maya_umbrella.vaccines.vaccine4.cmds')
+    @patch("maya_umbrella.vaccines.vaccine4.cmds")
     def test_collect_infected_nodes_with_uifiguration_virus(self, mock_cmds):
         """Test detection of uifiguration node with virus content."""
         mock_cmds.ls.return_value = []
@@ -58,11 +57,11 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
 
         self.vaccine.collect_infected_nodes()
 
-        mock_cmds.objExists.assert_called_with('uifiguration')
-        mock_cmds.getAttr.assert_called_with('uifiguration.notes')
-        self.mock_api.add_infected_node.assert_called_with('uifiguration')
+        mock_cmds.objExists.assert_called_with("uifiguration")
+        mock_cmds.getAttr.assert_called_with("uifiguration.notes")
+        self.mock_api.add_infected_node.assert_called_with("uifiguration")
 
-    @patch('maya_umbrella.vaccines.vaccine4.cmds')
+    @patch("maya_umbrella.vaccines.vaccine4.cmds")
     def test_collect_infected_nodes_with_uifiguration_clean(self, mock_cmds):
         """Test uifiguration node with clean content."""
         mock_cmds.ls.return_value = []
@@ -74,7 +73,7 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         # Should not add as infected
         self.mock_api.add_infected_node.assert_not_called()
 
-    @patch('maya_umbrella.vaccines.vaccine4.cmds')
+    @patch("maya_umbrella.vaccines.vaccine4.cmds")
     def test_collect_infected_nodes_uifiguration_exception(self, mock_cmds):
         """Test uifiguration node access with exception."""
         mock_cmds.ls.return_value = []
@@ -87,8 +86,8 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         # Should not add as infected due to exception
         self.mock_api.add_infected_node.assert_not_called()
 
-    @patch('maya_umbrella.vaccines.vaccine4.os.path.exists')
-    @patch('maya_umbrella.vaccines.vaccine4.os.getenv')
+    @patch("maya_umbrella.vaccines.vaccine4.os.path.exists")
+    @patch("maya_umbrella.vaccines.vaccine4.os.getenv")
     def test_collect_malicious_files_with_appdata_files(self, mock_getenv, mock_exists):
         """Test collection of malicious files including APPDATA files."""
         mock_appdata = "/mock/appdata"
@@ -118,8 +117,8 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         # Should call add_malicious_files for existing files
         self.assertGreater(self.mock_api.add_malicious_files.call_count, 0)
 
-    @patch('maya_umbrella.vaccines.vaccine4.os.path.exists')
-    @patch('maya_umbrella.vaccines.vaccine4.os.getenv')
+    @patch("maya_umbrella.vaccines.vaccine4.os.path.exists")
+    @patch("maya_umbrella.vaccines.vaccine4.os.getenv")
     def test_collect_malicious_files_no_appdata(self, mock_getenv, mock_exists):
         """Test collection when APPDATA is not available."""
         mock_getenv.return_value = None
@@ -130,8 +129,8 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         # Should handle None APPDATA gracefully
         mock_getenv.assert_called_with("APPDATA")
 
-    @patch('maya_umbrella.vaccines.vaccine4.os.path.exists')
-    @patch('maya_umbrella.vaccines.vaccine4.os.getenv')
+    @patch("maya_umbrella.vaccines.vaccine4.os.path.exists")
+    @patch("maya_umbrella.vaccines.vaccine4.os.getenv")
     def test_collect_malicious_files_appdata_exception(self, mock_getenv, mock_exists):
         """Test collection with APPDATA access exception."""
         mock_getenv.side_effect = Exception("Environment error")
@@ -140,8 +139,8 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         # Should not raise exception
         self.vaccine.collect_malicious_files()
 
-    @patch('builtins.open', new_callable=mock_open)
-    @patch('maya_umbrella.vaccines.vaccine4.os.path.exists')
+    @patch("builtins.open", new_callable=mock_open)
+    @patch("maya_umbrella.vaccines.vaccine4.os.path.exists")
     def test_collect_infected_user_setup_files_with_virus(self, mock_exists, mock_file):
         """Test detection of infected userSetup files."""
         mock_exists.return_value = True
@@ -153,8 +152,8 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         # Should detect virus in all 4 userSetup files
         self.assertTrue(self.mock_api.add_infected_file.called)
 
-    @patch('builtins.open', new_callable=mock_open)
-    @patch('maya_umbrella.vaccines.vaccine4.os.path.exists')
+    @patch("builtins.open", new_callable=mock_open)
+    @patch("maya_umbrella.vaccines.vaccine4.os.path.exists")
     def test_collect_infected_user_setup_files_clean(self, mock_exists, mock_file):
         """Test userSetup files with clean content."""
         mock_exists.return_value = True
@@ -166,9 +165,9 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         # Should not detect any infections
         self.mock_api.add_infected_file.assert_not_called()
 
-    @patch('builtins.open', side_effect=IOError("Permission denied"))
-    @patch('maya_umbrella.vaccines.vaccine4.os.path.exists')
-    @patch('maya_umbrella.vaccines.vaccine4.check_virus_file_by_signature')
+    @patch("builtins.open", side_effect=OSError("Permission denied"))
+    @patch("maya_umbrella.vaccines.vaccine4.os.path.exists")
+    @patch("maya_umbrella.vaccines.vaccine4.check_virus_file_by_signature")
     def test_collect_infected_user_setup_files_read_exception(self, mock_check_virus, mock_exists, mock_file):
         """Test userSetup files that can't be read."""
         mock_exists.return_value = True
@@ -180,7 +179,7 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         self.assertTrue(mock_check_virus.called)
         self.assertTrue(self.mock_api.add_infected_file.called)
 
-    @patch('maya_umbrella.vaccines.vaccine4.cmds')
+    @patch("maya_umbrella.vaccines.vaccine4.cmds")
     def test_collect_script_jobs_with_malicious_jobs(self, mock_cmds):
         """Test collection and removal of malicious script jobs."""
         mock_script_jobs = [
@@ -203,7 +202,7 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         ]
         mock_cmds.scriptJob.assert_has_calls(expected_kill_calls, any_order=True)
 
-    @patch('maya_umbrella.vaccines.vaccine4.cmds')
+    @patch("maya_umbrella.vaccines.vaccine4.cmds")
     def test_collect_script_jobs_no_jobs(self, mock_cmds):
         """Test script job collection when no jobs exist."""
         mock_cmds.scriptJob.return_value = []
@@ -213,7 +212,7 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         # Should handle empty job list gracefully
         mock_cmds.scriptJob.assert_called_with(listJobs=True)
 
-    @patch('maya_umbrella.vaccines.vaccine4.cmds')
+    @patch("maya_umbrella.vaccines.vaccine4.cmds")
     def test_collect_script_jobs_kill_exception(self, mock_cmds):
         """Test script job killing with exception."""
         mock_script_jobs = ["invalid_format_job"]
@@ -222,7 +221,7 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         # Should not raise exception
         self.vaccine.collect_script_jobs()
 
-    @patch('maya_umbrella.vaccines.vaccine4.cmds')
+    @patch("maya_umbrella.vaccines.vaccine4.cmds")
     def test_collect_script_jobs_base64_detection(self, mock_cmds):
         """Test detection of scriptJobs with base64 encoded payloads."""
         mock_script_jobs = [
@@ -248,7 +247,7 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         ]
         mock_cmds.scriptJob.assert_has_calls(expected_calls, any_order=True)
 
-    @patch('maya_umbrella.vaccines.vaccine4.cmds')
+    @patch("maya_umbrella.vaccines.vaccine4.cmds")
     def test_collect_script_jobs_virus_signature_detection(self, mock_cmds):
         """Test detection of scriptJobs matching virus signatures."""
         mock_script_jobs = [
@@ -269,7 +268,7 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
         ]
         mock_cmds.scriptJob.assert_has_calls(expected_kill_calls, any_order=True)
 
-    @patch('maya_umbrella.vaccines.vaccine4.cmds')
+    @patch("maya_umbrella.vaccines.vaccine4.cmds")
     def test_collect_script_jobs_exception(self, mock_cmds):
         """Test script job collection with exception."""
         mock_cmds.scriptJob.side_effect = Exception("Maya error")
@@ -281,10 +280,10 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
 
     def test_collect_issues_calls_all_methods(self):
         """Test that collect_issues calls all collection methods."""
-        with patch.object(self.vaccine, 'collect_malicious_files') as mock_files, \
-             patch.object(self.vaccine, 'collect_infected_user_setup_files') as mock_setup, \
-             patch.object(self.vaccine, 'collect_infected_nodes') as mock_nodes, \
-             patch.object(self.vaccine, 'collect_script_jobs') as mock_jobs:
+        with patch.object(self.vaccine, "collect_malicious_files") as mock_files, \
+                patch.object(self.vaccine, "collect_infected_user_setup_files") as mock_setup, \
+                patch.object(self.vaccine, "collect_infected_nodes") as mock_nodes, \
+                patch.object(self.vaccine, "collect_script_jobs") as mock_jobs:
 
             self.vaccine.collect_issues()
 
@@ -295,5 +294,5 @@ class TestLeukocyteVaccineComprehensive(unittest.TestCase):
             mock_jobs.assert_called_once()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
