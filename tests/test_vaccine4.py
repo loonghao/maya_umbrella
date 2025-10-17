@@ -110,8 +110,7 @@ def test_vaccine4_collect_issues_with_malicious_files(tmpdir):
     assert len(api.malicious_files) == 2
     assert (
         maya_secure_system_py in api.malicious_files
-        or os.path.join(api.local_script_path, "maya_secure_system.py")
-        in api.malicious_files
+        or os.path.join(api.local_script_path, "maya_secure_system.py") in api.malicious_files
     )
 
 
