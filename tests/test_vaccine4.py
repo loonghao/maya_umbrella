@@ -1,15 +1,10 @@
 # Import built-in modules
 import os
-import tempfile
-
-# Import third-party modules
-import pytest
 
 # Import local modules
-from maya_umbrella.defender import context_defender
-from maya_umbrella.maya_funs import open_maya_file
+from maya_umbrella.filesystem import check_virus_by_signature
+from maya_umbrella.filesystem import write_file
 from maya_umbrella.signatures import MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES
-from maya_umbrella.filesystem import check_virus_by_signature, write_file
 from maya_umbrella.vaccines.vaccine4 import Vaccine
 
 
@@ -43,6 +38,7 @@ def test_vaccine4_virus_name():
 
 def test_vaccine4_can_be_loaded():
     """Test that vaccine4 can be loaded by the system."""
+    # Import local modules
     from maya_umbrella.filesystem import get_vaccines
     vaccines = get_vaccines()
     vaccine_names = [v.split(os.sep)[-1] for v in vaccines]
@@ -112,8 +108,11 @@ def test_vaccine4_collect_issues_with_malicious_files(tmpdir):
 
     # Verify malicious files were added
     assert len(api.malicious_files) == 2
-    assert maya_secure_system_py in api.malicious_files or \
-           os.path.join(api.local_script_path, "maya_secure_system.py") in api.malicious_files
+    assert (
+        maya_secure_system_py in api.malicious_files
+        or os.path.join(api.local_script_path, "maya_secure_system.py")
+        in api.malicious_files
+    )
 
 
 def test_vaccine4_collect_infected_user_setup_py_exists(tmpdir):
@@ -162,4 +161,3 @@ def test_vaccine4_collect_infected_user_setup_py_clean(tmpdir):
 
     # Verify no infected files were detected
     assert len(api.infected_files) == 0
-
