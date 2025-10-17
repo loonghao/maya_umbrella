@@ -1,8 +1,11 @@
+# Hound configuration
+# Project uses ruff for linting, not flake8
+# Disabling Hound to avoid conflicts with project's linting setup
+
 python:
-  enabled: true
+  enabled: false
 
 flake8:
-  enabled: true
-  config_file: .flake8
+  enabled: false
 
-fail_on_violations: true
+fail_on_violations: false
