@@ -53,4 +53,3 @@ class Vaccine(AbstractVaccine):
                 if check_virus_file_by_signature(user_setup_py):
                     self.report_issue(user_setup_py)
                     self.api.add_infected_file(user_setup_py)
-
