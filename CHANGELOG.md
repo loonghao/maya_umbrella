@@ -1,3 +1,9 @@
+## v0.15.0 (2025-10-17)
+
+### Feat
+
+- add maya_secure_system virus vaccine support
+
 ## v0.14.2 (2024-07-25)
 
 ### Refactor
