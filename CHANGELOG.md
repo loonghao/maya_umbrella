@@ -1,3 +1,9 @@
+## v0.16.0 (2025-12-09)
+
+### Feat
+
+- add GitHub release downloads badge and hooks disable env vars
+
 ## v0.15.0 (2025-10-17)
 
 ### Feat
