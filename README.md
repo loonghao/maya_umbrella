@@ -8,6 +8,7 @@
 [![Downloads](https://static.pepy.tech/badge/maya-umbrella)](https://pepy.tech/project/maya-umbrella)
 [![Downloads](https://static.pepy.tech/badge/maya-umbrella/month)](https://pepy.tech/project/maya-umbrella)
 [![Downloads](https://static.pepy.tech/badge/maya-umbrella/week)](https://pepy.tech/project/maya-umbrella)
+[![GitHub Release](https://img.shields.io/github/downloads/loonghao/maya_umbrella/total?label=GitHub%20Downloads)](https://github.com/loonghao/maya_umbrella/releases)
 [![License](https://img.shields.io/pypi/l/maya-umbrella)](https://pypi.org/project/maya-umbrella/)
 [![PyPI Format](https://img.shields.io/pypi/format/maya-umbrella)](https://pypi.org/project/maya-umbrella/)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/loonghao/maya-umbrella/graphs/commit-activity)
@@ -175,6 +176,34 @@ You can also specify a directory from the command line.
 ```shell
 nox -s maya -- 2018 --install-root /your/local/maya/root
 
+```
+
+## Hooks Control
+
+Disable all hooks. When set to `true`, no hooks will be executed.
+```shell
+MAYA_UMBRELLA_DISABLE_ALL_HOOKS
+```
+If you want to disable all hooks:
+```shell
+SET MAYA_UMBRELLA_DISABLE_ALL_HOOKS=true
+```
+
+Disable specific hooks by name. Use a comma-separated list of hook names (without `.py` extension).
+
+Available hooks:
+- `delete_turtle` - Remove Turtle plugin and related nodes
+- `delete_unknown_plugin_node` - Remove unknown plugin nodes
+- `fix_model_panel` - Fix model panel issues
+- `fix_no_scene_name` - Fix scenes without names
+- `fix_on_model_change_3dc` - Fix 3D Coat model change callback
+
+```shell
+MAYA_UMBRELLA_DISABLE_HOOKS
+```
+For example, to disable the `delete_turtle` and `delete_unknown_plugin_node` hooks:
+```shell
+SET MAYA_UMBRELLA_DISABLE_HOOKS=delete_turtle,delete_unknown_plugin_node
 ```
 
 # API

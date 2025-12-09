@@ -8,6 +8,7 @@
 [![Downloads](https://static.pepy.tech/badge/maya-umbrella)](https://pepy.tech/project/maya-umbrella)
 [![Downloads](https://static.pepy.tech/badge/maya-umbrella/month)](https://pepy.tech/project/maya-umbrella)
 [![Downloads](https://static.pepy.tech/badge/maya-umbrella/week)](https://pepy.tech/project/maya-umbrella)
+[![GitHub Release](https://img.shields.io/github/downloads/loonghao/maya_umbrella/total?label=GitHub%20Downloads)](https://github.com/loonghao/maya_umbrella/releases)
 [![License](https://img.shields.io/pypi/l/maya-umbrella)](https://pypi.org/project/maya-umbrella/)
 [![PyPI Format](https://img.shields.io/pypi/format/maya-umbrella)](https://pypi.org/project/maya-umbrella/)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/loonghao/maya-umbrella/graphs/commit-activity)
@@ -163,6 +164,34 @@ SET MAYA_LOCATION=d:/your/path/maya_version/
 ```shell
 nox -s maya -- 2018 --install-root /your/local/maya/root
 
+```
+
+## Hooks 控制
+
+禁用所有 hooks。设置为 `true` 时，不会执行任何 hooks。
+```shell
+MAYA_UMBRELLA_DISABLE_ALL_HOOKS
+```
+如果你想禁用所有 hooks：
+```shell
+SET MAYA_UMBRELLA_DISABLE_ALL_HOOKS=true
+```
+
+按名称禁用特定的 hooks。使用逗号分隔的 hook 名称列表（不需要 `.py` 扩展名）。
+
+可用的 hooks：
+- `delete_turtle` - 删除 Turtle 插件及相关节点
+- `delete_unknown_plugin_node` - 删除未知插件节点
+- `fix_model_panel` - 修复模型面板问题
+- `fix_no_scene_name` - 修复没有名称的场景
+- `fix_on_model_change_3dc` - 修复 3D Coat 模型变更回调
+
+```shell
+MAYA_UMBRELLA_DISABLE_HOOKS
+```
+例如，禁用 `delete_turtle` 和 `delete_unknown_plugin_node` hooks：
+```shell
+SET MAYA_UMBRELLA_DISABLE_HOOKS=delete_turtle,delete_unknown_plugin_node
 ```
 
 # API

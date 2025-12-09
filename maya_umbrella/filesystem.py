@@ -123,14 +123,58 @@ def load_hook(hook_file):
     return module
 
 
+def is_hooks_disabled():
+    """Check if all hooks are disabled via environment variable.
+
+    Returns:
+        bool: True if hooks are disabled, False otherwise.
+    """
+    return os.getenv("MAYA_UMBRELLA_DISABLE_ALL_HOOKS", "false").lower() == "true"
+
+
+def get_disabled_hooks():
+    """Get the list of disabled hook names from environment variable.
+
+    The environment variable MAYA_UMBRELLA_DISABLE_HOOKS should be a comma-separated
+    list of hook names (without .py extension).
+
+    Example:
+        SET MAYA_UMBRELLA_DISABLE_HOOKS=delete_turtle,delete_unknown_plugin_node
+
+    Returns:
+        list: A list of disabled hook names.
+    """
+    disabled = os.getenv("MAYA_UMBRELLA_DISABLE_HOOKS", "")
+    if not disabled:
+        return []
+    return [name.strip() for name in disabled.split(",") if name.strip()]
+
+
 def get_hooks():
     """Return a list of paths to all hook files in the 'hooks' directory.
+
+    This function respects the following environment variables:
+    - MAYA_UMBRELLA_DISABLE_ALL_HOOKS: Set to "true" to disable all hooks.
+    - MAYA_UMBRELLA_DISABLE_HOOKS: Comma-separated list of hook names to disable.
 
     Returns:
         list: A list of paths to all hook files in the 'hooks' directory.
     """
+    if is_hooks_disabled():
+        return []
+
     pattern = os.path.join(this_root(), "hooks", "*.py")
-    return [hook for hook in glob.glob(pattern) if "__init__" not in hook]
+    disabled_hooks = get_disabled_hooks()
+
+    hooks = []
+    for hook in glob.glob(pattern):
+        if "__init__" in hook:
+            continue
+        hook_name = os.path.basename(hook).replace(".py", "")
+        if hook_name in disabled_hooks:
+            continue
+        hooks.append(hook)
+    return hooks
 
 
 def get_vaccines():
