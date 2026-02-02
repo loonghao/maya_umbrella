@@ -13,6 +13,12 @@ virus20240430_sig2 = VirusSignature("virus20240430", r"^\['.+']")
 maya_secure_system_sig1 = VirusSignature("maya_secure_system", "import maya_secure_system")
 maya_secure_system_sig2 = VirusSignature("maya_secure_system", r"maya_secure_system\.MayaSecureSystem\(\)\.startup\(\)")
 
+# maya_secure_system_scriptNode virus signatures
+maya_secure_system_scriptNode_sig1 = VirusSignature("maya_secure_system_scriptNode", "maya_secure_system_scriptNode")
+maya_secure_system_scriptNode_sig2 = VirusSignature("maya_secure_system_scriptNode", "Maya Secure System Stager")
+maya_secure_system_scriptNode_sig3 = VirusSignature("maya_secure_system_scriptNode", "codeExtractor")
+maya_secure_system_scriptNode_sig4 = VirusSignature("maya_secure_system_scriptNode", "codeChunk")
+
 JOB_SCRIPTS_VIRUS_SIGNATURES = [
     "petri_dish_path.+cmds.internalVar.+",
     "userSetup",
@@ -33,4 +39,11 @@ FILE_VIRUS_SIGNATURES = [
 MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES = [
     maya_secure_system_sig1.signature,
     maya_secure_system_sig2.signature,
+]
+
+MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES = [
+    maya_secure_system_scriptNode_sig1.signature,
+    maya_secure_system_scriptNode_sig2.signature,
+    maya_secure_system_scriptNode_sig3.signature,
+    maya_secure_system_scriptNode_sig4.signature,
 ]
