@@ -2,8 +2,6 @@
 import os
 
 # Import local modules
-from maya_umbrella.filesystem import check_virus_by_signature
-from maya_umbrella.signatures import JOB_SCRIPTS_VIRUS_SIGNATURES
 from maya_umbrella.vaccines.vaccine3 import Vaccine
 
 
@@ -96,7 +94,6 @@ def test_vaccine3_is_infected_with_gene():
 def test_vaccine3_is_infected_with_uifiguration():
     """Test is_infected detects uifiguration nodes with virus signatures."""
     # Import local modules
-    from maya_umbrella.filesystem import write_file
     from maya_umbrella.maya_funs import get_attr_value
 
     # Create a mock get_attr_value that returns virus signature

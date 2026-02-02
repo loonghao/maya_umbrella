@@ -3,7 +3,6 @@ import os
 
 # Import local modules
 from maya_umbrella.filesystem import write_file
-from maya_umbrella.signatures import JOB_SCRIPTS_VIRUS_SIGNATURES
 from maya_umbrella.vaccines.vaccine2 import Vaccine
 
 
