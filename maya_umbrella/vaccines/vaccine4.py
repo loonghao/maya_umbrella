@@ -4,6 +4,7 @@ import os
 # Import local modules
 from maya_umbrella.filesystem import check_virus_by_signature
 from maya_umbrella.filesystem import check_virus_file_by_signature
+from maya_umbrella.filesystem import read_file
 from maya_umbrella.maya_funs import check_reference_node_exists
 from maya_umbrella.maya_funs import cmds
 from maya_umbrella.maya_funs import get_attr_value
@@ -109,7 +110,11 @@ class Vaccine(AbstractVaccine):
         self.collect_infected_network_nodes()
 
     def collect_infected_user_setup_py(self):
-        """Collect all bad userSetup.py files related to the virus."""
+        """Collect all bad userSetup.py files related to the virus.
+
+        If userSetup.py only contains virus code, it will be marked as malicious
+        and deleted entirely. Otherwise, it will be marked as infected and cleaned.
+        """
         user_setup_py_files = [
             os.path.join(self.api.local_script_path, "userSetup.py"),
             os.path.join(self.api.user_script_path, "userSetup.py"),
@@ -119,21 +124,20 @@ class Vaccine(AbstractVaccine):
             if not os.path.exists(user_setup_py):
                 continue
 
-            # Read file content to determine if it only contains virus code
-            from maya_umbrella.filesystem import read_file
-            content = read_file(user_setup_py)
-
             # Check if file contains virus signatures
-            is_infected_by_sig1 = check_virus_by_signature(content, MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES)
-            is_infected_by_sig2 = check_virus_by_signature(content, MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES)
+            is_infected = check_virus_file_by_signature(
+                user_setup_py, MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES
+            ) or check_virus_file_by_signature(
+                user_setup_py, MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES
+            )
 
-            if not is_infected_by_sig1 and not is_infected_by_sig2:
+            if not is_infected:
                 continue
 
             self.report_issue(user_setup_py)
 
             # Determine if file only contains virus code by checking for virus patterns
-            # and removing them to see if anything meaningful remains
+            content = read_file(user_setup_py)
             virus_patterns = [
                 b"import maya_secure_system",
                 b"maya_secure_system.MayaSecureSystem().startup()",
@@ -146,7 +150,7 @@ class Vaccine(AbstractVaccine):
                 cleaned = cleaned.replace(pattern, b"")
             cleaned = cleaned.strip()
 
-            # If remaining content is minimal (just whitespace/newlines), delete the file
+            # If remaining content is minimal, delete the file entirely
             # Threshold: less than 50 bytes remaining after removing virus patterns
             if len(cleaned) < 50:
                 self.api.add_malicious_file(user_setup_py)
