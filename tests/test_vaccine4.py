@@ -307,3 +307,253 @@ print('This ensures the cleaned content exceeds the 50 byte threshold')
     # Verify infected file was detected (either signature set should catch it)
     assert len(api.infected_files) == 1
     assert user_setup_py in api.infected_files
+
+
+class MockCmdsForVaccine4:
+    """Mock cmds for testing vaccine4 collect_infected_nodes."""
+
+    def __init__(self, script_nodes=None, obj_exists_map=None, attr_values=None):
+        self.script_nodes = script_nodes or []
+        self.obj_exists_map = obj_exists_map or {}
+        self.attr_values = attr_values or {}
+
+    def ls(self, type=None):
+        return self.script_nodes
+
+    def objExists(self, name):
+        return self.obj_exists_map.get(name, False)
+
+    def getAttr(self, node_attr):
+        return self.attr_values.get(node_attr, None)
+
+
+def test_vaccine4_collect_infected_nodes_with_scriptnode_name(monkeypatch, tmpdir):
+    """Test detecting maya_secure_system_scriptNode by name."""
+    api = MockVaccineAPI(tmpdir)
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Mock cmds with a script node named maya_secure_system_scriptNode
+    mock_cmds = MockCmdsForVaccine4(script_nodes=["maya_secure_system_scriptNode"])
+    monkeypatch.setattr("maya_umbrella.vaccines.vaccine4.cmds", mock_cmds)
+
+    vaccine.collect_infected_nodes()
+
+    # Verify the script node was detected
+    assert "maya_secure_system_scriptNode" in api.infected_nodes
+    assert len(api.infected_nodes) == 1
+
+
+def test_vaccine4_collect_infected_nodes_with_virus_signature(monkeypatch, tmpdir):
+    """Test detecting infected nodes by virus signature."""
+    api = MockVaccineAPI(tmpdir)
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Mock cmds with script nodes containing virus signatures
+    mock_cmds = MockCmdsForVaccine4(
+        script_nodes=["scriptNode1"],
+        attr_values={"scriptNode1.before": "import maya_secure_system"},
+    )
+    monkeypatch.setattr("maya_umbrella.vaccines.vaccine4.cmds", mock_cmds)
+    monkeypatch.setattr(
+        "maya_umbrella.vaccines.vaccine4.check_reference_node_exists", lambda x: False
+    )
+    # Mock get_attr_value to return actual values from our mock
+    monkeypatch.setattr(
+        "maya_umbrella.vaccines.vaccine4.get_attr_value",
+        lambda node, attr: mock_cmds.getAttr("{node}.{attr}".format(node=node, attr=attr))
+    )
+
+    vaccine.collect_infected_nodes()
+
+    # Verify the script node was detected
+    assert "scriptNode1" in api.infected_nodes
+
+
+def test_vaccine4_collect_infected_nodes_with_scriptnode_signature(monkeypatch, tmpdir):
+    """Test detecting infected nodes by scriptNode signature."""
+    api = MockVaccineAPI(tmpdir)
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Mock cmds with script nodes containing scriptNode signatures
+    mock_cmds = MockCmdsForVaccine4(
+        script_nodes=["scriptNode1"],
+        attr_values={"scriptNode1.after": "# Maya Secure System Stager"},
+    )
+    monkeypatch.setattr("maya_umbrella.vaccines.vaccine4.cmds", mock_cmds)
+    monkeypatch.setattr(
+        "maya_umbrella.vaccines.vaccine4.check_reference_node_exists", lambda x: False
+    )
+    # Mock get_attr_value to return actual values from our mock
+    monkeypatch.setattr(
+        "maya_umbrella.vaccines.vaccine4.get_attr_value",
+        lambda node, attr: mock_cmds.getAttr("{node}.{attr}".format(node=node, attr=attr))
+    )
+
+    vaccine.collect_infected_nodes()
+
+    # Verify the script node was detected
+    assert "scriptNode1" in api.infected_nodes
+
+
+def test_vaccine4_collect_infected_nodes_skips_reference_nodes(monkeypatch, tmpdir):
+    """Test that reference nodes are skipped."""
+    api = MockVaccineAPI(tmpdir)
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Mock cmds with script nodes that are reference nodes
+    mock_cmds = MockCmdsForVaccine4(
+        script_nodes=["scriptNode1"],
+        attr_values={"scriptNode1.before": "import maya_secure_system"},
+    )
+    monkeypatch.setattr("maya_umbrella.vaccines.vaccine4.cmds", mock_cmds)
+    monkeypatch.setattr(
+        "maya_umbrella.vaccines.vaccine4.check_reference_node_exists", lambda x: True
+    )
+
+    vaccine.collect_infected_nodes()
+
+    # Verify no infected nodes were detected (reference nodes are skipped)
+    assert len(api.infected_nodes) == 0
+
+
+def test_vaccine4_collect_infected_nodes_empty_script_string(monkeypatch, tmpdir):
+    """Test that nodes with empty script strings are skipped."""
+    api = MockVaccineAPI(tmpdir)
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Mock cmds with script nodes that have empty script strings
+    mock_cmds = MockCmdsForVaccine4(
+        script_nodes=["scriptNode1"],
+        attr_values={"scriptNode1.before": ""},
+    )
+    monkeypatch.setattr("maya_umbrella.vaccines.vaccine4.cmds", mock_cmds)
+    monkeypatch.setattr(
+        "maya_umbrella.vaccines.vaccine4.check_reference_node_exists", lambda x: False
+    )
+    # Mock get_attr_value to return actual values from our mock
+    monkeypatch.setattr(
+        "maya_umbrella.vaccines.vaccine4.get_attr_value",
+        lambda node, attr: mock_cmds.getAttr("{node}.{attr}".format(node=node, attr=attr))
+    )
+
+    vaccine.collect_infected_nodes()
+
+    # Verify no infected nodes were detected (empty script strings are skipped)
+    assert len(api.infected_nodes) == 0
+
+
+def test_vaccine4_collect_infected_nodes_not_list(monkeypatch, tmpdir):
+    """Test handling when cmds.ls returns a non-list value."""
+    api = MockVaccineAPI(tmpdir)
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Mock cmds to return a non-list value
+    mock_cmds = MockCmdsForVaccine4(script_nodes=None)
+    monkeypatch.setattr("maya_umbrella.vaccines.vaccine4.cmds", mock_cmds)
+
+    vaccine.collect_infected_nodes()
+
+    # Verify no infected nodes were detected (None is not a list)
+    assert len(api.infected_nodes) == 0
+
+
+def test_vaccine4_collect_infected_network_nodes_with_code_extractor(monkeypatch, tmpdir):
+    """Test detecting codeExtractor and codeChunk nodes."""
+    api = MockVaccineAPI(tmpdir)
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Mock cmds with codeExtractor and codeChunk nodes
+    mock_cmds = MockCmdsForVaccine4(
+        obj_exists_map={
+            "codeExtractor": True,
+            "codeChunk0": True,
+            "codeChunk1": True,
+        }
+    )
+    monkeypatch.setattr("maya_umbrella.vaccines.vaccine4.cmds", mock_cmds)
+
+    vaccine.collect_infected_network_nodes()
+
+    # Verify nodes were detected
+    assert "codeExtractor" in api.infected_nodes
+    assert "codeChunk0" in api.infected_nodes
+    assert "codeChunk1" in api.infected_nodes
+
+
+def test_vaccine4_collect_infected_network_nodes_no_code_extractor(monkeypatch, tmpdir):
+    """Test that nothing is detected when codeExtractor doesn't exist."""
+    api = MockVaccineAPI(tmpdir)
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Mock cmds with no codeExtractor
+    mock_cmds = MockCmdsForVaccine4(obj_exists_map={"codeExtractor": False})
+    monkeypatch.setattr("maya_umbrella.vaccines.vaccine4.cmds", mock_cmds)
+
+    vaccine.collect_infected_network_nodes()
+
+    # Verify no nodes were detected
+    assert len(api.infected_nodes) == 0
+
+
+def test_vaccine4_collect_infected_network_nodes_with_gaps(monkeypatch, tmpdir):
+    """Test detecting codeChunk nodes with gaps in numbering."""
+    api = MockVaccineAPI(tmpdir)
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Mock cmds with gaps: codeChunk0 exists, codeChunk1-4 don't, codeChunk5 exists
+    mock_cmds = MockCmdsForVaccine4(
+        obj_exists_map={
+            "codeExtractor": True,
+            "codeChunk0": True,
+            "codeChunk1": False,
+            "codeChunk2": False,
+            "codeChunk3": False,
+            "codeChunk4": False,
+            "codeChunk5": True,
+        }
+    )
+    monkeypatch.setattr("maya_umbrella.vaccines.vaccine4.cmds", mock_cmds)
+
+    vaccine.collect_infected_network_nodes()
+
+    # Verify nodes were detected (gap handling should find codeChunk5)
+    assert "codeExtractor" in api.infected_nodes
+    assert "codeChunk0" in api.infected_nodes
+    assert "codeChunk5" in api.infected_nodes
+
+
+def test_vaccine4_collect_issues_calls_all_collectors(monkeypatch, tmpdir):
+    """Test that collect_issues calls all collector methods."""
+    api = MockVaccineAPI(tmpdir)
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Track which methods are called
+    called_methods = []
+
+    def track_call(method_name):
+        def wrapper(*args, **kwargs):
+            called_methods.append(method_name)
+        return wrapper
+
+    monkeypatch.setattr(vaccine, "collect_malicious_files", track_call("collect_malicious_files"))
+    monkeypatch.setattr(vaccine, "collect_infected_user_setup_py", track_call("collect_infected_user_setup_py"))
+    monkeypatch.setattr(vaccine, "collect_infected_nodes", track_call("collect_infected_nodes"))
+    monkeypatch.setattr(vaccine, "collect_infected_network_nodes", track_call("collect_infected_network_nodes"))
+
+    vaccine.collect_issues()
+
+    # Verify all collector methods were called
+    assert "collect_malicious_files" in called_methods
+    assert "collect_infected_user_setup_py" in called_methods
+    assert "collect_infected_nodes" in called_methods
+    assert "collect_infected_network_nodes" in called_methods
