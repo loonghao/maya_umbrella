@@ -44,15 +44,17 @@ class Vaccine(AbstractVaccine):
 
     def collect_infected_network_nodes(self):
         """Collect codeExtractor and codeChunk network nodes created by the virus."""
-        # Check for codeExtractor node
-        if cmds.objExists("codeExtractor"):
-            self.report_issue("codeExtractor")
-            self.api.add_infected_node("codeExtractor")
+        # Check for codeExtractor node first, skip if not exists
+        if not cmds.objExists("codeExtractor"):
+            return
 
-        # Check for codeChunk nodes
+        self.report_issue("codeExtractor")
+        self.api.add_infected_node("codeExtractor")
+
+        # Check for codeChunk nodes only if codeExtractor exists
         chunk_index = 0
-        max_empty_checks = 10
-        while chunk_index < 10000:  # Safety limit
+        max_empty_checks = 5
+        while chunk_index < 1000:  # Safety limit
             node_name = "codeChunk{index}".format(index=chunk_index)
             if cmds.objExists(node_name):
                 self.report_issue(node_name)
