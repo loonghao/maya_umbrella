@@ -8,8 +8,8 @@ from maya_umbrella.filesystem import read_file
 from maya_umbrella.maya_funs import check_reference_node_exists
 from maya_umbrella.maya_funs import cmds
 from maya_umbrella.maya_funs import get_attr_value
-from maya_umbrella.signatures import MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES
 from maya_umbrella.signatures import MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES
+from maya_umbrella.signatures import MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES
 from maya_umbrella.vaccine import AbstractVaccine
 
 
