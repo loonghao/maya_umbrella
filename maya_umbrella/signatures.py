@@ -34,6 +34,11 @@ FILE_VIRUS_SIGNATURES = [
     "cmds.evalDeferred.*leukocyte.+",
     virus20240430_sig1.signature,
     maya_secure_system_sig1.signature,
+    maya_secure_system_sig2.signature,
+    maya_secure_system_scriptNode_sig1.signature,
+    maya_secure_system_scriptNode_sig2.signature,
+    maya_secure_system_scriptNode_sig3.signature,
+    maya_secure_system_scriptNode_sig4.signature,
 ]
 
 MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES = [

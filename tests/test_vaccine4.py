@@ -139,10 +139,18 @@ class MockLogger:
 
     def __init__(self):
         self.warnings = []
+        self.debugs = []
 
     def warning(self, msg):
         """Log warning."""
         self.warnings.append(msg)
+
+    def debug(self, msg, *args):
+        """Log debug."""
+        if args:
+            self.debugs.append(msg % args)
+        else:
+            self.debugs.append(msg)
 
 
 def test_vaccine4_collect_issues_with_malicious_files(tmpdir):
