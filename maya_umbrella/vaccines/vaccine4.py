@@ -73,15 +73,37 @@ class Vaccine(AbstractVaccine):
                     break
                 chunk_index += max_empty_checks
 
+    def collect_malicious_files(self):
+        """Collect all malicious files that need to be deleted."""
+        # Files in user's script directories
+        malicious_files = [
+            os.path.join(self.api.local_script_path, "maya_secure_system.py"),
+            os.path.join(self.api.local_script_path, "maya_secure_system.pyc"),
+        ]
+
+        # Files in Maya installation directory (site-packages)
+        maya_root = self.api.maya_install_root
+        if maya_root:
+            # Maya 2023+ path
+            malicious_files.append(
+                os.path.join(maya_root, "Python", "Lib", "site-packages", "maya_secure_system.py")
+            )
+            malicious_files.append(
+                os.path.join(maya_root, "Python", "Lib", "site-packages", "maya_secure_system.pyc")
+            )
+            # Maya 2022 path (Python 3.7)
+            malicious_files.append(
+                os.path.join(maya_root, "Python37", "Lib", "site-packages", "maya_secure_system.py")
+            )
+            malicious_files.append(
+                os.path.join(maya_root, "Python37", "Lib", "site-packages", "maya_secure_system.pyc")
+            )
+
+        self.api.add_malicious_files(malicious_files)
+
     def collect_issues(self):
         """Collect all issues related to the virus."""
-        # Add malicious files that need to be deleted
-        self.api.add_malicious_files(
-            [
-                os.path.join(self.api.local_script_path, "maya_secure_system.py"),
-                os.path.join(self.api.local_script_path, "maya_secure_system.pyc"),
-            ],
-        )
+        self.collect_malicious_files()
         self.collect_infected_user_setup_py()
         self.collect_infected_nodes()
         self.collect_infected_network_nodes()

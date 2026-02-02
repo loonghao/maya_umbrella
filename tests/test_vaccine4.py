@@ -139,12 +139,63 @@ def test_vaccine4_collect_issues_with_malicious_files(tmpdir):
     # Collect issues
     vaccine.collect_issues()
 
-    # Verify malicious files were added
-    assert len(api.malicious_files) == 2
+    # Verify malicious files were added (2 local + 4 maya install paths if maya_install_root exists)
+    assert len(api.malicious_files) >= 2
     assert (
         maya_secure_system_py in api.malicious_files
         or os.path.join(api.local_script_path, "maya_secure_system.py") in api.malicious_files
     )
+
+
+def test_vaccine4_collect_malicious_files_includes_site_packages(tmpdir, monkeypatch):
+    """Test that vaccine4 includes Maya site-packages paths when MAYA_LOCATION is set."""
+    api = MockVaccineAPI(tmpdir)
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Mock maya_install_root
+    fake_maya_root = str(tmpdir.join("maya2024"))
+    os.makedirs(fake_maya_root, exist_ok=True)
+
+    class MockAPIWithMayaRoot:
+        def __init__(self, tmpdir, maya_root):
+            self.tmpdir = tmpdir
+            self.local_script_path = str(tmpdir.join("local_scripts"))
+            self.user_script_path = str(tmpdir.join("user_scripts"))
+            self.maya_install_root = maya_root
+            self.malicious_files = []
+            self.infected_files = []
+            self.infected_nodes = []
+            self.translator = MockTranslator()
+
+            os.makedirs(self.local_script_path, exist_ok=True)
+            os.makedirs(self.user_script_path, exist_ok=True)
+
+        def add_malicious_files(self, files):
+            self.malicious_files.extend(files)
+
+        def add_infected_file(self, file_path):
+            self.infected_files.append(file_path)
+
+        def add_infected_node(self, node):
+            self.infected_nodes.append(node)
+
+    api_with_root = MockAPIWithMayaRoot(tmpdir, fake_maya_root)
+    vaccine = Vaccine(api=api_with_root, logger=logger)
+
+    # Collect malicious files
+    vaccine.collect_malicious_files()
+
+    # Verify site-packages paths are included
+    site_packages_paths = [
+        os.path.join(fake_maya_root, "Python", "Lib", "site-packages", "maya_secure_system.py"),
+        os.path.join(fake_maya_root, "Python", "Lib", "site-packages", "maya_secure_system.pyc"),
+        os.path.join(fake_maya_root, "Python37", "Lib", "site-packages", "maya_secure_system.py"),
+        os.path.join(fake_maya_root, "Python37", "Lib", "site-packages", "maya_secure_system.pyc"),
+    ]
+
+    for path in site_packages_paths:
+        assert path in api_with_root.malicious_files, "Missing site-packages path: {path}".format(path=path)
 
 
 def test_vaccine4_collect_infected_user_setup_py_exists(tmpdir):
