@@ -93,6 +93,7 @@ class MockVaccineAPI:
         self.tmpdir = tmpdir
         self.local_script_path = str(tmpdir.join("local_scripts"))
         self.user_script_path = str(tmpdir.join("user_scripts"))
+        self.maya_install_root = ""  # Mock maya_install_root
         self.malicious_files = []
         self.infected_files = []
         self.infected_nodes = []
@@ -105,6 +106,10 @@ class MockVaccineAPI:
     def add_malicious_files(self, files):
         """Add malicious files."""
         self.malicious_files.extend(files)
+
+    def add_malicious_file(self, file_path):
+        """Add malicious file."""
+        self.malicious_files.append(file_path)
 
     def add_infected_file(self, file_path):
         """Add infected file."""
@@ -173,6 +178,9 @@ def test_vaccine4_collect_malicious_files_includes_site_packages(tmpdir, monkeyp
 
         def add_malicious_files(self, files):
             self.malicious_files.extend(files)
+
+        def add_malicious_file(self, file_path):
+            self.malicious_files.append(file_path)
 
         def add_infected_file(self, file_path):
             self.infected_files.append(file_path)
@@ -243,6 +251,27 @@ def test_vaccine4_collect_infected_user_setup_py_clean(tmpdir):
     vaccine.collect_infected_user_setup_py()
 
     # Verify no infected files were detected
+    assert len(api.infected_files) == 0
+    assert len(api.malicious_files) == 0
+
+
+def test_vaccine4_collect_virus_only_user_setup_py_is_malicious(tmpdir):
+    """Test that userSetup.py with only virus code is marked as malicious (to be deleted)."""
+    api = MockVaccineAPI(tmpdir)
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Create userSetup.py with only virus code
+    user_setup_py = os.path.join(api.local_script_path, "userSetup.py")
+    virus_only_content = "import maya_secure_system\nmaya_secure_system.MayaSecureSystem().startup()\n"
+    write_file(user_setup_py, virus_only_content)
+
+    # Collect infected user setup files
+    vaccine.collect_infected_user_setup_py()
+
+    # Verify file is marked as malicious (to be deleted) not just infected (to be cleaned)
+    assert len(api.malicious_files) == 1
+    assert user_setup_py in api.malicious_files
     assert len(api.infected_files) == 0
 
 
