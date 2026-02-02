@@ -1,11 +1,15 @@
 # Import third-party modules
+import os
+
 import pytest
 
 # Import local modules
 from maya_umbrella.filesystem import check_virus_file_by_signature
+from maya_umbrella.filesystem import get_all_user_setup_paths
 from maya_umbrella.filesystem import get_backup_path
 from maya_umbrella.filesystem import get_disabled_hooks
 from maya_umbrella.filesystem import get_hooks
+from maya_umbrella.filesystem import get_locale_script_paths
 from maya_umbrella.filesystem import get_maya_install_root
 from maya_umbrella.filesystem import is_hooks_disabled
 from maya_umbrella.filesystem import remove_virus_file_by_signature
@@ -158,3 +162,141 @@ def test_get_hooks_disabled_multiple(monkeypatch):
     hook_names = [hook.split("\\")[-1].split("/")[-1].replace(".py", "") for hook in hooks]
     assert "delete_turtle" not in hook_names
     assert "delete_unknown_plugin_node" not in hook_names
+
+
+# Tests for get_locale_script_paths and get_all_user_setup_paths
+
+
+def test_get_locale_script_paths_empty_dir(tmpdir):
+    """Test get_locale_script_paths returns empty list for directory without locale dirs."""
+    assert get_locale_script_paths(str(tmpdir)) == []
+
+
+def test_get_locale_script_paths_none_dir():
+    """Test get_locale_script_paths returns empty list for None or empty path."""
+    assert get_locale_script_paths(None) == []
+    assert get_locale_script_paths("") == []
+
+
+def test_get_locale_script_paths_nonexistent_dir():
+    """Test get_locale_script_paths returns empty list for nonexistent directory."""
+    assert get_locale_script_paths("/path/that/does/not/exist") == []
+
+
+def test_get_locale_script_paths_with_locales(tmpdir):
+    """Test get_locale_script_paths finds locale-specific script directories."""
+    # Create locale directories
+    zh_cn_scripts = tmpdir.mkdir("zh_CN").mkdir("scripts")
+    en_us_scripts = tmpdir.mkdir("en_US").mkdir("scripts")
+
+    locale_paths = get_locale_script_paths(str(tmpdir))
+
+    assert len(locale_paths) == 2
+    assert str(zh_cn_scripts) in locale_paths
+    assert str(en_us_scripts) in locale_paths
+
+
+def test_get_locale_script_paths_ignores_non_locale_dirs(tmpdir):
+    """Test get_locale_script_paths ignores directories without scripts subdirectory."""
+    # Create locale directory with scripts
+    zh_cn_scripts = tmpdir.mkdir("zh_CN").mkdir("scripts")
+    # Create locale directory without scripts
+    tmpdir.mkdir("ja_JP")
+    # Create non-locale directory
+    tmpdir.mkdir("prefs")
+
+    locale_paths = get_locale_script_paths(str(tmpdir))
+
+    assert len(locale_paths) == 1
+    assert str(zh_cn_scripts) in locale_paths
+
+
+def test_get_locale_script_paths_with_short_locale_codes(tmpdir):
+    """Test get_locale_script_paths finds short locale code directories."""
+    # Create short locale directories
+    zh_scripts = tmpdir.mkdir("zh").mkdir("scripts")
+    en_scripts = tmpdir.mkdir("en").mkdir("scripts")
+
+    locale_paths = get_locale_script_paths(str(tmpdir))
+
+    assert len(locale_paths) == 2
+    assert str(zh_scripts) in locale_paths
+    assert str(en_scripts) in locale_paths
+
+
+def test_get_all_user_setup_paths_basic(tmpdir):
+    """Test get_all_user_setup_paths returns basic paths."""
+    local_script_path = str(tmpdir.mkdir("scripts"))
+    user_script_path = str(tmpdir.mkdir("user_scripts"))
+
+    paths = get_all_user_setup_paths(
+        str(tmpdir),
+        user_script_path=user_script_path,
+        local_script_path=local_script_path,
+    )
+
+    assert len(paths) == 2
+    assert os.path.join(local_script_path, "userSetup.py") in paths
+    assert os.path.join(user_script_path, "userSetup.py") in paths
+
+
+def test_get_all_user_setup_paths_with_locales(tmpdir):
+    """Test get_all_user_setup_paths includes locale-specific paths."""
+    local_script_path = str(tmpdir.mkdir("scripts"))
+    zh_cn_scripts = tmpdir.mkdir("zh_CN").mkdir("scripts")
+
+    paths = get_all_user_setup_paths(
+        str(tmpdir),
+        local_script_path=local_script_path,
+    )
+
+    # Should include: local_script_path, zh_CN/scripts
+    assert len(paths) == 2
+    assert os.path.join(local_script_path, "userSetup.py") in paths
+    assert os.path.join(str(zh_cn_scripts), "userSetup.py") in paths
+
+
+def test_get_all_user_setup_paths_deduplicates(tmpdir):
+    """Test get_all_user_setup_paths removes duplicate paths."""
+    scripts_path = str(tmpdir.mkdir("scripts"))
+
+    paths = get_all_user_setup_paths(
+        str(tmpdir),
+        user_script_path=scripts_path,  # Same as local_script_path will be
+        local_script_path=scripts_path,
+    )
+
+    # Should deduplicate
+    user_setup_paths = [p for p in paths if p.endswith("userSetup.py")]
+    # Check no duplicates by comparing with set
+    assert len(user_setup_paths) == len(set(os.path.normpath(p) for p in user_setup_paths))
+
+
+def test_get_all_user_setup_paths_default_local_path(tmpdir):
+    """Test get_all_user_setup_paths uses default local path when not provided."""
+    # Create the default scripts directory
+    scripts_dir = tmpdir.mkdir("scripts")
+
+    paths = get_all_user_setup_paths(str(tmpdir))
+
+    # Should use user_app_dir/scripts by default
+    expected_path = os.path.join(str(tmpdir), "scripts", "userSetup.py")
+    assert expected_path in paths
+
+
+def test_get_all_user_setup_paths_multiple_locales(tmpdir):
+    """Test get_all_user_setup_paths finds multiple locale directories."""
+    local_script_path = str(tmpdir.mkdir("scripts"))
+    zh_cn_scripts = tmpdir.mkdir("zh_CN").mkdir("scripts")
+    en_us_scripts = tmpdir.mkdir("en_US").mkdir("scripts")
+    ja_jp_scripts = tmpdir.mkdir("ja_JP").mkdir("scripts")
+
+    paths = get_all_user_setup_paths(
+        str(tmpdir),
+        local_script_path=local_script_path,
+    )
+
+    # Should include all locale paths
+    assert os.path.join(str(zh_cn_scripts), "userSetup.py") in paths
+    assert os.path.join(str(en_us_scripts), "userSetup.py") in paths
+    assert os.path.join(str(ja_jp_scripts), "userSetup.py") in paths

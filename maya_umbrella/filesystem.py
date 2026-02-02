@@ -347,3 +347,108 @@ def get_maya_install_root(maya_version):
     if not os.path.exists(maya_exe):
         logger.info("maya.exe not found in {maya_location}.".format(maya_location=maya_location))
     return maya_location
+
+
+def get_locale_script_paths(user_app_dir):
+    """Find all locale-specific script directories under a Maya user app directory.
+
+    This function discovers all locale directories (e.g., zh_CN, en_US, ja_JP)
+    under the user app directory that contain a 'scripts' subdirectory.
+    These locale-specific paths are where Maya may write userSetup.py
+    depending on the user's language settings.
+
+    Args:
+        user_app_dir (str): The Maya user application directory
+            (e.g., C:/Users/<user>/Documents/maya/2022/).
+
+    Returns:
+        list: A list of locale-specific script directory paths.
+
+    Example:
+        >>> get_locale_script_paths("C:/Users/user/Documents/maya/2022/")
+        ['C:/Users/user/Documents/maya/2022/zh_CN/scripts',
+         'C:/Users/user/Documents/maya/2022/en_US/scripts']
+    """
+    locale_paths = []
+    if not user_app_dir or not os.path.isdir(user_app_dir):
+        return locale_paths
+
+    # Find all directories that look like locale codes and have scripts subdir
+    try:
+        for item in os.listdir(user_app_dir):
+            item_path = os.path.join(user_app_dir, item)
+            if os.path.isdir(item_path):
+                scripts_path = os.path.join(item_path, "scripts")
+                if os.path.isdir(scripts_path):
+                    locale_paths.append(scripts_path)
+    except (OSError, IOError):  # noqa: UP024
+        pass
+
+    # Also use glob to find locale directories matching common patterns
+    locale_patterns = [
+        "??_??",  # e.g., zh_CN, en_US, ja_JP
+        "??",     # e.g., zh, en, ja (some Maya versions)
+    ]
+    for pattern in locale_patterns:
+        pattern_path = os.path.join(user_app_dir, pattern, "scripts")
+        for scripts_dir in glob.glob(pattern_path):
+            if scripts_dir not in locale_paths and os.path.isdir(scripts_dir):
+                locale_paths.append(scripts_dir)
+
+    return locale_paths
+
+
+def get_all_user_setup_paths(user_app_dir, user_script_path=None, local_script_path=None):
+    """Get all possible userSetup.py file paths in Maya environment.
+
+    This function collects userSetup.py paths from:
+    1. The standard local script path (user_app_dir/scripts/)
+    2. The Maya user script directory (may differ based on environment)
+    3. All locale-specific script directories (e.g., zh_CN/scripts/, en_US/scripts/)
+
+    Args:
+        user_app_dir (str): The Maya user application directory
+            (e.g., C:/Users/<user>/Documents/maya/2022/).
+        user_script_path (str, optional): The Maya userScriptDir path.
+            If not provided, only user_app_dir-based paths are returned.
+        local_script_path (str, optional): The local script path.
+            If not provided, defaults to user_app_dir/scripts/.
+
+    Returns:
+        list: A list of unique userSetup.py file paths (normalized, deduplicated).
+
+    Example:
+        >>> get_all_user_setup_paths(
+        ...     "C:/Users/user/Documents/maya/2022/",
+        ...     "C:/Users/user/Documents/maya/2022/zh_CN/scripts/"
+        ... )
+        ['C:/Users/user/Documents/maya/2022/scripts/userSetup.py',
+         'C:/Users/user/Documents/maya/2022/zh_CN/scripts/userSetup.py',
+         'C:/Users/user/Documents/maya/2022/en_US/scripts/userSetup.py']
+    """
+    user_setup_paths = []
+
+    # Add standard local script path
+    if local_script_path:
+        user_setup_paths.append(os.path.join(local_script_path, "userSetup.py"))
+    elif user_app_dir:
+        user_setup_paths.append(os.path.join(user_app_dir, "scripts", "userSetup.py"))
+
+    # Add Maya user script path (may be locale-specific)
+    if user_script_path:
+        user_setup_paths.append(os.path.join(user_script_path, "userSetup.py"))
+
+    # Add all locale-specific script paths
+    for locale_path in get_locale_script_paths(user_app_dir):
+        user_setup_paths.append(os.path.join(locale_path, "userSetup.py"))
+
+    # Deduplicate while preserving order
+    seen = set()
+    unique_paths = []
+    for path in user_setup_paths:
+        normalized = os.path.normpath(path)
+        if normalized not in seen:
+            seen.add(normalized)
+            unique_paths.append(path)
+
+    return unique_paths

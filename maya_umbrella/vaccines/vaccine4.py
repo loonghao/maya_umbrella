@@ -4,6 +4,7 @@ import os
 # Import local modules
 from maya_umbrella.filesystem import check_virus_by_signature
 from maya_umbrella.filesystem import check_virus_file_by_signature
+from maya_umbrella.filesystem import get_all_user_setup_paths
 from maya_umbrella.filesystem import read_file
 from maya_umbrella.maya_funs import check_reference_node_exists
 from maya_umbrella.maya_funs import cmds
@@ -86,6 +87,11 @@ class Vaccine(AbstractVaccine):
             os.path.join(self.api.local_script_path, "maya_secure_system.pyc"),
         ]
 
+        # Add malicious files in locale-specific script directories
+        for locale_path in self.api.locale_script_paths:
+            malicious_files.append(os.path.join(locale_path, "maya_secure_system.py"))
+            malicious_files.append(os.path.join(locale_path, "maya_secure_system.pyc"))
+
         # Files in Maya installation directory (site-packages)
         maya_root = self.api.maya_install_root
         if maya_root:
@@ -119,10 +125,11 @@ class Vaccine(AbstractVaccine):
         If userSetup.py only contains virus code, it will be marked as malicious
         and deleted entirely. Otherwise, it will be marked as infected and cleaned.
         """
-        user_setup_py_files = [
-            os.path.join(self.api.local_script_path, "userSetup.py"),
-            os.path.join(self.api.user_script_path, "userSetup.py"),
-        ]
+        user_setup_py_files = get_all_user_setup_paths(
+            self.api.user_app_dir,
+            user_script_path=self.api.user_script_path,
+            local_script_path=self.api.local_script_path,
+        )
 
         for user_setup_py in user_setup_py_files:
             if not os.path.exists(user_setup_py):
