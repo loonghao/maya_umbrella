@@ -275,7 +275,7 @@ def test_get_all_user_setup_paths_deduplicates(tmpdir):
 def test_get_all_user_setup_paths_default_local_path(tmpdir):
     """Test get_all_user_setup_paths uses default local path when not provided."""
     # Create the default scripts directory
-    scripts_dir = tmpdir.mkdir("scripts")
+    tmpdir.mkdir("scripts")
 
     paths = get_all_user_setup_paths(str(tmpdir))
 
