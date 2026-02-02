@@ -5,6 +5,7 @@ import os
 from maya_umbrella.filesystem import check_virus_by_signature
 from maya_umbrella.filesystem import write_file
 from maya_umbrella.signatures import MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES
+from maya_umbrella.signatures import MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES
 from maya_umbrella.vaccines.vaccine4 import Vaccine
 
 
@@ -13,6 +14,15 @@ def test_maya_secure_system_signatures():
     assert len(MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES) == 2
     assert "import maya_secure_system" in MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES
     assert "maya_secure_system\\.MayaSecureSystem\\(\\)\\.startup\\(\\)" in MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES
+
+
+def test_maya_secure_system_scriptnode_signatures():
+    """Test that maya_secure_system_scriptNode virus signatures are properly defined."""
+    assert len(MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES) == 4
+    assert "maya_secure_system_scriptNode" in MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES
+    assert "Maya Secure System Stager" in MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES
+    assert "codeExtractor" in MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES
+    assert "codeChunk" in MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES
 
 
 def test_maya_secure_system_signature_detection():
@@ -28,6 +38,29 @@ def test_maya_secure_system_signature_detection():
     # Test clean code
     clean_code = "import sys\nprint('hello')"
     assert not check_virus_by_signature(clean_code, MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES)
+
+
+def test_maya_secure_system_scriptnode_signature_detection():
+    """Test that maya_secure_system_scriptNode virus signatures can detect infected code."""
+    # Test script node name
+    infected_code1 = 'createNode script -n "maya_secure_system_scriptNode";'
+    assert check_virus_by_signature(infected_code1, MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES)
+
+    # Test virus identifier string
+    infected_code2 = "# Embedded Bootstrap - Maya Secure System Stager"
+    assert check_virus_by_signature(infected_code2, MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES)
+
+    # Test codeExtractor node
+    infected_code3 = 'cmds.createNode("network", name="codeExtractor")'
+    assert check_virus_by_signature(infected_code3, MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES)
+
+    # Test codeChunk nodes
+    infected_code4 = 'node_name = f"codeChunk{i}"'
+    assert check_virus_by_signature(infected_code4, MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES)
+
+    # Test clean code
+    clean_code = "import maya.cmds as cmds\ncmds.polyCube()"
+    assert not check_virus_by_signature(clean_code, MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES)
 
 
 def test_vaccine4_virus_name():
@@ -160,3 +193,26 @@ def test_vaccine4_collect_infected_user_setup_py_clean(tmpdir):
 
     # Verify no infected files were detected
     assert len(api.infected_files) == 0
+
+
+def test_maya_secure_system_scriptnode_signatures_detection_in_user_setup(tmpdir):
+    """Test detection of scriptNode variant in userSetup.py files."""
+    api = MockVaccineAPI(tmpdir)
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Create userSetup.py infected with scriptNode variant signatures
+    user_setup_py = os.path.join(api.local_script_path, "userSetup.py")
+    infected_content = """
+import maya_secure_system
+maya_secure_system.MayaSecureSystem().startup()
+# Maya Secure System Stager payload
+"""
+    write_file(user_setup_py, infected_content)
+
+    # Collect infected user setup files
+    vaccine.collect_infected_user_setup_py()
+
+    # Verify infected file was detected (either signature set should catch it)
+    assert len(api.infected_files) == 1
+    assert user_setup_py in api.infected_files
