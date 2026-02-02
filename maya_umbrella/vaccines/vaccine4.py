@@ -116,12 +116,39 @@ class Vaccine(AbstractVaccine):
         ]
 
         for user_setup_py in user_setup_py_files:
-            if os.path.exists(user_setup_py):
-                # Check both signature sets
-                if check_virus_file_by_signature(user_setup_py, MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES):
-                    self.report_issue(user_setup_py)
-                    self.api.add_infected_file(user_setup_py)
-                    continue
-                if check_virus_file_by_signature(user_setup_py, MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES):
-                    self.report_issue(user_setup_py)
-                    self.api.add_infected_file(user_setup_py)
+            if not os.path.exists(user_setup_py):
+                continue
+
+            # Read file content to determine if it only contains virus code
+            from maya_umbrella.filesystem import read_file
+            content = read_file(user_setup_py)
+
+            # Check if file contains virus signatures
+            is_infected_by_sig1 = check_virus_by_signature(content, MAYA_SECURE_SYSTEM_VIRUS_SIGNATURES)
+            is_infected_by_sig2 = check_virus_by_signature(content, MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES)
+
+            if not is_infected_by_sig1 and not is_infected_by_sig2:
+                continue
+
+            self.report_issue(user_setup_py)
+
+            # Determine if file only contains virus code by checking for virus patterns
+            # and removing them to see if anything meaningful remains
+            virus_patterns = [
+                b"import maya_secure_system",
+                b"maya_secure_system.MayaSecureSystem().startup()",
+                b"Maya Secure System Stager",
+            ]
+
+            # Remove virus patterns and check remaining content
+            cleaned = content
+            for pattern in virus_patterns:
+                cleaned = cleaned.replace(pattern, b"")
+            cleaned = cleaned.strip()
+
+            # If remaining content is minimal (just whitespace/newlines), delete the file
+            # Threshold: less than 50 bytes remaining after removing virus patterns
+            if len(cleaned) < 50:
+                self.api.add_malicious_file(user_setup_py)
+            else:
+                self.api.add_infected_file(user_setup_py)
