@@ -18,7 +18,11 @@ class Vaccine(AbstractVaccine):
 
     def collect_infected_nodes(self):
         """Collect all bad nodes related to the virus."""
-        for script_node in cmds.ls(type="script"):
+        script_nodes = cmds.ls(type="script")
+        # Ensure we have a list, not a MagicMock (in non-Maya environments)
+        if not isinstance(script_nodes, (list, tuple)):
+            return
+        for script_node in script_nodes:
             if check_reference_node_exists(script_node):
                 continue
             for attr_name in ("before", "after"):
