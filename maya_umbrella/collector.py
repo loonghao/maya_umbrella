@@ -4,6 +4,7 @@ import logging
 import os
 
 # Import local modules
+from maya_umbrella.filesystem import get_locale_script_paths
 from maya_umbrella.filesystem import get_vaccines
 from maya_umbrella.filesystem import load_hook
 from maya_umbrella.i18n import Translator
@@ -85,6 +86,20 @@ class MayaVirusCollector(object):
     def local_script_path(self):
         """Return the local script directory."""
         return os.path.join(self.user_app_dir, "scripts")
+
+    @property
+    def locale_script_paths(self):
+        """Return all locale-specific script directories.
+
+        This method finds all locale directories (e.g., zh_CN, en_US, ja_JP)
+        under the user app directory that contain a 'scripts' subdirectory.
+        These locale-specific paths are where Maya may write userSetup.py
+        depending on the user's language settings.
+
+        Returns:
+            list: A list of locale-specific script directory paths.
+        """
+        return get_locale_script_paths(self.user_app_dir)
 
     @property
     def malicious_files(self):

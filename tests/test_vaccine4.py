@@ -89,8 +89,9 @@ class MockTranslator:
 class MockVaccineAPI:
     """Mock API for testing vaccine methods."""
 
-    def __init__(self, tmpdir):
+    def __init__(self, tmpdir, locale_dirs=None):
         self.tmpdir = tmpdir
+        self.user_app_dir = str(tmpdir)  # Root user app directory
         self.local_script_path = str(tmpdir.join("local_scripts"))
         self.user_script_path = str(tmpdir.join("user_scripts"))
         self.maya_install_root = ""  # Mock maya_install_root
@@ -98,10 +99,23 @@ class MockVaccineAPI:
         self.infected_files = []
         self.infected_nodes = []
         self.translator = MockTranslator()
+        self._locale_script_paths = []
 
         # Create directories
         os.makedirs(self.local_script_path, exist_ok=True)
         os.makedirs(self.user_script_path, exist_ok=True)
+
+        # Create locale-specific directories if specified
+        if locale_dirs:
+            for locale_dir in locale_dirs:
+                locale_path = str(tmpdir.join(locale_dir, "scripts"))
+                os.makedirs(locale_path, exist_ok=True)
+                self._locale_script_paths.append(locale_path)
+
+    @property
+    def locale_script_paths(self):
+        """Return locale-specific script paths."""
+        return self._locale_script_paths
 
     def add_malicious_files(self, files):
         """Add malicious files."""
@@ -163,8 +177,9 @@ def test_vaccine4_collect_malicious_files_includes_site_packages(tmpdir, monkeyp
     os.makedirs(fake_maya_root, exist_ok=True)
 
     class MockAPIWithMayaRoot:
-        def __init__(self, tmpdir, maya_root):
+        def __init__(self, tmpdir, maya_root, locale_dirs=None):
             self.tmpdir = tmpdir
+            self.user_app_dir = str(tmpdir)  # Root user app directory
             self.local_script_path = str(tmpdir.join("local_scripts"))
             self.user_script_path = str(tmpdir.join("user_scripts"))
             self.maya_install_root = maya_root
@@ -172,9 +187,22 @@ def test_vaccine4_collect_malicious_files_includes_site_packages(tmpdir, monkeyp
             self.infected_files = []
             self.infected_nodes = []
             self.translator = MockTranslator()
+            self._locale_script_paths = []
 
             os.makedirs(self.local_script_path, exist_ok=True)
             os.makedirs(self.user_script_path, exist_ok=True)
+
+            # Create locale-specific directories if specified
+            if locale_dirs:
+                for locale_dir in locale_dirs:
+                    locale_path = str(tmpdir.join(locale_dir, "scripts"))
+                    os.makedirs(locale_path, exist_ok=True)
+                    self._locale_script_paths.append(locale_path)
+
+        @property
+        def locale_script_paths(self):
+            """Return locale-specific script paths."""
+            return self._locale_script_paths
 
         def add_malicious_files(self, files):
             self.malicious_files.extend(files)
@@ -557,3 +585,118 @@ def test_vaccine4_collect_issues_calls_all_collectors(monkeypatch, tmpdir):
     assert "collect_infected_user_setup_py" in called_methods
     assert "collect_infected_nodes" in called_methods
     assert "collect_infected_network_nodes" in called_methods
+
+
+def test_vaccine4_collect_infected_user_setup_py_in_locale_path(tmpdir):
+    """Test that vaccine4 detects infected userSetup.py in locale-specific paths (e.g., zh_CN/scripts/)."""
+    api = MockVaccineAPI(tmpdir, locale_dirs=["zh_CN"])
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Create infected userSetup.py in locale-specific path
+    locale_path = api.locale_script_paths[0]
+    user_setup_py = os.path.join(locale_path, "userSetup.py")
+    infected_content = """# User setup script with legitimate content
+import maya_secure_system
+maya_secure_system.MayaSecureSystem().startup()
+# Additional legitimate user setup code
+print('Hello World - Setting up user environment')
+print('Loading custom tools and configurations')
+"""
+    write_file(user_setup_py, infected_content)
+
+    # Collect infected user setup files
+    vaccine.collect_infected_user_setup_py()
+
+    # Verify infected file was detected in locale path
+    assert len(api.infected_files) == 1
+    assert user_setup_py in api.infected_files
+
+
+def test_vaccine4_collect_malicious_files_in_locale_path(tmpdir):
+    """Test that vaccine4 collects malicious files from locale-specific paths."""
+    api = MockVaccineAPI(tmpdir, locale_dirs=["zh_CN", "en_US"])
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Collect malicious files
+    vaccine.collect_malicious_files()
+
+    # Verify locale paths are included in malicious files check
+    for locale_path in api.locale_script_paths:
+        assert os.path.join(locale_path, "maya_secure_system.py") in api.malicious_files
+        assert os.path.join(locale_path, "maya_secure_system.pyc") in api.malicious_files
+
+
+def test_vaccine4_collect_virus_only_user_setup_py_in_locale_path(tmpdir):
+    """Test that virus-only userSetup.py in locale path is marked as malicious."""
+    api = MockVaccineAPI(tmpdir, locale_dirs=["zh_CN"])
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Create userSetup.py with only virus code in locale path
+    locale_path = api.locale_script_paths[0]
+    user_setup_py = os.path.join(locale_path, "userSetup.py")
+    virus_only_content = "import maya_secure_system\nmaya_secure_system.MayaSecureSystem().startup()\n"
+    write_file(user_setup_py, virus_only_content)
+
+    # Collect infected user setup files
+    vaccine.collect_infected_user_setup_py()
+
+    # Verify file is marked as malicious
+    assert len(api.malicious_files) == 1
+    assert user_setup_py in api.malicious_files
+    assert len(api.infected_files) == 0
+
+
+def test_vaccine4_detects_multiple_locale_infected_files(tmpdir):
+    """Test that vaccine4 detects infected files in multiple locale directories."""
+    api = MockVaccineAPI(tmpdir, locale_dirs=["zh_CN", "ja_JP"])
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Create infected userSetup.py in both locale paths
+    for locale_path in api.locale_script_paths:
+        user_setup_py = os.path.join(locale_path, "userSetup.py")
+        infected_content = """# User setup script with legitimate content
+import maya_secure_system
+maya_secure_system.MayaSecureSystem().startup()
+print('Additional legitimate content to ensure file is marked as infected')
+print('This ensures the cleaned content exceeds the 50 byte threshold')
+"""
+        write_file(user_setup_py, infected_content)
+
+    # Collect infected user setup files
+    vaccine.collect_infected_user_setup_py()
+
+    # Verify both locale paths were detected
+    assert len(api.infected_files) == 2
+    for locale_path in api.locale_script_paths:
+        user_setup_py = os.path.join(locale_path, "userSetup.py")
+        assert user_setup_py in api.infected_files
+
+
+def test_vaccine4_no_duplicate_detection_when_paths_overlap(tmpdir):
+    """Test that vaccine4 doesn't detect the same file twice when paths overlap."""
+    api = MockVaccineAPI(tmpdir)
+    # Make user_script_path same as local_script_path to simulate overlap
+    api.user_script_path = api.local_script_path
+    logger = MockLogger()
+    vaccine = Vaccine(api=api, logger=logger)
+
+    # Create infected userSetup.py
+    user_setup_py = os.path.join(api.local_script_path, "userSetup.py")
+    infected_content = """# User setup script with legitimate content
+import maya_secure_system
+maya_secure_system.MayaSecureSystem().startup()
+print('Additional legitimate content to ensure file is marked as infected')
+print('This ensures the cleaned content exceeds the 50 byte threshold')
+"""
+    write_file(user_setup_py, infected_content)
+
+    # Collect infected user setup files
+    vaccine.collect_infected_user_setup_py()
+
+    # Verify only one instance is detected (no duplicates)
+    assert len(api.infected_files) == 1
+    assert user_setup_py in api.infected_files
