@@ -1,3 +1,14 @@
+## v0.18.0 (2026-02-02)
+
+### Feat
+
+- **vaccine4**: add locale-specific script path detection for maya_secure_system virus\n\n- Add get_locale_script_paths() function to filesystem.py for finding all\n  locale directories (zh_CN, en_US, ja_JP, etc.) under user app directory\n- Add get_all_user_setup_paths() function for comprehensive userSetup.py\n  path discovery across all possible locations\n- Refactor collector.py to use the new filesystem functions\n- Update vaccine4 to use get_all_user_setup_paths() for userSetup.py detection\n- Add comprehensive unit tests for the new filesystem functions\n\nThis provides a reusable solution for locale-specific path detection that\ncan be used by any vaccine, fixing the issue where virus writes userSetup.py\nto locale-specific paths (e.g., Documents/maya/2022/zh_CN/scripts/).
+
+### Fix
+
+- **i18n**: improve English locale grammar and wording
+- **signatures**: add maya_secure_system_scriptNode signatures to FILE_VIRUS_SIGNATURES\n\nThe cleaner uses FILE_VIRUS_SIGNATURES to clean infected files, but\nvaccine4 detects infections using MAYA_SECURE_SYSTEM_SCRIPTNODE_SIGNATURES.\nThis mismatch caused detected infections to not be properly cleaned.\n\nAdd all maya_secure_system signatures to FILE_VIRUS_SIGNATURES to ensure\nproper cleanup of infected userSetup.py files.
+
 ## v0.17.0 (2026-02-02)
 
 ### Feat
