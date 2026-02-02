@@ -1,3 +1,19 @@
+## v0.17.0 (2026-02-02)
+
+### Feat
+
+- add support for cleaning maya_secure_system.py from site-packages
+- enhance detection for maya_secure_system virus variants
+
+### Fix
+
+- add MagicMock type check for non-Maya environment compatibility
+- delete userSetup.py if only contains virus code
+
+### Perf
+
+- optimize network node detection logic
+
 ## v0.16.0 (2025-12-09)
 
 ### Feat
