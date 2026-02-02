@@ -212,9 +212,17 @@ def test_vaccine4_collect_infected_user_setup_py_exists(tmpdir):
     logger = MockLogger()
     vaccine = Vaccine(api=api, logger=logger)
 
-    # Create infected userSetup.py
+    # Create infected userSetup.py with additional content to ensure it's marked as infected, not malicious
+    # The content after removing virus patterns must be >= 50 bytes to be marked as infected
     user_setup_py = os.path.join(api.local_script_path, "userSetup.py")
-    write_file(user_setup_py, "import maya_secure_system\nmaya_secure_system.MayaSecureSystem().startup()")
+    infected_content = """# User setup script with legitimate content
+import maya_secure_system
+maya_secure_system.MayaSecureSystem().startup()
+# Additional legitimate user setup code
+print('Hello World - Setting up user environment')
+print('Loading custom tools and configurations')
+"""
+    write_file(user_setup_py, infected_content)
 
     # Collect infected user setup files
     vaccine.collect_infected_user_setup_py()
@@ -282,11 +290,14 @@ def test_maya_secure_system_scriptnode_signatures_detection_in_user_setup(tmpdir
     vaccine = Vaccine(api=api, logger=logger)
 
     # Create userSetup.py infected with scriptNode variant signatures
+    # Add extra content to ensure it's marked as infected, not malicious
     user_setup_py = os.path.join(api.local_script_path, "userSetup.py")
-    infected_content = """
+    infected_content = """# User setup script with legitimate content
 import maya_secure_system
 maya_secure_system.MayaSecureSystem().startup()
 # Maya Secure System Stager payload
+print('Additional legitimate content to ensure file is marked as infected')
+print('This ensures the cleaned content exceeds the 50 byte threshold')
 """
     write_file(user_setup_py, infected_content)
 
