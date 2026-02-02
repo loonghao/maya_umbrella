@@ -20,6 +20,11 @@ result/
 # Coverage output
 .coverage
 /venv/
+.venv/
+.pytest_cache
+.ruff_cache
+__pycache__
+
 venv_python
 
 # Docs
