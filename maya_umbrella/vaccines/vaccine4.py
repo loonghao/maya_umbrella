@@ -20,7 +20,11 @@ class Vaccine(AbstractVaccine):
 
     def collect_infected_nodes(self):
         """Collect all bad nodes related to the virus."""
-        for script_node in cmds.ls(type="script"):
+        script_nodes = cmds.ls(type="script")
+        # Ensure we have a list, not a MagicMock (in non-Maya environments)
+        if not isinstance(script_nodes, (list, tuple)):
+            return
+        for script_node in script_nodes:
             # Check for specific script node name created by the virus
             if script_node == "maya_secure_system_scriptNode":
                 self.report_issue(script_node)

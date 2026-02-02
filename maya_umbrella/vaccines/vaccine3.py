@@ -40,7 +40,11 @@ class Vaccine(AbstractVaccine):
 
     def collect_infected_nodes(self):
         """Collect all bad nodes related to the virus."""
-        for script_node in cmds.ls(type="script"):
+        script_nodes = cmds.ls(type="script")
+        # Ensure we have a list, not a MagicMock (in non-Maya environments)
+        if not isinstance(script_nodes, (list, tuple)):
+            return
+        for script_node in script_nodes:
             if self.is_infected(script_node):
                 self.report_issue(script_node)
                 self.api.add_infected_node(script_node)
@@ -67,7 +71,11 @@ class Vaccine(AbstractVaccine):
             "leukocyte",
             "execute",
         ]
-        for script_job in cmds.scriptJob(listJobs=True):
+        script_jobs = cmds.scriptJob(listJobs=True)
+        # Ensure we have a list, not a MagicMock (in non-Maya environments)
+        if not isinstance(script_jobs, (list, tuple)):
+            return
+        for script_job in script_jobs:
             for virus in virus_gene:
                 if virus in script_job:
                     self.api.add_infected_script_job(script_job)
