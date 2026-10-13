@@ -24,3 +24,8 @@ jobs:
       - name: lint
         run: |
           nox -s lint
+      - name: Check generated llms files are current
+        # Content-only: ignores the `Version:` line, so a new release tag does
+        # not turn every branch red. Regenerate with `nox -s llms-txt`.
+        run: |
+          nox -s llms-txt-check
