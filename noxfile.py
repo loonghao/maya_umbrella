@@ -16,6 +16,7 @@ if ROOT not in sys.path:
 # Import third-party modules
 from nox_actions import codetest  # noqa: E402
 from nox_actions import lint  # noqa: E402
+from nox_actions import llms  # noqa: E402
 from nox_actions import release  # noqa: E402
 from nox_actions import run_maya  # noqa: E402
 
@@ -27,3 +28,5 @@ nox.session(release.make_install_zip, name="make-zip")
 nox.session(codetest.pytest, name="pytest")
 nox.session(release.vendoring, name="vendoring")
 nox.session(release.translate, name="t")
+nox.session(llms.llms_txt, name="llms-txt")
+nox.session(llms.llms_txt_check, name="llms-txt-check")
