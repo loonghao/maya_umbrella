@@ -1,0 +1,62 @@
+# maya_umbrella
+
+> An antivirus tool for Autodesk Maya. It scans scenes and files for
+> known malicious node types and scripts, then removes or repairs them.
+> It runs inside Maya (or standalone via mayapy) and is also usable as a
+> Python API for pipeline integration.
+
+Version: 0.18.0
+Package: https://pypi.org/project/maya-umbrella/
+Source: https://github.com/loonghao/maya_umbrella
+
+## Getting started
+
+Install into a Maya interpreter with
+`mayapy -m pip install maya-umbrella`. The package's public API is
+`MayaVirusDefender`, `MayaVirusCleaner`, `MayaVirusCollector` and
+`MayaVirusScanner`, all importable directly from `maya_umbrella`.
+
+Scan the current scene for unrepaired virus files:
+
+```python
+from maya_umbrella import MayaVirusDefender
+
+api = MayaVirusDefender()
+print(api.get_unfixed_references())
+```
+
+Batch repair files matching a pattern:
+
+```python
+from maya_umbrella import MayaVirusScanner
+
+api = MayaVirusScanner()
+print(api.scan_files_from_pattern("your/path/*.m[ab]"))
+```
+
+## Table of contents
+
+- [README](https://github.com/loonghao/maya_umbrella/blob/main/README.md) — installation, Maya version support and the API section
+- [Hooks](https://github.com/loonghao/maya_umbrella/tree/main/maya_umbrella/hooks) — 5 remediation hooks, each disableable by name
+- [Vaccines](https://github.com/loonghao/maya_umbrella/tree/main/maya_umbrella/vaccines) — one detection module per virus family
+- [Tests](https://github.com/loonghao/maya_umbrella/tree/main/tests) — pytest suite, including the virus fixtures it scans against
+
+## Conventions
+
+- All modules live under the `maya_umbrella` package. The four public
+  classes are re-exported from `maya_umbrella/__init__.py`; everything
+  else is reached by module path.
+- Detection hooks are one module per remediation under
+  `maya_umbrella/hooks/`. They can be switched off with the
+  `MAYA_UMBRELLA_DISABLE_HOOKS` and `MAYA_UMBRELLA_DISABLE_ALL_HOOKS`
+  environment variables, which take hook names without the `.py`
+  extension.
+- Virus signatures live in `maya_umbrella/vaccines/`, one module per
+  virus family, each subclassing `AbstractVaccine`.
+- Third-party code is vendored under `maya_umbrella/_vendor/`, which is
+  excluded from linting; do not edit it by hand.
+
+## Optional
+
+- [Changelog](https://github.com/loonghao/maya_umbrella/blob/main/CHANGELOG.md) — release history.
+- [Issue tracker](https://github.com/loonghao/maya_umbrella/issues) — known problems and questions.
